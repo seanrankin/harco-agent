@@ -1,0 +1,111 @@
+import { openai } from "@ai-sdk/openai";
+import { streamText, tool, convertToModelMessages, zodSchema } from "ai";
+import type { UIMessage } from "ai";
+import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
+import { retrieveContext } from "@/lib/rag";
+
+export const maxDuration = 30;
+
+const SYSTEM_PROMPT = `You are a helpful knowledge base assistant for Harco Fittings, a pipe and pipe fitting manufacturer. You help salespeople find information from company documents.
+
+Rules:
+- Only answer based on the provided context documents. If the context doesn't contain relevant information, say so clearly.
+- When you reference a specific document, use the fileReference tool to provide a downloadable link.
+- When a user asks you to draft an email, use the emailDraft tool to provide a formatted, sendable draft.
+- Be concise and professional. These are busy salespeople who need quick answers.
+- If asked about something outside the company documents, politely explain that you can only help with information from the Harco knowledge base.`;
+
+export async function POST(req: Request) {
+  // Dev-only auth bypass
+  if (process.env.SKIP_AUTH !== "true") {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+  }
+
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  // Get the latest user message for RAG retrieval
+  const lastUserMessage = [...messages]
+    .reverse()
+    .find((m) => m.role === "user");
+
+  let contextText = "";
+  let contextDocs: {
+    id: string;
+    title: string;
+    file_type: string;
+    file_size_bytes: number;
+  }[] = [];
+
+  // Extract text from UIMessage parts (v6 format) with fallback to content string
+  let userQuery = "";
+  if (lastUserMessage) {
+    if (lastUserMessage.parts && Array.isArray(lastUserMessage.parts)) {
+      userQuery = lastUserMessage.parts
+        .filter((p): p is { type: "text"; text: string } => p.type === "text")
+        .map((p) => p.text)
+        .join(" ");
+    }
+    // Fallback: if parts extraction yielded nothing, try content directly
+    if (!userQuery && typeof lastUserMessage.content === "string") {
+      userQuery = lastUserMessage.content;
+    }
+  }
+
+  if (userQuery) {
+    const retrieved = await retrieveContext(userQuery);
+    contextText = retrieved.contextText;
+    contextDocs = retrieved.documents;
+  }
+
+  const systemWithContext = `${SYSTEM_PROMPT}
+
+## Available Documents for Reference
+${contextDocs.map((d) => `- [${d.id}] "${d.title}" (${d.file_type}, ${d.file_size_bytes} bytes)`).join("\n")}
+
+## Retrieved Context
+${contextText || "No relevant context found for this query."}`;
+
+  const result = streamText({
+    model: openai("gpt-4o-mini"),
+    system: systemWithContext,
+    messages: await convertToModelMessages(messages),
+    tools: {
+      fileReference: tool({
+        description:
+          "Show a downloadable file card to the user. Use this when referencing a specific source document that the user might want to download.",
+        inputSchema: zodSchema(
+          z.object({
+            document_id: z
+              .string()
+              .describe("The document UUID from the available documents list"),
+            title: z.string().describe("The document title"),
+            file_type: z.string().describe("File extension (docx, pdf, etc)"),
+            file_size_bytes: z.number().describe("File size in bytes"),
+          }),
+        ),
+      }),
+      emailDraft: tool({
+        description:
+          "Generate an email draft that the user can open in Outlook. Use this when the user asks you to write or draft an email.",
+        inputSchema: zodSchema(
+          z.object({
+            to: z.string().describe("Recipient email address"),
+            subject: z.string().describe("Email subject line"),
+            body: z.string().describe("Email body text"),
+          }),
+        ),
+      }),
+    },
+  });
+
+  return result.toUIMessageStreamResponse();
+}
