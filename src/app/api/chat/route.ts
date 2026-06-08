@@ -45,19 +45,12 @@ export async function POST(req: Request) {
     file_size_bytes: number;
   }[] = [];
 
-  // Extract text from UIMessage parts (v6 format) with fallback to content string
   let userQuery = "";
   if (lastUserMessage) {
-    if (lastUserMessage.parts && Array.isArray(lastUserMessage.parts)) {
-      userQuery = lastUserMessage.parts
-        .filter((p): p is { type: "text"; text: string } => p.type === "text")
-        .map((p) => p.text)
-        .join(" ");
-    }
-    // Fallback: if parts extraction yielded nothing, try content directly
-    if (!userQuery && typeof lastUserMessage.content === "string") {
-      userQuery = lastUserMessage.content;
-    }
+    userQuery = lastUserMessage.parts
+      .filter((p): p is { type: "text"; text: string } => p.type === "text")
+      .map((p) => p.text)
+      .join(" ");
   }
 
   if (userQuery) {
