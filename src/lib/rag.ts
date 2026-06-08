@@ -2,8 +2,8 @@ import { openai } from "@ai-sdk/openai";
 import { embedMany, embed } from "ai";
 import { createServiceClient } from "@/lib/supabase/server";
 
-const MATCH_THRESHOLD = 0.5;
-const MATCH_COUNT = 5;
+const MATCH_THRESHOLD = 0.3;
+const MATCH_COUNT = 8;
 
 interface RetrievedDocument {
   id: string;

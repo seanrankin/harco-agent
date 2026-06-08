@@ -161,14 +161,59 @@ async function parsePdf(filePath) {
   return data.text;
 }
 
+function stripEmailNoise(text) {
+  // Remove image CID references like [cid:image001.gif@01DCF764.4F68C9D0]
+  text = text.replace(/\[cid:[^\]]+\]/g, "");
+
+  // Remove URL markup like www.example.com<http://www.example.com/>
+  text = text.replace(/(\S+)<https?:\/\/[^>]+>/g, "$1");
+
+  // Remove long To: lines with multiple email addresses
+  text = text.replace(/^To:.*(?:\n(?=\S).*@.*)*$/gm, "");
+
+  // Remove Sent: lines
+  text = text.replace(/^Sent:.*$/gm, "");
+
+  // Remove signature blocks (name + title patterns before forwarded content)
+  const lines = text.split("\n");
+  const cleaned = [];
+  let inSignature = false;
+
+  for (const line of lines) {
+    if (
+      /^(John D\. Fralick|National Sales Manager|Harco Fittings LLC|\(\d{3}\) \d{3}-\d{4})/.test(
+        line.trim(),
+      )
+    ) {
+      inSignature = true;
+      continue;
+    }
+    if (/^From:/.test(line.trim()) && inSignature) {
+      inSignature = false;
+    }
+    if (!inSignature) {
+      cleaned.push(line);
+    }
+  }
+
+  // Remove excessive blank lines
+  return cleaned
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 async function parseEml(filePath) {
   const source = await readFile(filePath);
   const parsed = await simpleParser(source);
 
   let text = "";
   if (parsed.subject) text += `Subject: ${parsed.subject}\n\n`;
-  if (parsed.text) text += parsed.text;
-  else if (parsed.html) text += parsed.html.replace(/<[^>]+>/g, " ");
+  if (parsed.text) {
+    text += stripEmailNoise(parsed.text);
+  } else if (parsed.html) {
+    text += stripEmailNoise(parsed.html.replace(/<[^>]+>/g, " "));
+  }
 
   const attachments = (parsed.attachments || []).filter(
     (a) =>
