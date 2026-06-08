@@ -20,62 +20,62 @@ Set up Vitest with fast-check for the harco-agent project. Extract `isEmailAllow
     - Verify the login page still compiles correctly
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [ ] 3. Write email gating tests
-  - [-] 3.1 Write property-based tests for `isEmailAllowed` (`src/lib/email.test.ts`)
+- [x] 3. Write email gating tests
+  - [x] 3.1 Write property-based tests for `isEmailAllowed` (`src/lib/email.test.ts`)
     - Mock `process.env.NEXT_PUBLIC_ALLOWED_EMAILS` using `vi.stubEnv()` in setup/teardown
     - Implement property tests using `fc.assert(fc.property(...))` pattern
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-  - [ ]\* 3.2 Write property test: allowed domain acceptance is case-insensitive
+  - [x]\* 3.2 Write property test: allowed domain acceptance is case-insensitive
     - **Property 1: Allowed domain acceptance is case-insensitive**
     - Generate emails with arbitrary local parts and any casing of `harcofittings.com` domain
     - Assert `isEmailAllowed` returns `true` for all generated inputs
     - **Validates: Requirements 2.1, 2.4**
 
-  - [ ]\* 3.3 Write property test: non-allowed emails are rejected
+  - [x]\* 3.3 Write property test: non-allowed emails are rejected
     - **Property 2: Non-allowed emails are rejected**
     - Generate emails whose lowercased domain is not `harcofittings.com` and not in the allowlist, plus strings without `@`
     - Assert `isEmailAllowed` returns `false` for all generated inputs
     - **Validates: Requirements 2.2, 2.5, 2.6**
 
-  - [ ]\* 3.4 Write property test: allowlist override accepts regardless of domain
+  - [x]\* 3.4 Write property test: allowlist override accepts regardless of domain
     - **Property 3: Allowlist override accepts regardless of domain**
     - Set `NEXT_PUBLIC_ALLOWED_EMAILS` to a generated list, then test that any email in that list returns `true`
     - **Validates: Requirements 2.3**
 
-- [ ] 4. Checkpoint - Verify email tests pass
+- [x] 4. Checkpoint - Verify email tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Write RAG context retrieval tests
-  - [-] 5.1 Write property-based and example tests for `retrieveContext` (`src/lib/rag.test.ts`)
+- [x] 5. Write RAG context retrieval tests
+  - [x] 5.1 Write property-based and example tests for `retrieveContext` (`src/lib/rag.test.ts`)
     - Mock `@/lib/supabase/server` (`createServiceClient`) and `ai` (`embed`) at module level
     - Configure mock to return controlled chunk arrays for property tests
     - Include example test for empty/error case returning `{ contextText: "", documents: [] }`
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-  - [ ]\* 5.2 Write property test: document deduplication by ID
+  - [x]\* 5.2 Write property test: document deduplication by ID
     - **Property 4: Document deduplication by ID**
     - Generate arrays of chunks with overlapping `document_id` values
     - Assert `documents` output contains exactly one entry per unique `document_id` with values from the first occurrence
     - **Validates: Requirements 3.1**
 
-  - [ ]\* 5.3 Write property test: context text concatenation
+  - [x]\* 5.3 Write property test: context text concatenation
     - **Property 5: Context text concatenation**
     - Generate non-empty arrays of chunks with arbitrary `content` strings
     - Assert `contextText` equals contents joined by `"\n\n---\n\n"`
     - **Validates: Requirements 3.2**
 
-  - [ ]\* 5.4 Write property test: document field mapping correctness
+  - [x]\* 5.4 Write property test: document field mapping correctness
     - **Property 6: Document field mapping correctness**
     - Generate chunks with unique `document_id` values
     - Assert each document in output has `id`, `title`, `file_type`, `file_size_bytes` mapped correctly from the chunk
     - **Validates: Requirements 3.4**
 
-- [ ] 6. Checkpoint - Verify RAG tests pass
+- [x] 6. Checkpoint - Verify RAG tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Write API route guard tests
-  - [ ] 7.1 Write example-based tests for chat route auth guard (`src/app/api/chat/route.test.ts`)
+- [x] 7. Write API route guard tests
+  - [x] 7.1 Write example-based tests for chat route auth guard (`src/app/api/chat/route.test.ts`)
     - Mock `@/lib/supabase/server` and `ai` (`streamText`) at module level
     - Test: auth error returns 401 "Unauthorized" without invoking streaming
     - Test: null user returns 401 "Unauthorized" without invoking streaming
@@ -83,7 +83,7 @@ Set up Vitest with fast-check for the harco-agent project. Extract `isEmailAllow
     - Test: unauthorized request does not parse body or call `retrieveContext`
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-  - [ ] 7.2 Write example-based tests for download route validation (`src/app/api/download/route.test.ts`)
+  - [x] 7.2 Write example-based tests for download route validation (`src/app/api/download/route.test.ts`)
     - Mock `@/lib/supabase/server` at module level
     - Test: auth error returns 401 "Unauthorized"
     - Test: missing `document_id` returns 400 "Missing document_id parameter"
@@ -92,7 +92,7 @@ Set up Vitest with fast-check for the harco-agent project. Extract `isEmailAllow
     - Test: signed URL generation failure returns 500 "Failed to generate download URL"
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 8. Final checkpoint - Ensure all tests pass
+- [x] 8. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

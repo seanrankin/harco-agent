@@ -3,8 +3,8 @@ import { FileText, FileSpreadsheet, File } from "lucide-react";
 interface FileCardProps {
   documentId: string;
   title: string;
-  fileType: string;
-  fileSizeBytes: number;
+  fileType?: string;
+  fileSizeBytes?: number;
 }
 
 function formatFileSize(bytes: number): string {
@@ -13,7 +13,7 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function FileIcon({ fileType }: { fileType: string }) {
+function FileIcon({ fileType }: { fileType: string | undefined }) {
   const className = "h-8 w-8 shrink-0";
   switch (fileType) {
     case "docx":
@@ -47,7 +47,8 @@ export function FileCard({
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{title}</p>
         <p className="text-xs text-muted-foreground">
-          {fileType.toUpperCase()} &middot; {formatFileSize(fileSizeBytes)}
+          {fileType?.toUpperCase() ?? "FILE"} &middot;{" "}
+          {formatFileSize(fileSizeBytes ?? 0)}
         </p>
       </div>
     </a>

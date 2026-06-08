@@ -36,9 +36,8 @@ describe("isEmailAllowed", () => {
     // Feature: test-suite, Property 1: Allowed domain acceptance is case-insensitive
     // **Validates: Requirements 2.1, 2.4**
     it("Property 1: allowed domain acceptance is case-insensitive", () => {
-      const localPartChars = fc.stringOf(
-        fc.char().filter((c) => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]$/.test(c)),
-        { minLength: 1, maxLength: 30 },
+      const localPart = fc.stringMatching(
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,30}$/,
       );
 
       const casedDomain = fc.constantFrom(
@@ -52,7 +51,7 @@ describe("isEmailAllowed", () => {
       );
 
       fc.assert(
-        fc.property(localPartChars, casedDomain, (local, domain) => {
+        fc.property(localPart, casedDomain, (local, domain) => {
           const email = `${local}@${domain}`;
           expect(isEmailAllowed(email)).toBe(true);
         }),
@@ -66,9 +65,8 @@ describe("isEmailAllowed", () => {
         .domain()
         .filter((d) => d.toLowerCase() !== "harcofittings.com");
 
-      const localPart = fc.stringOf(
-        fc.char().filter((c) => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]$/.test(c)),
-        { minLength: 1, maxLength: 30 },
+      const localPart = fc.stringMatching(
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,30}$/,
       );
 
       const emailWithWrongDomain = fc
@@ -91,9 +89,8 @@ describe("isEmailAllowed", () => {
     // Feature: test-suite, Property 3: Allowlist override accepts regardless of domain
     // **Validates: Requirements 2.3**
     it("Property 3: allowlist override accepts regardless of domain", () => {
-      const localPart = fc.stringOf(
-        fc.char().filter((c) => /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]$/.test(c)),
-        { minLength: 1, maxLength: 20 },
+      const localPart = fc.stringMatching(
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,20}$/,
       );
 
       const domain = fc.domain();
@@ -110,10 +107,9 @@ describe("isEmailAllowed", () => {
       fc.assert(
         fc.property(allowlistEmails, (emails) => {
           const envValue = emails
-            .map((e) => {
-              const rand = Math.random();
-              if (rand < 0.33) return ` ${e} `;
-              if (rand < 0.66) return e.toUpperCase();
+            .map((e, i) => {
+              if (i % 3 === 0) return ` ${e} `;
+              if (i % 3 === 1) return e.toUpperCase();
               return e;
             })
             .join(",");

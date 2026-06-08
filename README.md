@@ -18,7 +18,7 @@ An internal AI-powered knowledge base for Harco Fittings salespeople. Ask questi
 - Source document cards with signed download links
 - Email draft generation (opens in mail client)
 - Magic link auth with domain restriction
-- Document ingestion script supporting .docx, .pdf, and .eml files
+- Document ingestion script supporting .docx, .pdf, .eml, and .msg files (with attachment extraction)
 
 ## Getting Started
 
@@ -69,9 +69,11 @@ Place documents in a folder, then run:
 npm run ingest -- ./doc
 ```
 
-Supported formats: `.docx`, `.doc`, `.pdf`, `.eml`
+Supported formats: `.docx`, `.doc`, `.pdf`, `.eml`, `.msg`
 
 The script extracts text, chunks it, generates embeddings, uploads originals to Supabase Storage, and stores chunks with vectors in the `document_chunks` table. Already-ingested files (matched by content hash) are skipped.
+
+Email files (`.eml` and `.msg`) are parsed for both body text and attachments. Supported attachments (`.docx`, `.doc`, `.pdf`) are extracted and ingested as separate downloadable documents.
 
 ## Project Structure
 
