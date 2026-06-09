@@ -81,17 +81,20 @@ ${contextText || "No relevant context found for this query."}`;
         (d) => !EMAIL_TYPES.has(d.file_type),
       );
 
-      if (attachmentDocs.length > 0) {
-        writer.write({
-          type: "data-sources",
-          data: { documents: attachmentDocs.slice(0, 8) },
-        });
-      }
-
       const result = streamText({
         model: openai("gpt-4o-mini"),
         system: systemWithContext,
         messages: await convertToModelMessages(messages),
+        onFinish: () => {
+          // Emit sources AFTER the model finishes so the Sources block
+          // renders beneath the assistant's prose, not above it.
+          if (attachmentDocs.length > 0) {
+            writer.write({
+              type: "data-sources",
+              data: { documents: attachmentDocs.slice(0, 8) },
+            });
+          }
+        },
         tools: {
           fileReference: tool({
             description:

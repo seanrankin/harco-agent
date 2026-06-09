@@ -220,7 +220,8 @@ const defaultComponents = memoizeMarkdownComponents({
   table: ({ className, ...props }) => (
     <table
       className={cn(
-        "aui-md-table bg-card border-border my-3 w-full overflow-hidden rounded-[10px] border border-collapse",
+        // border-separate + spacing-0 so rounded-corners + inner cell borders coexist
+        "aui-md-table bg-card border-border my-3 w-full overflow-hidden rounded-[10px] border border-separate border-spacing-0",
         className,
       )}
       {...props}
@@ -229,7 +230,7 @@ const defaultComponents = memoizeMarkdownComponents({
   th: ({ className, ...props }) => (
     <th
       className={cn(
-        "aui-md-th bg-muted/60 text-muted-foreground border-border border-b px-3.5 py-2.5 text-start font-mono text-[10px] font-semibold tracking-wider uppercase [[align=center]]:text-center [[align=right]]:text-right",
+        "aui-md-th bg-muted/40 text-muted-foreground border-border/60 border-b px-3.5 py-2.5 text-start font-mono text-[10px] font-semibold tracking-wider uppercase first:border-r [[align=center]]:text-center [[align=right]]:text-right",
         className,
       )}
       {...props}
@@ -238,7 +239,7 @@ const defaultComponents = memoizeMarkdownComponents({
   td: ({ className, ...props }) => (
     <td
       className={cn(
-        "aui-md-td text-primary px-3.5 py-2.5 text-start font-mono text-xs font-medium [[align=center]]:text-center [[align=right]]:text-right",
+        "aui-md-td text-primary border-border/60 border-b px-3.5 py-2.5 text-start font-mono text-xs font-medium first:bg-muted/40 first:text-muted-foreground first:border-r first:font-semibold first:tracking-wider first:uppercase first:text-[11px] [[align=center]]:text-center [[align=right]]:text-right",
         className,
       )}
       {...props}
@@ -247,7 +248,8 @@ const defaultComponents = memoizeMarkdownComponents({
   tr: ({ className, ...props }) => (
     <tr
       className={cn(
-        "aui-md-tr border-border/60 border-b last:border-b-0",
+        // last row drops its bottom border (cells handle the row separator now)
+        "aui-md-tr [&:last-child>td]:border-b-0",
         className,
       )}
       {...props}

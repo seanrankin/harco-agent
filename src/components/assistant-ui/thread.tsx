@@ -1,5 +1,4 @@
 import {
-  ComposerAddAttachment,
   ComposerAttachments,
   UserMessageAttachments,
 } from "@/components/assistant-ui/attachment";
@@ -218,7 +217,6 @@ const Composer: FC = () => {
 const ComposerAction: FC = () => {
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between gap-3">
-      <ComposerAddAttachment />
       <span className="aui-composer-grounding-note text-muted-foreground flex-1 font-mono text-[10px] tracking-wide max-sm:hidden">
         Answers grounded in Harco&rsquo;s document library · sources shown
       </span>
@@ -279,12 +277,20 @@ const AssistantMessage: FC = () => {
     <MessagePrimitive.Root
       data-slot="aui_assistant-message-root"
       data-role="assistant"
-      className="fade-in slide-in-from-bottom-1 animate-in relative duration-150"
+      className="fade-in slide-in-from-bottom-1 animate-in relative grid grid-cols-[auto_1fr] items-start gap-x-3 duration-150"
     >
+      <AssistantAvatar />
+      <div className="col-start-2 flex flex-col">
+        <div
+          data-slot="aui_assistant-message-author"
+          className="text-primary mb-1 text-sm font-semibold"
+        >
+          Harco Assistant
+        </div>
       <div
         data-slot="aui_assistant-message-content"
         // [contain-intrinsic-size:auto_24px] fixes issue #4104, don't change without checking for regressions
-        className="text-foreground px-2 leading-relaxed wrap-break-word [contain-intrinsic-size:auto_24px] [content-visibility:auto]"
+        className="text-foreground leading-relaxed wrap-break-word [contain-intrinsic-size:auto_24px] [content-visibility:auto]"
       >
         <MessagePrimitive.GroupedParts
           groupBy={groupPartByType({
@@ -337,14 +343,27 @@ const AssistantMessage: FC = () => {
         <MessageError />
       </div>
 
-      <div
-        data-slot="aui_assistant-message-footer"
-        className={cn("ms-2 flex items-center", ACTION_BAR_HEIGHT)}
-      >
-        <BranchPicker />
-        <AssistantActionBar />
+        <div
+          data-slot="aui_assistant-message-footer"
+          className={cn("-ms-1 flex items-center", ACTION_BAR_HEIGHT)}
+        >
+          <BranchPicker />
+          <AssistantActionBar />
+        </div>
       </div>
     </MessagePrimitive.Root>
+  );
+};
+
+const AssistantAvatar: FC = () => {
+  return (
+    <div
+      data-slot="aui_assistant-avatar"
+      className="col-start-1 flex shrink-0 items-center justify-center pt-1"
+      aria-hidden="true"
+    >
+      <Diamond size={32} color="var(--primary)" />
+    </div>
   );
 };
 
