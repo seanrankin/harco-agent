@@ -98,8 +98,8 @@ const STARTER_SUGGESTIONS = [
   },
   {
     prompt:
-      "How do the 10-inch PE ball valves compare between Polyvalve, Central Plastics, and Lyall/Polytec?",
-    description: "Returns the comparison PDF + key specs",
+      "A contractor is bidding a project and asked for everything we have on 10-inch PE ball valves — what should I send?",
+    description: "Surfaces the comparison PDF as an attachment",
   },
 ];
 
