@@ -290,6 +290,8 @@ const AssistantMessage: FC = () => {
                 return <Reasoning {...part} />;
               case "tool-call":
                 return part.toolUI ?? <ToolFallback {...part} />;
+              case "data":
+                return part.dataRendererUI ?? null;
               case "indicator":
                 return (
                   <span

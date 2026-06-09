@@ -9,6 +9,17 @@ vi.mock("ai", () => ({
   tool: vi.fn((config) => config),
   convertToModelMessages: vi.fn(async (msgs) => msgs),
   zodSchema: vi.fn((schema) => schema),
+  createUIMessageStream: vi.fn(({ execute }) => {
+    const writer = {
+      write: vi.fn(),
+      merge: vi.fn(),
+    };
+    execute({ writer });
+    return new ReadableStream();
+  }),
+  createUIMessageStreamResponse: vi.fn(
+    ({ stream }) => new Response("ok", { status: 200 }),
+  ),
 }));
 
 vi.mock("@ai-sdk/openai", () => ({
@@ -83,7 +94,7 @@ describe("Chat Route Auth Guard", () => {
     } as any);
 
     vi.mocked(streamText).mockReturnValue({
-      toUIMessageStreamResponse: () => new Response("ok", { status: 200 }),
+      toUIMessageStream: () => new ReadableStream(),
     } as any);
 
     vi.mocked(retrieveContext).mockResolvedValue({

@@ -18,6 +18,7 @@ import mammoth from "mammoth";
 import { simpleParser } from "mailparser";
 import MsgReader from "@kenjiuno/msgreader";
 import { Agent, request } from "undici";
+import { chunkText, stripEmailNoise } from "../src/lib/ingest-utils.js";
 
 // Force HTTP/1.1 to work around Node 26 HTTP/2 memory leak
 const agent = new Agent({ allowH2: false });
@@ -40,8 +41,6 @@ if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(1);
 }
 
-const CHUNK_SIZE = 1500;
-const CHUNK_OVERLAP = 200;
 const EMBEDDING_MODEL = "text-embedding-3-small";
 
 // --- Supabase REST helpers ---
@@ -92,32 +91,6 @@ function hashContent(content) {
   return createHash("sha256").update(content).digest("hex");
 }
 
-function chunkText(text, chunkSize = CHUNK_SIZE, overlap = CHUNK_OVERLAP) {
-  const charSize = chunkSize * 4;
-  const charOverlap = overlap * 4;
-  const step = charSize - charOverlap;
-  const estimatedChunks = Math.ceil(text.length / step);
-
-  if (estimatedChunks > 50000) {
-    console.warn(
-      `  ⚠  Document is extremely large (${text.length} chars, ~${estimatedChunks} chunks). Truncating to first 10M chars.`,
-    );
-    text = text.slice(0, 10_000_000);
-  }
-
-  const chunks = [];
-  let start = 0;
-
-  while (start < text.length) {
-    const end = Math.min(start + charSize, text.length);
-    chunks.push(text.slice(start, end));
-    start += step;
-    if (start >= text.length) break;
-  }
-
-  return chunks;
-}
-
 async function generateEmbeddings(texts) {
   const results = [];
   for (let i = 0; i < texts.length; i += 100) {
@@ -159,48 +132,6 @@ async function parsePdf(filePath) {
   const buffer = await readFile(filePath);
   const data = await pdf(buffer);
   return data.text;
-}
-
-function stripEmailNoise(text) {
-  // Remove image CID references like [cid:image001.gif@01DCF764.4F68C9D0]
-  text = text.replace(/\[cid:[^\]]+\]/g, "");
-
-  // Remove URL markup like www.example.com<http://www.example.com/>
-  text = text.replace(/(\S+)<https?:\/\/[^>]+>/g, "$1");
-
-  // Remove long To: lines with multiple email addresses
-  text = text.replace(/^To:.*(?:\n(?=\S).*@.*)*$/gm, "");
-
-  // Remove Sent: lines
-  text = text.replace(/^Sent:.*$/gm, "");
-
-  // Remove signature blocks (name + title patterns before forwarded content)
-  const lines = text.split("\n");
-  const cleaned = [];
-  let inSignature = false;
-
-  for (const line of lines) {
-    if (
-      /^(John D\. Fralick|National Sales Manager|Harco Fittings LLC|\(\d{3}\) \d{3}-\d{4})/.test(
-        line.trim(),
-      )
-    ) {
-      inSignature = true;
-      continue;
-    }
-    if (/^From:/.test(line.trim()) && inSignature) {
-      inSignature = false;
-    }
-    if (!inSignature) {
-      cleaned.push(line);
-    }
-  }
-
-  // Remove excessive blank lines
-  return cleaned
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
 }
 
 async function parseEml(filePath) {

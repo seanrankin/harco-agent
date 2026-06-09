@@ -14,7 +14,7 @@
 /coverage
 
 # source emails and doc.
-/doc
+/ingest
 
 # next.js
 /.next/

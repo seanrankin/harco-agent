@@ -1,5 +1,12 @@
 import { openai } from "@ai-sdk/openai";
-import { streamText, tool, convertToModelMessages, zodSchema } from "ai";
+import {
+  streamText,
+  tool,
+  convertToModelMessages,
+  zodSchema,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+} from "ai";
 import type { UIMessage } from "ai";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -67,38 +74,55 @@ ${contextDocs.map((d) => `- [${d.id}] "${d.title}" (${d.file_type}, ${d.file_siz
 ## Retrieved Context
 ${contextText || "No relevant context found for this query."}`;
 
-  const result = streamText({
-    model: openai("gpt-4o-mini"),
-    system: systemWithContext,
-    messages: await convertToModelMessages(messages),
-    tools: {
-      fileReference: tool({
-        description:
-          "Show a downloadable file card to the user. Use this when referencing a specific source document that the user might want to download.",
-        inputSchema: zodSchema(
-          z.object({
-            document_id: z
-              .string()
-              .describe("The document UUID from the available documents list"),
-            title: z.string().describe("The document title"),
-            file_type: z.string().describe("File extension (docx, pdf, etc)"),
-            file_size_bytes: z.number().describe("File size in bytes"),
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      if (contextDocs.length > 0) {
+        writer.write({
+          type: "data-sources",
+          data: { documents: contextDocs.slice(0, 8) },
+        });
+      }
+
+      const result = streamText({
+        model: openai("gpt-4o-mini"),
+        system: systemWithContext,
+        messages: await convertToModelMessages(messages),
+        tools: {
+          fileReference: tool({
+            description:
+              "Show a downloadable file card to the user. Use this when referencing a specific source document that the user might want to download.",
+            inputSchema: zodSchema(
+              z.object({
+                document_id: z
+                  .string()
+                  .describe(
+                    "The document UUID from the available documents list",
+                  ),
+                title: z.string().describe("The document title"),
+                file_type: z
+                  .string()
+                  .describe("File extension (docx, pdf, etc)"),
+                file_size_bytes: z.number().describe("File size in bytes"),
+              }),
+            ),
           }),
-        ),
-      }),
-      emailDraft: tool({
-        description:
-          "Generate an email draft that the user can open in Outlook. Use this when the user asks you to write or draft an email.",
-        inputSchema: zodSchema(
-          z.object({
-            to: z.string().describe("Recipient email address"),
-            subject: z.string().describe("Email subject line"),
-            body: z.string().describe("Email body text"),
+          emailDraft: tool({
+            description:
+              "Generate an email draft that the user can open in Outlook. Use this when the user asks you to write or draft an email.",
+            inputSchema: zodSchema(
+              z.object({
+                to: z.string().describe("Recipient email address"),
+                subject: z.string().describe("Email subject line"),
+                body: z.string().describe("Email body text"),
+              }),
+            ),
           }),
-        ),
-      }),
+        },
+      });
+
+      writer.merge(result.toUIMessageStream());
     },
   });
 
-  return result.toUIMessageStreamResponse();
+  return createUIMessageStreamResponse({ stream });
 }

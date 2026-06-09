@@ -7,10 +7,9 @@ interface EmailDraftCardProps {
 }
 
 function buildMailtoLink({ to, subject, body }: EmailDraftCardProps): string {
-  const params = new URLSearchParams();
-  params.set("subject", subject);
-  params.set("body", body);
-  return `mailto:${encodeURIComponent(to)}?${params.toString()}`;
+  const subject_ = encodeURIComponent(subject);
+  const body_ = encodeURIComponent(body);
+  return `mailto:${encodeURIComponent(to)}?subject=${subject_}&body=${body_}`;
 }
 
 export function EmailDraftCard({ to, subject, body }: EmailDraftCardProps) {

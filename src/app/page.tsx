@@ -6,6 +6,8 @@ import { Thread } from "@/components/assistant-ui/thread";
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import { FileCard } from "@/components/tool-ui/file-card";
 import { EmailDraftCard } from "@/components/tool-ui/email-draft-card";
+import { SourceAttachmentsDataUI } from "@/components/tool-ui/source-attachments";
+import { DevToolsModal } from "@assistant-ui/react-devtools";
 
 const FileReferenceToolUI = makeAssistantToolUI({
   toolName: "fileReference",
@@ -41,8 +43,10 @@ export default function ChatPage() {
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
+      <DevToolsModal />
       <FileReferenceToolUI />
       <EmailDraftToolUI />
+      <SourceAttachmentsDataUI />
       <div className="flex h-full flex-col">
         <header className="flex items-center justify-between border-b px-4 py-3">
           <h1 className="text-lg font-semibold">Harco Knowledge Base</h1>
