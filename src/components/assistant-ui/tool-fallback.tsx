@@ -332,9 +332,6 @@ function ToolFallbackApproval({
 }
 
 const ToolFallbackImpl: ToolCallMessagePartComponent = ({
-  toolName,
-  argsText,
-  result,
   status,
   addResult,
   resume,
@@ -342,43 +339,16 @@ const ToolFallbackImpl: ToolCallMessagePartComponent = ({
   approval,
   respondToApproval,
 }) => {
-  const isCancelled =
-    status?.type === "incomplete" && status.reason === "cancelled";
-  const isRequiresAction = status?.type === "requires-action";
-
-  const [open, setOpen] = useState(isRequiresAction);
-  const [prevRequiresAction, setPrevRequiresAction] =
-    useState(isRequiresAction);
-  if (isRequiresAction !== prevRequiresAction) {
-    setPrevRequiresAction(isRequiresAction);
-    if (isRequiresAction) setOpen(true);
-  }
+  if (status?.type !== "requires-action") return null;
 
   return (
-    <ToolFallbackRoot
-      open={open}
-      onOpenChange={setOpen}
-      className={cn(isCancelled && "border-muted-foreground/30 bg-muted/30")}
-    >
-      <ToolFallbackTrigger toolName={toolName} status={status} />
-      <ToolFallbackContent>
-        <ToolFallbackError status={status} />
-        <ToolFallbackArgs
-          argsText={argsText}
-          className={cn(isCancelled && "opacity-60")}
-        />
-        {isRequiresAction && (
-          <ToolFallbackApproval
-            addResult={addResult}
-            resume={resume}
-            interrupt={interrupt}
-            approval={approval}
-            respondToApproval={respondToApproval}
-          />
-        )}
-        {!isCancelled && <ToolFallbackResult result={result} />}
-      </ToolFallbackContent>
-    </ToolFallbackRoot>
+    <ToolFallbackApproval
+      addResult={addResult}
+      resume={resume}
+      interrupt={interrupt}
+      approval={approval}
+      respondToApproval={respondToApproval}
+    />
   );
 };
 

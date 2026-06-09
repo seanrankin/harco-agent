@@ -29,8 +29,9 @@ describe("chunkText", () => {
           if (chunks.length < 2) return;
 
           for (let i = 0; i < chunks.length - 1; i++) {
-            const endOfCurrent = chunks[i].slice(-charOverlap);
-            const startOfNext = chunks[i + 1].slice(0, charOverlap);
+            const overlapLen = Math.min(charOverlap, chunks[i + 1].length);
+            const endOfCurrent = chunks[i].slice(-overlapLen);
+            const startOfNext = chunks[i + 1].slice(0, overlapLen);
             expect(endOfCurrent).toBe(startOfNext);
           }
         },

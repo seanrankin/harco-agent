@@ -76,7 +76,7 @@ export function FileCard({
       href={`/api/download?document_id=${documentId}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group bg-card hover:border-muted-foreground/40 my-2 flex w-full max-w-md items-center gap-3.5 rounded-xl border p-3 transition-all hover:shadow-sm"
+      className="group bg-card hover:border-muted-foreground/40 my-2 flex w-full items-center gap-3.5 rounded-xl border p-3 transition-all hover:shadow-sm"
     >
       <DocIcon ext={ext} />
       <div className="min-w-0 flex-1">

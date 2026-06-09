@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
-  const supabase = await createClient();
-
   // Dev-only auth bypass
   if (process.env.SKIP_AUTH !== "true") {
+    const supabase = await createClient();
     const {
       data: { user },
       error: authError,
@@ -23,8 +22,10 @@ export async function GET(request: Request) {
     return new Response("Missing document_id parameter", { status: 400 });
   }
 
-  // Look up the document
-  const { data: doc, error: docError } = await supabase
+  // Service client bypasses RLS — auth has already been enforced above.
+  const service = createServiceClient();
+
+  const { data: doc, error: docError } = await service
     .from("documents")
     .select("storage_path, title, file_type")
     .eq("id", documentId)
@@ -35,7 +36,7 @@ export async function GET(request: Request) {
   }
 
   // Generate a signed URL (60-minute expiry)
-  const { data: signedUrlData, error: urlError } = await supabase.storage
+  const { data: signedUrlData, error: urlError } = await service.storage
     .from("documents")
     .createSignedUrl(doc.storage_path, 60 * 60);
 

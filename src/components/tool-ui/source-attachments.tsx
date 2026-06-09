@@ -5,7 +5,6 @@ import {
   deduplicateSources,
   type SourceDocument,
 } from "@/lib/deduplicate-sources";
-import { DocIcon } from "@/components/tool-ui/file-card";
 
 interface SourcesData {
   documents: SourceDocument[];
@@ -43,7 +42,7 @@ export const SourceAttachmentsDataUI = makeAssistantDataUI<SourcesData>({
 
     return (
       <div className="border-border/60 mt-5 border-t pt-3">
-        <p className="text-muted-foreground mb-2 font-mono text-[10px] tracking-wider uppercase">
+        <p className="text-muted-foreground mb-2 font-mono text-[10px] tracking-[0.12em] uppercase">
           Sources · grounded in {sources.length} document
           {sources.length === 1 ? "" : "s"}
         </p>
@@ -61,16 +60,15 @@ export const SourceAttachmentsDataUI = makeAssistantDataUI<SourcesData>({
                   href={`/api/download?document_id=${doc.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:bg-ring/5 flex items-center gap-2.5 rounded-md px-2 py-1.5 text-xs transition-colors"
+                  className="hover:bg-ring/5 flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[12.5px] transition-colors"
                 >
-                  <span className="bg-ring/10 text-ring inline-flex size-4 shrink-0 items-center justify-center rounded font-mono text-[9px] font-semibold">
+                  <span className="bg-ring/10 text-ring inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] font-mono text-[9.5px] font-semibold">
                     {i + 1}
                   </span>
-                  <DocIcon ext={ext} size="sm" />
                   <span className="text-primary min-w-0 flex-1 truncate font-medium">
                     {doc.title}
                   </span>
-                  <span className="text-muted-foreground hidden font-mono text-[10px] tracking-wide sm:inline">
+                  <span className="text-muted-foreground hidden font-mono text-[10.5px] tracking-wide sm:inline">
                     {ext.toUpperCase()}
                     {size && ` · ${size}`}
                   </span>

@@ -10,6 +10,10 @@ vi.mock("@/lib/supabase/server", () => ({
     from: mockFrom,
     storage: { from: mockStorageFrom },
   })),
+  createServiceClient: vi.fn(() => ({
+    from: mockFrom,
+    storage: { from: mockStorageFrom },
+  })),
 }));
 
 import { GET } from "./route";
