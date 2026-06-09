@@ -1,0 +1,3 @@
+-- No-op: security definer + search_path fix already included in 20260608181639_create_domain_validation_trigger.sql
+-- This migration was applied remotely to fix the function in-place.
+-- Kept here to maintain parity with the remote migration history.

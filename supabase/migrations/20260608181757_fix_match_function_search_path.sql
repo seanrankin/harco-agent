@@ -1,0 +1,3 @@
+-- No-op: search_path fix already included in 20260608181510_create_match_document_chunks_function.sql
+-- This migration was applied remotely to fix the function in-place.
+-- Kept here to maintain parity with the remote migration history.
