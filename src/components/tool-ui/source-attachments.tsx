@@ -1,14 +1,21 @@
 "use client";
 
 import { makeAssistantDataUI, useMessage } from "@assistant-ui/react";
-import { FileCard } from "@/components/tool-ui/file-card";
 import {
   deduplicateSources,
   type SourceDocument,
 } from "@/lib/deduplicate-sources";
+import { DocIcon } from "@/components/tool-ui/file-card";
 
 interface SourcesData {
   documents: SourceDocument[];
+}
+
+function formatFileSize(bytes: number | undefined): string {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export const SourceAttachmentsDataUI = makeAssistantDataUI<SourcesData>({
@@ -35,17 +42,43 @@ export const SourceAttachmentsDataUI = makeAssistantDataUI<SourcesData>({
     }
 
     return (
-      <div className="mt-2">
-        <p className="text-xs text-muted-foreground mb-1">Sources</p>
-        {sources.map((doc) => (
-          <FileCard
-            key={doc.id}
-            documentId={doc.id}
-            title={doc.title}
-            fileType={doc.file_type}
-            fileSizeBytes={doc.file_size_bytes}
-          />
-        ))}
+      <div className="border-border/60 mt-5 border-t pt-3">
+        <p className="text-muted-foreground mb-2 font-mono text-[10px] tracking-wider uppercase">
+          Sources · grounded in {sources.length} document
+          {sources.length === 1 ? "" : "s"}
+        </p>
+        <ul className="-mx-2 flex flex-col gap-0.5">
+          {sources.map((doc, i) => {
+            const ext = (doc.file_type ?? "file").toLowerCase();
+            const size = formatFileSize(doc.file_size_bytes);
+            return (
+              <li
+                key={doc.id}
+                /* Citation badges in the prose scroll to these anchors */
+                id={`source-${i + 1}`}
+              >
+                <a
+                  href={`/api/download?document_id=${doc.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:bg-ring/5 flex items-center gap-2.5 rounded-md px-2 py-1.5 text-xs transition-colors"
+                >
+                  <span className="bg-ring/10 text-ring inline-flex size-4 shrink-0 items-center justify-center rounded font-mono text-[9px] font-semibold">
+                    {i + 1}
+                  </span>
+                  <DocIcon ext={ext} size="sm" />
+                  <span className="text-primary min-w-0 flex-1 truncate font-medium">
+                    {doc.title}
+                  </span>
+                  <span className="text-muted-foreground hidden font-mono text-[10px] tracking-wide sm:inline">
+                    {ext.toUpperCase()}
+                    {size && ` · ${size}`}
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     );
   },

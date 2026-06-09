@@ -14,11 +14,15 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
+import {
+  remarkCitations,
+  CITATION_TITLE,
+} from "@/lib/citations/remark-citations";
 
 const MarkdownTextImpl = () => {
   return (
     <MarkdownTextPrimitive
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkCitations]}
       className="aui-md"
       components={defaultComponents}
     />
@@ -135,15 +139,51 @@ const defaultComponents = memoizeMarkdownComponents({
       {...props}
     />
   ),
-  a: ({ className, ...props }) => (
-    <a
-      className={cn(
-        "aui-md-a text-primary hover:text-primary/80 underline underline-offset-2",
-        className,
-      )}
-      {...props}
-    />
-  ),
+  a: ({ className, title, children, ...props }) => {
+    // Citation badge: rendered when the remark-citations plugin marks the
+    // link with the CITATION_TITLE sentinel. The visible text is `[N]`.
+    if (title === CITATION_TITLE) {
+      const label = typeof children === "string" ? children : null;
+      const text =
+        label ??
+        (Array.isArray(children) && typeof children[0] === "string"
+          ? children[0]
+          : "");
+      const numStr = String(text).replace(/[^\d]/g, "");
+      return (
+        <a
+          {...props}
+          aria-label={`Citation ${numStr}`}
+          className="bg-ring/10 text-ring hover:bg-ring/20 mx-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded px-1 align-[1px] font-mono text-[9.5px] font-semibold no-underline transition-colors"
+          onClick={(e) => {
+            const id = (props.href ?? "").replace(/^#/, "");
+            const el =
+              typeof document !== "undefined"
+                ? document.getElementById(id)
+                : null;
+            if (el) {
+              e.preventDefault();
+              el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+          }}
+        >
+          {numStr}
+        </a>
+      );
+    }
+    return (
+      <a
+        title={title}
+        className={cn(
+          "aui-md-a text-primary hover:text-primary/80 underline underline-offset-2",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  },
   blockquote: ({ className, ...props }) => (
     <blockquote
       className={cn(
@@ -180,7 +220,7 @@ const defaultComponents = memoizeMarkdownComponents({
   table: ({ className, ...props }) => (
     <table
       className={cn(
-        "aui-md-table my-2 w-full border-separate border-spacing-0 overflow-y-auto",
+        "aui-md-table bg-card border-border my-3 w-full overflow-hidden rounded-[10px] border border-collapse",
         className,
       )}
       {...props}
@@ -189,7 +229,7 @@ const defaultComponents = memoizeMarkdownComponents({
   th: ({ className, ...props }) => (
     <th
       className={cn(
-        "aui-md-th bg-muted px-2 py-1 text-start font-medium first:rounded-ss-lg last:rounded-se-lg [[align=center]]:text-center [[align=right]]:text-right",
+        "aui-md-th bg-muted/60 text-muted-foreground border-border border-b px-3.5 py-2.5 text-start font-mono text-[10px] font-semibold tracking-wider uppercase [[align=center]]:text-center [[align=right]]:text-right",
         className,
       )}
       {...props}
@@ -198,7 +238,7 @@ const defaultComponents = memoizeMarkdownComponents({
   td: ({ className, ...props }) => (
     <td
       className={cn(
-        "aui-md-td border-muted-foreground/20 border-s border-b px-2 py-1 text-start last:border-e [[align=center]]:text-center [[align=right]]:text-right",
+        "aui-md-td text-primary px-3.5 py-2.5 text-start font-mono text-xs font-medium [[align=center]]:text-center [[align=right]]:text-right",
         className,
       )}
       {...props}
@@ -207,7 +247,7 @@ const defaultComponents = memoizeMarkdownComponents({
   tr: ({ className, ...props }) => (
     <tr
       className={cn(
-        "aui-md-tr m-0 border-b p-0 first:border-t [&:last-child>td:first-child]:rounded-es-lg [&:last-child>td:last-child]:rounded-ee-lg",
+        "aui-md-tr border-border/60 border-b last:border-b-0",
         className,
       )}
       {...props}

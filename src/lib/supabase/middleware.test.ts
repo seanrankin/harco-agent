@@ -28,13 +28,26 @@ describe("updateSession", () => {
     expect(createServerClient).not.toHaveBeenCalled();
   });
 
-  it("redirects unauthenticated user on protected route to /login", async () => {
+  it("redirects unauthenticated user on / to /login", async () => {
     vi.stubEnv("SKIP_AUTH", "false");
     vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "http://localhost:54321");
     vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "test-key");
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const request = new NextRequest(new URL("http://localhost/"));
+    const response = await updateSession(request);
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe("http://localhost/login");
+  });
+
+  it("redirects unauthenticated user on /some-page to /login", async () => {
+    vi.stubEnv("SKIP_AUTH", "false");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "http://localhost:54321");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "test-key");
+    mockGetUser.mockResolvedValue({ data: { user: null } });
+
+    const request = new NextRequest(new URL("http://localhost/some-page"));
     const response = await updateSession(request);
 
     expect(response.status).toBe(307);

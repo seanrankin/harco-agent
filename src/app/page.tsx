@@ -1,13 +1,21 @@
 "use client";
 
-import { AssistantRuntimeProvider } from "@assistant-ui/react";
+import {
+  AssistantRuntimeProvider,
+  makeAssistantToolUI,
+  SimpleImageAttachmentAdapter,
+  useAssistantRuntime,
+} from "@assistant-ui/react";
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
+import { DevToolsModal } from "@assistant-ui/react-devtools";
+import { useCallback, useMemo, useState } from "react";
+
 import { Thread } from "@/components/assistant-ui/thread";
-import { makeAssistantToolUI } from "@assistant-ui/react";
+import { Sidebar } from "@/components/app-shell/sidebar";
+import { MobileMenuButton } from "@/components/app-shell/mobile-menu-button";
 import { FileCard } from "@/components/tool-ui/file-card";
 import { EmailDraftCard } from "@/components/tool-ui/email-draft-card";
 import { SourceAttachmentsDataUI } from "@/components/tool-ui/source-attachments";
-import { DevToolsModal } from "@assistant-ui/react-devtools";
 
 const FileReferenceToolUI = makeAssistantToolUI({
   toolName: "fileReference",
@@ -39,7 +47,15 @@ const EmailDraftToolUI = makeAssistantToolUI({
 });
 
 export default function ChatPage() {
-  const runtime = useChatRuntime();
+  // TODO(redesign): SimpleImageAttachmentAdapter holds files in browser memory
+  // only — they vanish on reload. Swap for a Supabase Storage adapter when we
+  // want attachments to persist with messages.
+  const adapters = useMemo(
+    () => ({ attachments: new SimpleImageAttachmentAdapter() }),
+    [],
+  );
+  const runtime = useChatRuntime({ adapters });
+  const [navOpen, setNavOpen] = useState(false);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
@@ -47,33 +63,47 @@ export default function ChatPage() {
       <FileReferenceToolUI />
       <EmailDraftToolUI />
       <SourceAttachmentsDataUI />
-      <div className="flex h-full flex-col">
-        <header className="flex items-center justify-between border-b px-4 py-3">
-          <h1 className="text-lg font-semibold">Harco Knowledge Base</h1>
-          <SignOutButton />
-        </header>
-        <div className="flex-1 overflow-hidden">
-          <Thread />
-        </div>
-      </div>
+      <AppShell navOpen={navOpen} setNavOpen={setNavOpen} />
     </AssistantRuntimeProvider>
   );
 }
 
-function SignOutButton() {
-  const handleSignOut = async () => {
+function AppShell({
+  navOpen,
+  setNavOpen,
+}: {
+  navOpen: boolean;
+  setNavOpen: (open: boolean) => void;
+}) {
+  const assistantRuntime = useAssistantRuntime();
+
+  const handleNewQuestion = useCallback(() => {
+    // TODO(redesign): once a multi-thread RemoteThreadListAdapter is wired,
+    // this will create a fresh thread and slot it into the sidebar's history
+    // list. For now it resets the in-memory thread.
+    void assistantRuntime.threads.switchToNewThread();
+    setNavOpen(false);
+  }, [assistantRuntime, setNavOpen]);
+
+  const handleSignOut = useCallback(async () => {
     const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
     await supabase.auth.signOut();
     window.location.href = "/login";
-  };
+  }, []);
 
   return (
-    <button
-      onClick={handleSignOut}
-      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-    >
-      Sign out
-    </button>
+    <div className="bg-background flex h-full w-full">
+      <Sidebar
+        open={navOpen}
+        onClose={() => setNavOpen(false)}
+        onNewQuestion={handleNewQuestion}
+        onSignOut={handleSignOut}
+      />
+      <main className="relative flex h-full min-w-0 flex-1 flex-col">
+        <MobileMenuButton open={navOpen} onClick={() => setNavOpen(true)} />
+        <Thread />
+      </main>
+    </div>
   );
 }

@@ -8,9 +8,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, monospace;
-  --font-heading: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-heading: var(--font-source-serif), Georgia, serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -40,6 +41,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-pdf: var(--pdf);
+  --color-docx: var(--docx);
+  --color-xlsx: var(--xlsx);
+  --color-spec-blue: var(--spec-blue);
+  --color-navy-2: var(--navy-2);
+  --color-line-soft: var(--line-soft);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -50,41 +57,51 @@
 }
 
 :root {
-  --background: oklch(0.985 0 0);
-  --foreground: oklch(0.12 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.12 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.12 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.955 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.955 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.94 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.895 0 0);
-  --input: oklch(0.895 0 0);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Harco brand tokens — see doc/ui-redesign.md */
+  --background: #FAFAF7;            /* paper */
+  --foreground: #3A4651;            /* steel */
+  --card: #FFFFFF;
+  --card-foreground: #3A4651;
+  --popover: #FFFFFF;
+  --popover-foreground: #3A4651;
+  --primary: #0B3D5C;               /* navy */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F3F4F2;
+  --secondary-foreground: #0B3D5C;
+  --muted: #F3F4F2;
+  --muted-foreground: #8A95A0;
+  --accent: #E8A630;                /* amber */
+  --accent-foreground: #0B3D5C;
+  --destructive: #B4472F;           /* pdf red, doubles as error */
+  --border: #DCE1E5;
+  --input: #DCE1E5;
+  --ring: #1E6F9F;                  /* spec-blue */
+  --chart-1: #0B3D5C;
+  --chart-2: #1E6F9F;
+  --chart-3: #E8A630;
+  --chart-4: #3E7D55;
+  --chart-5: #B4472F;
   --radius: 0.625rem;
-  --sidebar: oklch(0.975 0 0);
-  --sidebar-foreground: oklch(0.12 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.94 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.895 0 0);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: #F3F4F2;
+  --sidebar-foreground: #3A4651;
+  --sidebar-primary: #0B3D5C;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E8EBEE;
+  --sidebar-accent-foreground: #0B3D5C;
+  --sidebar-border: #DCE1E5;
+  --sidebar-ring: #1E6F9F;
+
+  /* Raw tokens for file-type and brand surfaces */
+  --pdf: #B4472F;
+  --docx: #1E6F9F;
+  --xlsx: #3E7D55;
+  --spec-blue: #1E6F9F;
+  --navy-2: #0a3450;
+  --line-soft: #E8EBEE;
 }
 
 .dark {
+  /* Dark mode is not part of the v1 redesign — left as neutral fallback */
   --background: oklch(0.16 0 0);
   --foreground: oklch(0.94 0 0);
   --card: oklch(0.2 0 0);

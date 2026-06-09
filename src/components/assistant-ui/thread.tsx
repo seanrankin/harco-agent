@@ -29,7 +29,6 @@ import {
   ErrorPrimitive,
   groupPartByType,
   MessagePrimitive,
-  SuggestionPrimitive,
   ThreadPrimitive,
   useAuiState,
 } from "@assistant-ui/react";
@@ -47,6 +46,30 @@ import {
   SquareIcon,
 } from "lucide-react";
 import type { FC } from "react";
+
+import { Diamond } from "@/components/brand/diamond";
+
+// Four starter prompts mirrored from the design mockup. Hardcoded for v1.
+// TODO(redesign): source these from runtime/runtime-extras once suggestions
+// can vary by context (e.g., recent activity, role).
+const STARTER_SUGGESTIONS = [
+  {
+    prompt: "What's the pressure rating on a 12″ PVC push-on fitting?",
+    description: "Pulls the spec sheet + AWWA standard",
+  },
+  {
+    prompt: "Find the AWWA C907 submittal for a contractor",
+    description: "Returns the downloadable PDF + DOCX",
+  },
+  {
+    prompt: "Draft a stock-availability email to a customer",
+    description: "Builds an Outlook-ready draft",
+  },
+  {
+    prompt: "Which fittings are NSF/ANSI 61 certified?",
+    description: "Lists certified lines with sources",
+  },
+];
 
 export const Thread: FC = () => {
   return (
@@ -114,80 +137,96 @@ const ThreadScrollToBottom: FC = () => {
 
 const ThreadWelcome: FC = () => {
   return (
-    <div className="aui-thread-welcome-root my-auto flex grow flex-col">
-      <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
-        <div className="aui-thread-welcome-message flex size-full flex-col justify-center px-4">
-          <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-2xl font-semibold duration-200">
-            Hello there!
-          </h1>
-          <p className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-xl delay-75 duration-200">
-            How can I help you today?
-          </p>
-        </div>
+    <div className="aui-thread-welcome-root my-auto flex grow flex-col items-center justify-center px-4">
+      <div className="aui-thread-welcome-center flex w-full max-w-xl flex-col items-center text-center">
+        <Diamond
+          size={72}
+          color="var(--primary)"
+          className="fade-in slide-in-from-bottom-1 animate-in fill-mode-both mb-6 duration-200"
+        />
+        <h1 className="aui-thread-welcome-headline fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-primary font-serif text-3xl font-semibold tracking-tight delay-75 duration-200 sm:text-4xl">
+          Ask the Harco library.
+        </h1>
+        <p className="aui-thread-welcome-sub fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground mt-3 text-base delay-100 duration-200">
+          Plain-English answers grounded in Harco&rsquo;s product docs, spec
+          sheets, and email archive — every one linked back to the source file.
+        </p>
       </div>
-      <ThreadSuggestions />
+      <ThreadStarterSuggestions />
     </div>
   );
 };
 
-const ThreadSuggestions: FC = () => {
+const ThreadStarterSuggestions: FC = () => {
   return (
-    <div className="aui-thread-welcome-suggestions grid w-full gap-2 pb-4 @md:grid-cols-2">
-      <ThreadPrimitive.Suggestions>
-        {() => <ThreadSuggestionItem />}
-      </ThreadPrimitive.Suggestions>
-    </div>
-  );
-};
-
-const ThreadSuggestionItem: FC = () => {
-  return (
-    <div className="aui-thread-welcome-suggestion-display fade-in slide-in-from-bottom-2 animate-in fill-mode-both duration-200 nth-[n+3]:hidden @md:nth-[n+3]:block">
-      <SuggestionPrimitive.Trigger
-        send
-        render={
-          <Button
-            variant="ghost"
-            className="aui-thread-welcome-suggestion bg-background hover:bg-muted h-auto w-full flex-wrap items-start justify-start gap-1 rounded-3xl border px-4 py-3 text-start text-sm transition-colors @md:flex-col"
-          />
-        }
-      >
-        <SuggestionPrimitive.Title className="aui-thread-welcome-suggestion-text-1 font-medium" />
-        <SuggestionPrimitive.Description className="aui-thread-welcome-suggestion-text-2 text-muted-foreground empty:hidden" />
-      </SuggestionPrimitive.Trigger>
+    <div className="aui-thread-welcome-suggestions mt-8 grid w-full max-w-2xl gap-3 pb-4 @md:grid-cols-2">
+      {STARTER_SUGGESTIONS.map((s, i) => (
+        <div
+          key={s.prompt}
+          className="fade-in slide-in-from-bottom-2 animate-in fill-mode-both duration-200"
+          style={{ animationDelay: `${150 + i * 40}ms` }}
+        >
+          <ThreadPrimitive.Suggestion
+            prompt={s.prompt}
+            send
+            render={
+              <Button
+                variant="outline"
+                className="aui-thread-welcome-suggestion bg-card hover:border-muted-foreground/30 hover:shadow-sm flex h-auto w-full flex-col items-start justify-start gap-1.5 rounded-xl border px-4 py-3.5 text-start text-sm whitespace-normal transition-all"
+              />
+            }
+          >
+            <span className="text-primary text-sm leading-snug font-semibold tracking-tight">
+              {s.prompt}
+            </span>
+            <span className="text-muted-foreground text-xs">
+              {s.description}
+            </span>
+          </ThreadPrimitive.Suggestion>
+        </div>
+      ))}
     </div>
   );
 };
 
 const Composer: FC = () => {
   return (
-    <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
-      <ComposerPrimitive.AttachmentDropzone
-        render={
-          <div
-            data-slot="aui_composer-shell"
-            className="bg-background focus-within:border-ring/75 focus-within:ring-ring/20 data-[dragging=true]:border-ring data-[dragging=true]:bg-accent/50 flex w-full flex-col gap-2 rounded-(--composer-radius) border p-(--composer-padding) transition-shadow focus-within:ring-2 data-[dragging=true]:border-dashed"
+    <div className="aui-composer-wrap flex w-full flex-col">
+      <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
+        <ComposerPrimitive.AttachmentDropzone
+          render={
+            <div
+              data-slot="aui_composer-shell"
+              className="bg-card focus-within:border-ring/75 focus-within:ring-ring/20 data-[dragging=true]:border-ring data-[dragging=true]:bg-accent/50 flex w-full flex-col gap-2 rounded-(--composer-radius) border p-(--composer-padding) shadow-sm transition-shadow focus-within:ring-2 data-[dragging=true]:border-dashed"
+            />
+          }
+        >
+          <ComposerAttachments />
+          <ComposerPrimitive.Input
+            placeholder="Ask about a fitting, spec, stock, or draft an email…"
+            className="aui-composer-input placeholder:text-muted-foreground/80 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none"
+            rows={1}
+            autoFocus
+            aria-label="Message input"
           />
-        }
-      >
-        <ComposerAttachments />
-        <ComposerPrimitive.Input
-          placeholder="Send a message..."
-          className="aui-composer-input placeholder:text-muted-foreground/80 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none"
-          rows={1}
-          autoFocus
-          aria-label="Message input"
-        />
-        <ComposerAction />
-      </ComposerPrimitive.AttachmentDropzone>
-    </ComposerPrimitive.Root>
+          <ComposerAction />
+        </ComposerPrimitive.AttachmentDropzone>
+      </ComposerPrimitive.Root>
+      <p className="aui-composer-disclaimer text-muted-foreground mx-auto mt-2 max-w-(--thread-max-width) text-center text-[11px] leading-relaxed">
+        Harco Assistant can be wrong — confirm part numbers and ratings against
+        the linked source before quoting.
+      </p>
+    </div>
   );
 };
 
 const ComposerAction: FC = () => {
   return (
-    <div className="aui-composer-action-wrapper relative flex items-center justify-between">
+    <div className="aui-composer-action-wrapper relative flex items-center justify-between gap-3">
       <ComposerAddAttachment />
+      <span className="aui-composer-grounding-note text-muted-foreground flex-1 font-mono text-[10px] tracking-wide max-sm:hidden">
+        Answers grounded in Harco&rsquo;s document library · sources shown
+      </span>
       <AuiIf condition={(s) => !s.thread.isRunning}>
         <ComposerPrimitive.Send
           render={
@@ -210,7 +249,7 @@ const ComposerAction: FC = () => {
           render={
             <Button
               type="button"
-              variant="default"
+              variant="destructive"
               size="icon"
               className="aui-composer-cancel size-8 rounded-full"
               aria-label="Stop generating"
@@ -296,10 +335,11 @@ const AssistantMessage: FC = () => {
                 return (
                   <span
                     data-slot="aui_assistant-message-indicator"
-                    className="animate-pulse font-sans"
+                    className="text-muted-foreground border-border bg-muted/50 inline-flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-[10px] font-medium tracking-wider uppercase"
                     aria-label="Assistant is working"
                   >
-                    {"●"}
+                    <span className="bg-muted-foreground/70 size-1.5 animate-pulse rounded-full" />
+                    Searching docs…
                   </span>
                 );
               default:
@@ -381,7 +421,7 @@ const UserMessage: FC = () => {
       <UserMessageAttachments />
 
       <div className="aui-user-message-content-wrapper relative col-start-2 min-w-0">
-        <div className="aui-user-message-content peer bg-muted text-foreground rounded-2xl px-4 py-2.5 wrap-break-word empty:hidden">
+        <div className="aui-user-message-content peer bg-primary text-primary-foreground rounded-2xl rounded-br-sm px-4 py-2.5 leading-relaxed wrap-break-word empty:hidden">
           <MessagePrimitive.Parts />
         </div>
         <div className="aui-user-action-bar-wrapper absolute start-0 top-1/2 -translate-x-full -translate-y-1/2 pe-2 peer-empty:hidden rtl:translate-x-full">
@@ -424,9 +464,9 @@ const EditComposer: FC = () => {
       data-slot="aui_edit-composer-wrapper"
       className="flex flex-col px-2"
     >
-      <ComposerPrimitive.Root className="aui-edit-composer-root bg-muted ms-auto flex w-full max-w-[85%] flex-col rounded-2xl">
+      <ComposerPrimitive.Root className="aui-edit-composer-root border-ring/60 bg-card ring-ring/15 ms-auto flex w-full max-w-[85%] flex-col rounded-2xl rounded-br-sm border shadow-md ring-2">
         <ComposerPrimitive.Input
-          className="aui-edit-composer-input text-foreground min-h-14 w-full resize-none bg-transparent p-4 text-sm outline-none"
+          className="aui-edit-composer-input text-foreground placeholder:text-muted-foreground/70 min-h-14 w-full resize-none bg-transparent p-4 text-sm leading-relaxed outline-none"
           autoFocus
         />
         <div className="aui-edit-composer-footer mx-3 mb-3 flex items-center gap-2 self-end">
@@ -436,7 +476,7 @@ const EditComposer: FC = () => {
             Cancel
           </ComposerPrimitive.Cancel>
           <ComposerPrimitive.Send render={<Button size="sm" />}>
-            Update
+            Send
           </ComposerPrimitive.Send>
         </div>
       </ComposerPrimitive.Root>

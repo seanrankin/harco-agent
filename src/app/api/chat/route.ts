@@ -76,10 +76,15 @@ ${contextText || "No relevant context found for this query."}`;
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
-      if (contextDocs.length > 0) {
+      const EMAIL_TYPES = new Set(["eml", "msg"]);
+      const attachmentDocs = contextDocs.filter(
+        (d) => !EMAIL_TYPES.has(d.file_type),
+      );
+
+      if (attachmentDocs.length > 0) {
         writer.write({
           type: "data-sources",
-          data: { documents: contextDocs.slice(0, 8) },
+          data: { documents: attachmentDocs.slice(0, 8) },
         });
       }
 

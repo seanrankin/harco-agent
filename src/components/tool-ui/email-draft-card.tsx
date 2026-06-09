@@ -1,4 +1,7 @@
-import { Mail } from "lucide-react";
+"use client";
+
+import { CheckIcon, CopyIcon, MailIcon } from "lucide-react";
+import { useState } from "react";
 
 interface EmailDraftCardProps {
   to: string;
@@ -14,29 +17,72 @@ function buildMailtoLink({ to, subject, body }: EmailDraftCardProps): string {
 
 export function EmailDraftCard({ to, subject, body }: EmailDraftCardProps) {
   const mailtoLink = buildMailtoLink({ to, subject, body });
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    await navigator.clipboard.writeText(body);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
 
   return (
-    <div className="my-2 max-w-sm rounded-lg border bg-card p-3 shadow-sm">
-      <div className="flex items-start gap-3">
-        <Mail className="h-6 w-6 shrink-0 text-blue-600 mt-0.5" />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">Email Draft</p>
-          <p className="text-xs text-muted-foreground truncate">To: {to}</p>
-          <p className="text-xs text-muted-foreground truncate">
-            Subject: {subject}
-          </p>
-          <p className="mt-2 text-xs text-muted-foreground line-clamp-3">
-            {body}
-          </p>
-        </div>
+    <div className="bg-card my-3 w-full max-w-xl overflow-hidden rounded-xl border shadow-sm">
+      {/* Header */}
+      <div className="bg-muted/40 text-muted-foreground border-border flex items-center gap-2 border-b px-4 py-2.5 font-mono text-[10px] font-semibold tracking-wider uppercase">
+        <MailIcon className="size-3.5" />
+        Email draft · ready to send
       </div>
-      <a
-        href={mailtoLink}
-        className="mt-3 flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-      >
-        <Mail className="h-4 w-4" />
-        Open in Outlook
-      </a>
+
+      {/* Field rows */}
+      <div className="px-4 pt-3.5 pb-1">
+        <Field label="To" value={to} />
+        <Field label="Subject" value={subject} />
+      </div>
+
+      {/* Body */}
+      <div className="border-border/60 text-foreground border-t px-4 pt-3 pb-4 text-sm leading-relaxed whitespace-pre-wrap">
+        {body}
+      </div>
+
+      {/* Actions */}
+      <div className="border-border/60 bg-muted/30 flex flex-wrap items-center gap-2 border-t px-4 py-3">
+        <a
+          href={mailtoLink}
+          className="bg-accent text-accent-foreground inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold tracking-tight transition-[filter] hover:brightness-105 active:translate-y-px"
+        >
+          <MailIcon className="size-4" />
+          Draft an Email
+        </a>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="text-foreground bg-card hover:bg-muted/60 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors"
+        >
+          {copied ? (
+            <>
+              <CheckIcon className="size-3.5" /> Copied
+            </>
+          ) : (
+            <>
+              <CopyIcon className="size-3.5" /> Copy
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex gap-3 py-1 text-sm leading-snug">
+      <span className="text-muted-foreground w-14 shrink-0 pt-0.5 font-mono text-[10px] tracking-wider uppercase">
+        {label}
+      </span>
+      <span className="text-primary min-w-0 flex-1 font-medium break-words">
+        {value}
+      </span>
     </div>
   );
 }
