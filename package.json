@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "analyze": "ANALYZE=true npm run build --webpack",
     "ingest": "node --max-old-space-size=8192 scripts/ingest.js"
   },
   "dependencies": {
@@ -43,13 +44,17 @@
   },
   "devDependencies": {
     "@assistant-ui/react-devtools": "^1.2.3",
+    "@next/bundle-analyzer": "^16.2.7",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "fast-check": "^4.8.0",
+    "jsdom": "^29.1.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.8"

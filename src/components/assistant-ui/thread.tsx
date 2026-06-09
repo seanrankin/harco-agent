@@ -2,7 +2,6 @@ import {
   ComposerAttachments,
   UserMessageAttachments,
 } from "@/components/assistant-ui/attachment";
-import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import {
   Reasoning,
   ReasoningContent,
@@ -39,29 +38,68 @@ import {
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { FC } from "react";
 
 import { Diamond } from "@/components/brand/diamond";
+
+export const MarkdownSkeleton: FC = () => (
+  <div
+    className="flex flex-col gap-2 py-1"
+    aria-busy="true"
+    aria-label="Loading message"
+  >
+    <div className="bg-muted h-3.5 w-[92%] animate-pulse rounded" />
+    <div className="bg-muted h-3.5 w-[78%] animate-pulse rounded" />
+    <div className="bg-muted h-3.5 w-[85%] animate-pulse rounded" />
+  </div>
+);
+
+export const importMarkdownWithRetry = () =>
+  import("@/components/assistant-ui/markdown-text")
+    .then((m) => m.MarkdownText)
+    .catch(() =>
+      // Retry once on failure
+      import("@/components/assistant-ui/markdown-text")
+        .then((m) => m.MarkdownText)
+        .catch(() => {
+          // Both attempts failed, return a fallback component
+          const Fallback: FC = () => (
+            <p className="text-muted-foreground text-sm italic">
+              Message rendering unavailable
+            </p>
+          );
+          Fallback.displayName = "MarkdownLoadError";
+          return Fallback;
+        }),
+    );
+
+const MarkdownText = dynamic(importMarkdownWithRetry, {
+  loading: () => <MarkdownSkeleton />,
+});
 
 // Four starter prompts mirrored from the design mockup. Hardcoded for v1.
 // TODO(redesign): source these from runtime/runtime-extras once suggestions
 // can vary by context (e.g., recent activity, role).
 const STARTER_SUGGESTIONS = [
   {
-    prompt: "What's the pressure rating on a 12″ PVC push-on fitting?",
-    description: "Pulls the spec sheet + AWWA standard",
+    prompt:
+      "What products does Harco Fittings offer? Give me a summary from the product catalog.",
+    description: "Summarizes the catalog + attaches the DOCX",
   },
   {
-    prompt: "Find the AWWA C907 submittal for a contractor",
-    description: "Returns the downloadable PDF + DOCX",
+    prompt: "Is PE pipe actually good for rocky sites?",
+    description: "Answers from the Info Blurt email archive",
   },
   {
-    prompt: "Draft a stock-availability email to a customer",
+    prompt:
+      "Draft an email explaining that AVK Series 66 gate valves with PE ends meet Buy America Act requirements and are made in Minden, NV.",
     description: "Builds an Outlook-ready draft",
   },
   {
-    prompt: "Which fittings are NSF/ANSI 61 certified?",
-    description: "Lists certified lines with sources",
+    prompt:
+      "How do the 10-inch PE ball valves compare between Polyvalve, Central Plastics, and Lyall/Polytec?",
+    description: "Returns the comparison PDF + key specs",
   },
 ];
 
@@ -166,7 +204,7 @@ const ThreadStarterSuggestions: FC = () => {
             render={
               <Button
                 variant="outline"
-                className="aui-thread-welcome-suggestion bg-card hover:border-muted-foreground/30 hover:shadow-sm flex h-auto w-full flex-col items-start justify-start gap-1.5 rounded-xl border px-4 py-3.5 text-start text-sm whitespace-normal transition-all"
+                className="aui-thread-welcome-suggestion bg-card hover:border-muted-foreground/30 hover:shadow-sm flex h-auto w-full cursor-pointer flex-col items-start justify-start gap-1.5 rounded-xl border px-4 py-3.5 text-start text-sm whitespace-normal transition-all"
               />
             }
           >
@@ -287,61 +325,61 @@ const AssistantMessage: FC = () => {
         >
           Harco Assistant
         </div>
-      <div
-        data-slot="aui_assistant-message-content"
-        // [contain-intrinsic-size:auto_24px] fixes issue #4104, don't change without checking for regressions
-        className="text-foreground leading-relaxed wrap-break-word [contain-intrinsic-size:auto_24px] [content-visibility:auto]"
-      >
-        <MessagePrimitive.GroupedParts
-          groupBy={groupPartByType({
-            reasoning: ["group-chainOfThought", "group-reasoning"],
-            "tool-call": ["group-chainOfThought", "group-tool"],
-            "standalone-tool-call": [],
-          })}
+        <div
+          data-slot="aui_assistant-message-content"
+          // [contain-intrinsic-size:auto_24px] fixes issue #4104, don't change without checking for regressions
+          className="text-foreground leading-relaxed wrap-break-word [contain-intrinsic-size:auto_24px] [content-visibility:auto]"
         >
-          {({ part, children }) => {
-            switch (part.type) {
-              case "group-chainOfThought":
-                return <div data-slot="aui_chain-of-thought">{children}</div>;
-              case "group-reasoning": {
-                const running = part.status.type === "running";
-                return (
-                  <ReasoningRoot defaultOpen={running}>
-                    <ReasoningTrigger active={running} />
-                    <ReasoningContent aria-busy={running}>
-                      <ReasoningText>{children}</ReasoningText>
-                    </ReasoningContent>
-                  </ReasoningRoot>
-                );
+          <MessagePrimitive.GroupedParts
+            groupBy={groupPartByType({
+              reasoning: ["group-chainOfThought", "group-reasoning"],
+              "tool-call": ["group-chainOfThought", "group-tool"],
+              "standalone-tool-call": [],
+            })}
+          >
+            {({ part, children }) => {
+              switch (part.type) {
+                case "group-chainOfThought":
+                  return <div data-slot="aui_chain-of-thought">{children}</div>;
+                case "group-reasoning": {
+                  const running = part.status.type === "running";
+                  return (
+                    <ReasoningRoot defaultOpen={running}>
+                      <ReasoningTrigger active={running} />
+                      <ReasoningContent aria-busy={running}>
+                        <ReasoningText>{children}</ReasoningText>
+                      </ReasoningContent>
+                    </ReasoningRoot>
+                  );
+                }
+                case "group-tool":
+                  return <>{children}</>;
+                case "text":
+                  return <MarkdownText />;
+                case "reasoning":
+                  return <Reasoning {...part} />;
+                case "tool-call":
+                  return part.toolUI ?? <ToolFallback {...part} />;
+                case "data":
+                  return part.dataRendererUI ?? null;
+                case "indicator":
+                  return (
+                    <span
+                      data-slot="aui_assistant-message-indicator"
+                      className="text-muted-foreground border-border bg-muted/50 inline-flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-[10px] font-medium tracking-wider uppercase"
+                      aria-label="Assistant is working"
+                    >
+                      <span className="bg-muted-foreground/70 size-1.5 animate-pulse rounded-full" />
+                      Searching docs…
+                    </span>
+                  );
+                default:
+                  return null;
               }
-              case "group-tool":
-                return <>{children}</>;
-              case "text":
-                return <MarkdownText />;
-              case "reasoning":
-                return <Reasoning {...part} />;
-              case "tool-call":
-                return part.toolUI ?? <ToolFallback {...part} />;
-              case "data":
-                return part.dataRendererUI ?? null;
-              case "indicator":
-                return (
-                  <span
-                    data-slot="aui_assistant-message-indicator"
-                    className="text-muted-foreground border-border bg-muted/50 inline-flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-[10px] font-medium tracking-wider uppercase"
-                    aria-label="Assistant is working"
-                  >
-                    <span className="bg-muted-foreground/70 size-1.5 animate-pulse rounded-full" />
-                    Searching docs…
-                  </span>
-                );
-              default:
-                return null;
-            }
-          }}
-        </MessagePrimitive.GroupedParts>
-        <MessageError />
-      </div>
+            }}
+          </MessagePrimitive.GroupedParts>
+          <MessageError />
+        </div>
 
         <div
           data-slot="aui_assistant-message-footer"
