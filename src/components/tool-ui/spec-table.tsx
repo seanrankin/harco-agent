@@ -22,7 +22,7 @@ export function SpecTable({ rows, className }: SpecTableProps) {
     <div
       className={cn(
         "bg-card border-border my-3 w-full overflow-hidden rounded-[10px] border",
-        className,
+        className
       )}
     >
       {rows.map(([key, value], i) => (
@@ -33,9 +33,7 @@ export function SpecTable({ rows, className }: SpecTableProps) {
           <div className="bg-muted/40 text-muted-foreground border-border/60 border-r px-3.5 py-2.5 font-mono text-[11px] tracking-wider uppercase">
             {key}
           </div>
-          <div className="text-primary px-3.5 py-2.5 font-mono text-xs font-medium">
-            {value}
-          </div>
+          <div className="text-primary px-3.5 py-2.5 font-mono text-xs font-medium">{value}</div>
         </div>
       ))}
     </div>

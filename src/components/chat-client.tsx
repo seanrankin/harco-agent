@@ -60,33 +60,24 @@ function SourceAttachmentsSkeleton() {
 }
 
 // Tool UIs: only needed mid-conversation, loaded dynamically
-const FileCard = dynamic(
-  () => import("@/components/tool-ui/file-card").then((m) => m.FileCard),
-  { ssr: false, loading: () => <FileCardSkeleton /> },
-);
+const FileCard = dynamic(() => import("@/components/tool-ui/file-card").then((m) => m.FileCard), {
+  ssr: false,
+  loading: () => <FileCardSkeleton />,
+});
 
 const EmailDraftCard = dynamic(
-  () =>
-    import("@/components/tool-ui/email-draft-card").then(
-      (m) => m.EmailDraftCard,
-    ),
-  { ssr: false, loading: () => <EmailDraftCardSkeleton /> },
+  () => import("@/components/tool-ui/email-draft-card").then((m) => m.EmailDraftCard),
+  { ssr: false, loading: () => <EmailDraftCardSkeleton /> }
 );
 
 const SourceAttachmentsDataUI = dynamic(
-  () =>
-    import("@/components/tool-ui/source-attachments").then(
-      (m) => m.SourceAttachmentsDataUI,
-    ),
-  { ssr: false, loading: () => <SourceAttachmentsSkeleton /> },
+  () => import("@/components/tool-ui/source-attachments").then((m) => m.SourceAttachmentsDataUI),
+  { ssr: false, loading: () => <SourceAttachmentsSkeleton /> }
 );
 
 const DevToolsModal =
-  process.env.NODE_ENV === "development" &&
-  process.env.NEXT_PUBLIC_SHOW_DEVTOOLSMODAL === "true"
-    ? dynamic(() =>
-        import("@assistant-ui/react-devtools").then((m) => m.DevToolsModal),
-      )
+  process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_SHOW_DEVTOOLSMODAL === "true"
+    ? dynamic(() => import("@assistant-ui/react-devtools").then((m) => m.DevToolsModal))
     : () => null;
 
 const FileReferenceToolUI = makeAssistantToolUI({

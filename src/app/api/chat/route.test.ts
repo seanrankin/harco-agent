@@ -17,9 +17,7 @@ vi.mock("ai", () => ({
     execute({ writer });
     return new ReadableStream();
   }),
-  createUIMessageStreamResponse: vi.fn(
-    ({ stream }) => new Response("ok", { status: 200 }),
-  ),
+  createUIMessageStreamResponse: vi.fn(({ stream }) => new Response("ok", { status: 200 })),
 }));
 
 vi.mock("@ai-sdk/openai", () => ({
@@ -49,9 +47,7 @@ describe("Chat Route Auth Guard", () => {
   });
 
   it("returns 401 when requireAuth returns a 401 response", async () => {
-    vi.mocked(requireAuth).mockResolvedValue(
-      new Response("Unauthorized", { status: 401 }),
-    );
+    vi.mocked(requireAuth).mockResolvedValue(new Response("Unauthorized", { status: 401 }));
 
     const response = await POST(makeRequest());
 
@@ -75,7 +71,7 @@ describe("Chat Route Auth Guard", () => {
     const response = await POST(
       makeRequest({
         messages: [{ role: "user", parts: [{ type: "text", text: "hello" }] }],
-      }),
+      })
     );
 
     expect(response.status).not.toBe(401);
@@ -83,9 +79,7 @@ describe("Chat Route Auth Guard", () => {
   });
 
   it("does not parse request body or call retrieveContext when unauthorized", async () => {
-    vi.mocked(requireAuth).mockResolvedValue(
-      new Response("Unauthorized", { status: 401 }),
-    );
+    vi.mocked(requireAuth).mockResolvedValue(new Response("Unauthorized", { status: 401 }));
 
     const req = makeRequest({ messages: [{ role: "user", content: "hi" }] });
     const jsonSpy = vi.spyOn(req, "json");

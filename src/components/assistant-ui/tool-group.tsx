@@ -1,21 +1,10 @@
 "use client";
 
-import {
-  memo,
-  useCallback,
-  useRef,
-  useState,
-  type FC,
-  type PropsWithChildren,
-} from "react";
+import { memo, useCallback, useRef, useState, type FC, type PropsWithChildren } from "react";
 import { ChevronDownIcon, LoaderIcon } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useScrollLock } from "@assistant-ui/react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 
 const ANIMATION_DURATION = 200;
@@ -67,7 +56,7 @@ function ToolGroupRoot({
       }
       controlledOnOpenChange?.(open);
     },
-    [lockScroll, isControlled, controlledOnOpenChange],
+    [lockScroll, isControlled, controlledOnOpenChange]
   );
 
   return (
@@ -77,11 +66,7 @@ function ToolGroupRoot({
       data-variant={variant ?? "outline"}
       open={isOpen}
       onOpenChange={handleOpenChange}
-      className={cn(
-        toolGroupVariants({ variant }),
-        "group/tool-group-root",
-        className,
-      )}
+      className={cn(toolGroupVariants({ variant }), "group/tool-group-root", className)}
       style={
         {
           "--animation-duration": `${ANIMATION_DURATION}ms`,
@@ -112,7 +97,7 @@ function ToolGroupTrigger({
         "aui-tool-group-trigger group/trigger flex items-center gap-2 text-sm transition-colors",
         "group-data-[variant=outline]/tool-group-root:w-full group-data-[variant=outline]/tool-group-root:px-4",
         "group-data-[variant=muted]/tool-group-root:w-full group-data-[variant=muted]/tool-group-root:px-4",
-        className,
+        className
       )}
       {...props}
     >
@@ -127,7 +112,7 @@ function ToolGroupTrigger({
         className={cn(
           "aui-tool-group-trigger-label-wrapper relative inline-block text-start leading-none font-medium",
           "group-data-[variant=outline]/tool-group-root:grow",
-          "group-data-[variant=muted]/tool-group-root:grow",
+          "group-data-[variant=muted]/tool-group-root:grow"
         )}
       >
         <span>{label}</span>
@@ -147,7 +132,7 @@ function ToolGroupTrigger({
           "aui-tool-group-trigger-chevron size-4 shrink-0",
           "transition-transform duration-(--animation-duration) ease-out",
           "group-data-[state=closed]/trigger:-rotate-90",
-          "group-data-[state=open]/trigger:rotate-0",
+          "group-data-[state=open]/trigger:rotate-0"
         )}
       />
     </CollapsibleTrigger>
@@ -171,7 +156,7 @@ function ToolGroupContent({
         "data-[state=closed]:pointer-events-none",
         "data-[state=open]:duration-(--animation-duration)",
         "data-[state=closed]:duration-(--animation-duration)",
-        className,
+        className
       )}
       {...props}
     >
@@ -179,7 +164,7 @@ function ToolGroupContent({
         className={cn(
           "mt-2 flex flex-col gap-2",
           "group-data-[variant=outline]/tool-group-root:mt-3 group-data-[variant=outline]/tool-group-root:border-t group-data-[variant=outline]/tool-group-root:px-4 group-data-[variant=outline]/tool-group-root:pt-3",
-          "group-data-[variant=muted]/tool-group-root:mt-3 group-data-[variant=muted]/tool-group-root:border-t group-data-[variant=muted]/tool-group-root:px-4 group-data-[variant=muted]/tool-group-root:pt-3",
+          "group-data-[variant=muted]/tool-group-root:mt-3 group-data-[variant=muted]/tool-group-root:border-t group-data-[variant=muted]/tool-group-root:px-4 group-data-[variant=muted]/tool-group-root:pt-3"
         )}
       >
         {children}
@@ -188,17 +173,17 @@ function ToolGroupContent({
   );
 }
 
-type ToolGroupComponent = FC<
-  PropsWithChildren<{ startIndex: number; endIndex: number }>
-> & {
+type ToolGroupComponent = FC<PropsWithChildren<{ startIndex: number; endIndex: number }>> & {
   Root: typeof ToolGroupRoot;
   Trigger: typeof ToolGroupTrigger;
   Content: typeof ToolGroupContent;
 };
 
-const ToolGroupImpl: FC<
-  PropsWithChildren<{ startIndex: number; endIndex: number }>
-> = ({ children, startIndex, endIndex }) => {
+const ToolGroupImpl: FC<PropsWithChildren<{ startIndex: number; endIndex: number }>> = ({
+  children,
+  startIndex,
+  endIndex,
+}) => {
   const toolCount = endIndex - startIndex + 1;
 
   return (
@@ -222,10 +207,4 @@ ToolGroup.Root = ToolGroupRoot;
 ToolGroup.Trigger = ToolGroupTrigger;
 ToolGroup.Content = ToolGroupContent;
 
-export {
-  ToolGroup,
-  ToolGroupRoot,
-  ToolGroupTrigger,
-  ToolGroupContent,
-  toolGroupVariants,
-};
+export { ToolGroup, ToolGroupRoot, ToolGroupTrigger, ToolGroupContent, toolGroupVariants };

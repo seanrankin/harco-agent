@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   const {
@@ -40,10 +37,7 @@ export async function GET(
   return NextResponse.json(messages);
 }
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   const {
@@ -71,24 +65,21 @@ export async function POST(
   if (typeof body.id !== "string" || body.id.length === 0) {
     return NextResponse.json(
       { error: "id is required and must be a non-empty string" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
-  if (
-    !("parent_id" in body) ||
-    (body.parent_id !== null && typeof body.parent_id !== "string")
-  ) {
+  if (!("parent_id" in body) || (body.parent_id !== null && typeof body.parent_id !== "string")) {
     return NextResponse.json(
       { error: "parent_id is required and must be a string or null" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
   if (typeof body.format !== "string" || body.format.length === 0) {
     return NextResponse.json(
       { error: "format is required and must be a non-empty string" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -100,7 +91,7 @@ export async function POST(
   ) {
     return NextResponse.json(
       { error: "content is required and must be an object" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 

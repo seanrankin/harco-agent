@@ -23,9 +23,7 @@ export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   // Get the latest user message for RAG retrieval
-  const lastUserMessage = [...messages]
-    .reverse()
-    .find((m) => m.role === "user");
+  const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
 
   let contextText = "";
   let contextDocs: SourceDocument[] = [];
@@ -55,9 +53,7 @@ ${contextText || "No relevant context found for this query."}`;
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
       const EMAIL_TYPES = new Set(["eml", "msg"]);
-      const attachmentDocs = contextDocs.filter(
-        (d) => !EMAIL_TYPES.has(d.file_type),
-      );
+      const attachmentDocs = contextDocs.filter((d) => !EMAIL_TYPES.has(d.file_type));
 
       const result = streamText({
         model: openai("gpt-4o-mini"),
@@ -81,15 +77,11 @@ ${contextText || "No relevant context found for this query."}`;
               z.object({
                 document_id: z
                   .string()
-                  .describe(
-                    "The document UUID from the available documents list",
-                  ),
+                  .describe("The document UUID from the available documents list"),
                 title: z.string().describe("The document title"),
-                file_type: z
-                  .string()
-                  .describe("File extension (docx, pdf, etc)"),
+                file_type: z.string().describe("File extension (docx, pdf, etc)"),
                 file_size_bytes: z.number().describe("File size in bytes"),
-              }),
+              })
             ),
           }),
           emailDraft: tool({
@@ -100,7 +92,7 @@ ${contextText || "No relevant context found for this query."}`;
                 to: z.string().describe("Recipient email address"),
                 subject: z.string().describe("Email subject line"),
                 body: z.string().describe("Email body text"),
-              }),
+              })
             ),
           }),
         },

@@ -36,9 +36,7 @@ describe("isEmailAllowed", () => {
     // Feature: test-suite, Property 1: Allowed domain acceptance is case-insensitive
     // **Validates: Requirements 2.1, 2.4**
     it("Property 1: allowed domain acceptance is case-insensitive", () => {
-      const localPart = fc.stringMatching(
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,30}$/,
-      );
+      const localPart = fc.stringMatching(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,30}$/);
 
       const casedDomain = fc.constantFrom(
         "harcofittings.com",
@@ -47,27 +45,23 @@ describe("isEmailAllowed", () => {
         "hArCoFiTtInGs.CoM",
         "HARCOFITTINGS.com",
         "harcofittings.COM",
-        "HarcoFittings.COM",
+        "HarcoFittings.COM"
       );
 
       fc.assert(
         fc.property(localPart, casedDomain, (local, domain) => {
           const email = `${local}@${domain}`;
           expect(isEmailAllowed(email)).toBe(true);
-        }),
+        })
       );
     });
 
     // Feature: test-suite, Property 2: Non-allowed emails are rejected
     // **Validates: Requirements 2.2, 2.5, 2.6**
     it("Property 2: non-allowed emails are rejected", () => {
-      const nonAllowedDomain = fc
-        .domain()
-        .filter((d) => d.toLowerCase() !== "harcofittings.com");
+      const nonAllowedDomain = fc.domain().filter((d) => d.toLowerCase() !== "harcofittings.com");
 
-      const localPart = fc.stringMatching(
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,30}$/,
-      );
+      const localPart = fc.stringMatching(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,30}$/);
 
       const emailWithWrongDomain = fc
         .tuple(localPart, nonAllowedDomain)
@@ -82,22 +76,18 @@ describe("isEmailAllowed", () => {
       fc.assert(
         fc.property(nonAllowedInput, (input) => {
           expect(isEmailAllowed(input)).toBe(false);
-        }),
+        })
       );
     });
 
     // Feature: test-suite, Property 3: Allowlist override accepts regardless of domain
     // **Validates: Requirements 2.3**
     it("Property 3: allowlist override accepts regardless of domain", () => {
-      const localPart = fc.stringMatching(
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,20}$/,
-      );
+      const localPart = fc.stringMatching(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,20}$/);
 
       const domain = fc.domain();
 
-      const allowlistEmail = fc
-        .tuple(localPart, domain)
-        .map(([local, d]) => `${local}@${d}`);
+      const allowlistEmail = fc.tuple(localPart, domain).map(([local, d]) => `${local}@${d}`);
 
       const allowlistEmails = fc.array(allowlistEmail, {
         minLength: 1,
@@ -119,7 +109,7 @@ describe("isEmailAllowed", () => {
           for (const email of emails) {
             expect(isEmailAllowed(email)).toBe(true);
           }
-        }),
+        })
       );
     });
   });

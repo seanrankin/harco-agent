@@ -16,10 +16,7 @@ interface MobileMenuButtonProps {
  * Hidden on desktop (sidebar is always visible there) and hidden while
  * the drawer is open (so it doesn't sit underneath it).
  */
-export const MobileMenuButton: FC<MobileMenuButtonProps> = ({
-  open,
-  onClick,
-}) => {
+export const MobileMenuButton: FC<MobileMenuButtonProps> = ({ open, onClick }) => {
   return (
     <TooltipIconButton
       tooltip="Open menu"
@@ -28,7 +25,7 @@ export const MobileMenuButton: FC<MobileMenuButtonProps> = ({
       variant="outline"
       className={cn(
         "bg-card text-primary fixed top-3 left-3 z-30 size-10 rounded-lg shadow-sm transition-opacity lg:hidden",
-        open && "pointer-events-none opacity-0",
+        open && "pointer-events-none opacity-0"
       )}
     >
       <MenuIcon className="size-5" />

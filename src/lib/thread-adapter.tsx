@@ -33,11 +33,9 @@ export const threadListAdapter: RemoteThreadListAdapter = {
         }) => ({
           remoteId: row.id,
           title: row.title ?? undefined,
-          status: row.archived_at
-            ? ("archived" as const)
-            : ("regular" as const),
+          status: row.archived_at ? ("archived" as const) : ("regular" as const),
           custom: { updated_at: row.updated_at },
-        }),
+        })
       ),
     };
   },
@@ -133,7 +131,7 @@ export const threadListAdapter: RemoteThreadListAdapter = {
                   parent_id: string | null;
                   format: string;
                   content: Record<string, unknown>;
-                }) => fmt.decode(row as any),
+                }) => fmt.decode(row as any)
               ),
             };
           },
@@ -153,12 +151,8 @@ export const threadListAdapter: RemoteThreadListAdapter = {
           },
         }),
       }),
-      [aui],
+      [aui]
     );
-    return (
-      <RuntimeAdapterProvider adapters={{ history }}>
-        {children}
-      </RuntimeAdapterProvider>
-    );
+    return <RuntimeAdapterProvider adapters={{ history }}>{children}</RuntimeAdapterProvider>;
   },
 };

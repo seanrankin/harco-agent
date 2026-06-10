@@ -36,7 +36,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error(
-    "Missing required env vars. Ensure OPENAI_API_KEY, NEXT_PUBLIC_SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY are in .env.local",
+    "Missing required env vars. Ensure OPENAI_API_KEY, NEXT_PUBLIC_SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY are in .env.local"
   );
   process.exit(1);
 }
@@ -104,19 +104,16 @@ async function generateEmbeddings(texts) {
   const results = [];
   for (let i = 0; i < texts.length; i += 100) {
     const batch = texts.slice(i, i + 100);
-    const { statusCode, body } = await request(
-      "https://api.openai.com/v1/embeddings",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-          "Accept-Encoding": "identity",
-        },
-        body: JSON.stringify({ model: EMBEDDING_MODEL, input: batch }),
-        dispatcher: agent,
+    const { statusCode, body } = await request("https://api.openai.com/v1/embeddings", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+        "Accept-Encoding": "identity",
       },
-    );
+      body: JSON.stringify({ model: EMBEDDING_MODEL, input: batch }),
+      dispatcher: agent,
+    });
 
     const text = await body.text();
     if (statusCode >= 400) {
@@ -160,9 +157,7 @@ async function parseEml(filePath) {
   const attachments = (parsed.attachments || []).filter(
     (a) =>
       a.filename &&
-      (a.filename.endsWith(".docx") ||
-        a.filename.endsWith(".doc") ||
-        a.filename.endsWith(".pdf")),
+      (a.filename.endsWith(".docx") || a.filename.endsWith(".doc") || a.filename.endsWith(".pdf"))
   );
 
   return { text, attachments, subject: parsed.subject || basename(filePath) };
@@ -184,9 +179,7 @@ async function parseMsg(filePath) {
       const filename = att.fileName || att.name;
       if (
         filename &&
-        (filename.endsWith(".docx") ||
-          filename.endsWith(".doc") ||
-          filename.endsWith(".pdf"))
+        (filename.endsWith(".docx") || filename.endsWith(".doc") || filename.endsWith(".pdf"))
       ) {
         const attData = msgReader.getAttachment(i);
         attachments.push({
@@ -216,15 +209,14 @@ async function ingestDocument({ buffer, filename, title, fileType, text }) {
   const contentHash = hashContent(buffer);
 
   // Check if already ingested
-  const existing = await supabaseRest(
-    `documents?content_hash=eq.${contentHash}&select=id`,
-    { method: "GET" },
-  );
+  const existing = await supabaseRest(`documents?content_hash=eq.${contentHash}&select=id`, {
+    method: "GET",
+  });
 
   if (existing.length > 0) {
     const existingChunks = await supabaseRest(
       `document_chunks?document_id=eq.${existing[0].id}&select=id&limit=1`,
-      { method: "GET" },
+      { method: "GET" }
     );
     if (existingChunks.length > 0) {
       console.log(`  ⏭  Already ingested: ${title}`);
@@ -255,7 +247,7 @@ async function ingestDocument({ buffer, filename, title, fileType, text }) {
   await supabaseStorageUpload(
     storagePath,
     buffer,
-    CONTENT_TYPES[fileType] || "application/octet-stream",
+    CONTENT_TYPES[fileType] || "application/octet-stream"
   );
 
   // Insert document record
@@ -330,9 +322,7 @@ async function ingestDirectory(dirPath) {
   });
 
   if (supported.length === 0) {
-    console.error(
-      `No supported files (.docx, .doc, .pdf, .eml, .msg) found in ${dirPath}`,
-    );
+    console.error(`No supported files (.docx, .doc, .pdf, .eml, .msg) found in ${dirPath}`);
     process.exit(1);
   }
 

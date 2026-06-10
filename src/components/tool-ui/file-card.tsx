@@ -33,13 +33,7 @@ function extColor(ext: string): string {
  * Document-icon block — colored card with ext label and a folded corner.
  * Matches the .doc-icon pattern from the design mockup.
  */
-export function DocIcon({
-  ext,
-  size = "md",
-}: {
-  ext: string;
-  size?: "sm" | "md";
-}) {
+export function DocIcon({ ext, size = "md" }: { ext: string; size?: "sm" | "md" }) {
   const label = ext.toUpperCase();
   const dims = size === "sm" ? "h-9 w-7" : "h-12 w-10";
   const fontSize = size === "sm" ? "text-[8px]" : "text-[9px]";
@@ -55,21 +49,12 @@ export function DocIcon({
           clipPath: "polygon(0 0, 100% 100%, 100% 0)",
         }}
       />
-      <span
-        className={`pb-1 font-mono font-semibold tracking-wider ${fontSize}`}
-      >
-        {label}
-      </span>
+      <span className={`pb-1 font-mono font-semibold tracking-wider ${fontSize}`}>{label}</span>
     </div>
   );
 }
 
-export function FileCard({
-  documentId,
-  title,
-  fileType,
-  fileSizeBytes,
-}: FileCardProps) {
+export function FileCard({ documentId, title, fileType, fileSizeBytes }: FileCardProps) {
   const ext = (fileType ?? "file").toLowerCase();
   return (
     <a

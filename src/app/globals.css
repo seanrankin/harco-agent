@@ -58,46 +58,46 @@
 
 :root {
   /* Harco brand tokens — see doc/ui-redesign.md */
-  --background: #FAFAF7;            /* paper */
-  --foreground: #3A4651;            /* steel */
-  --card: #FFFFFF;
-  --card-foreground: #3A4651;
-  --popover: #FFFFFF;
-  --popover-foreground: #3A4651;
-  --primary: #0B3D5C;               /* navy */
-  --primary-foreground: #FFFFFF;
-  --secondary: #F3F4F2;
-  --secondary-foreground: #0B3D5C;
-  --muted: #F3F4F2;
-  --muted-foreground: #8A95A0;
-  --accent: #E8A630;                /* amber */
-  --accent-foreground: #0B3D5C;
-  --destructive: #B4472F;           /* pdf red, doubles as error */
-  --border: #DCE1E5;
-  --input: #DCE1E5;
-  --ring: #1E6F9F;                  /* spec-blue */
-  --chart-1: #0B3D5C;
-  --chart-2: #1E6F9F;
-  --chart-3: #E8A630;
-  --chart-4: #3E7D55;
-  --chart-5: #B4472F;
+  --background: #fafaf7; /* paper */
+  --foreground: #3a4651; /* steel */
+  --card: #ffffff;
+  --card-foreground: #3a4651;
+  --popover: #ffffff;
+  --popover-foreground: #3a4651;
+  --primary: #0b3d5c; /* navy */
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f2;
+  --secondary-foreground: #0b3d5c;
+  --muted: #f3f4f2;
+  --muted-foreground: #8a95a0;
+  --accent: #e8a630; /* amber */
+  --accent-foreground: #0b3d5c;
+  --destructive: #b4472f; /* pdf red, doubles as error */
+  --border: #dce1e5;
+  --input: #dce1e5;
+  --ring: #1e6f9f; /* spec-blue */
+  --chart-1: #0b3d5c;
+  --chart-2: #1e6f9f;
+  --chart-3: #e8a630;
+  --chart-4: #3e7d55;
+  --chart-5: #b4472f;
   --radius: 0.625rem;
-  --sidebar: #F3F4F2;
-  --sidebar-foreground: #3A4651;
-  --sidebar-primary: #0B3D5C;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #E8EBEE;
-  --sidebar-accent-foreground: #0B3D5C;
-  --sidebar-border: #DCE1E5;
-  --sidebar-ring: #1E6F9F;
+  --sidebar: #f3f4f2;
+  --sidebar-foreground: #3a4651;
+  --sidebar-primary: #0b3d5c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8ebee;
+  --sidebar-accent-foreground: #0b3d5c;
+  --sidebar-border: #dce1e5;
+  --sidebar-ring: #1e6f9f;
 
   /* Raw tokens for file-type and brand surfaces */
-  --pdf: #B4472F;
-  --docx: #1E6F9F;
-  --xlsx: #3E7D55;
-  --spec-blue: #1E6F9F;
+  --pdf: #b4472f;
+  --docx: #1e6f9f;
+  --xlsx: #3e7d55;
+  --spec-blue: #1e6f9f;
   --navy-2: #0a3450;
-  --line-soft: #E8EBEE;
+  --line-soft: #e8ebee;
 }
 
 .dark {

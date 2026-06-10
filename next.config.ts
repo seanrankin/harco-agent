@@ -7,12 +7,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   experimental: {
-    optimizePackageImports: [
-      "lucide-react",
-      "@assistant-ui/react",
-      "radix-ui",
-      "@base-ui/react",
-    ],
+    optimizePackageImports: ["lucide-react", "@assistant-ui/react", "radix-ui", "@base-ui/react"],
   },
 };
 

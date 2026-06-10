@@ -30,12 +30,11 @@ describe("Production build verification", () => {
   it.skipIf(!fs.existsSync(STATIC_DIR))(
     "should not contain @assistant-ui/react-devtools in production chunks",
     () => {
-      const result = execSync(
-        `grep -r "react-devtools" "${STATIC_DIR}" || true`,
-        { encoding: "utf-8" },
-      );
+      const result = execSync(`grep -r "react-devtools" "${STATIC_DIR}" || true`, {
+        encoding: "utf-8",
+      });
       expect(result.trim()).toBe("");
-    },
+    }
   );
 
   it.skipIf(!fs.existsSync(STATIC_DIR))(
@@ -44,6 +43,6 @@ describe("Production build verification", () => {
       const jsBytes = getFileSizesByPattern(STATIC_DIR, ".js");
       const jsSizeMB = jsBytes / (1024 * 1024);
       expect(jsSizeMB).toBeLessThan(MAX_JS_SIZE_MB);
-    },
+    }
   );
 });

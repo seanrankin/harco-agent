@@ -3,11 +3,7 @@ export type DateGroup = "today" | "earlier-this-week" | "earlier";
 export function classifyDateGroup(updatedAt: Date): DateGroup {
   const now = new Date();
 
-  const todayMidnight = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-  );
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   if (updatedAt >= todayMidnight) {
     return "today";
@@ -18,7 +14,7 @@ export function classifyDateGroup(updatedAt: Date): DateGroup {
   const mondayMidnight = new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate() - daysSinceMonday,
+    now.getDate() - daysSinceMonday
   );
 
   if (updatedAt >= mondayMidnight) {

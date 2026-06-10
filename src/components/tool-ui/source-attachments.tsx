@@ -27,7 +27,7 @@ export const SourceAttachmentsDataUI = makeAssistantDataUI<SourcesData>({
     const toolCallDocumentIds = message.content
       .filter(
         (part): part is Extract<typeof part, { type: "tool-call" }> =>
-          part.type === "tool-call" && part.toolName === "fileReference",
+          part.type === "tool-call" && part.toolName === "fileReference"
       )
       .map((part) => (part.args as { document_id?: string }).document_id ?? "")
       .filter(Boolean);

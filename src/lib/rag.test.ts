@@ -63,18 +63,16 @@ describe("retrieveContext", () => {
     // **Validates: Requirements 3.1**
     await fc.assert(
       fc.asyncProperty(
-        fc
-          .array(chunkArbitrary, { minLength: 2, maxLength: 10 })
-          .chain((chunks) => {
-            // Force at least two chunks to share a document_id
-            const sharedId = chunks[0].document_id;
-            const modified = [...chunks];
-            modified[modified.length - 1] = {
-              ...modified[modified.length - 1],
-              document_id: sharedId,
-            };
-            return fc.constant(modified);
-          }),
+        fc.array(chunkArbitrary, { minLength: 2, maxLength: 10 }).chain((chunks) => {
+          // Force at least two chunks to share a document_id
+          const sharedId = chunks[0].document_id;
+          const modified = [...chunks];
+          modified[modified.length - 1] = {
+            ...modified[modified.length - 1],
+            document_id: sharedId,
+          };
+          return fc.constant(modified);
+        }),
         async (chunks) => {
           mockRpc.mockResolvedValue({ data: chunks, error: null });
 
@@ -88,17 +86,13 @@ describe("retrieveContext", () => {
 
           // Values should come from the first chunk encountered for each ID
           for (const doc of result.documents) {
-            const firstChunk = chunks.find(
-              (c) => c.document_id === doc.id,
-            ) as Chunk;
+            const firstChunk = chunks.find((c) => c.document_id === doc.id) as Chunk;
             expect(doc.title).toBe(firstChunk.document_title);
             expect(doc.file_type).toBe(firstChunk.document_file_type);
-            expect(doc.file_size_bytes).toBe(
-              firstChunk.document_file_size_bytes,
-            );
+            expect(doc.file_size_bytes).toBe(firstChunk.document_file_size_bytes);
           }
-        },
-      ),
+        }
+      )
     );
   });
 
@@ -114,8 +108,8 @@ describe("retrieveContext", () => {
 
           const expected = chunks.map((c) => c.content).join("\n\n---\n\n");
           expect(result.contextText).toBe(expected);
-        },
-      ),
+        }
+      )
     );
   });
 
@@ -143,17 +137,15 @@ describe("retrieveContext", () => {
           expect(result.documents).toHaveLength(chunks.length);
 
           for (const chunk of chunks) {
-            const doc = result.documents.find(
-              (d) => d.id === chunk.document_id,
-            );
+            const doc = result.documents.find((d) => d.id === chunk.document_id);
             expect(doc).toBeDefined();
             expect(doc!.id).toBe(chunk.document_id);
             expect(doc!.title).toBe(chunk.document_title);
             expect(doc!.file_type).toBe(chunk.document_file_type);
             expect(doc!.file_size_bytes).toBe(chunk.document_file_size_bytes);
           }
-        },
-      ),
+        }
+      )
     );
   });
 });

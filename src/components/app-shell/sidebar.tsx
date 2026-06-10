@@ -21,18 +21,11 @@ const EmptyThreadList: FC = () => {
   const count = useAuiState((s) => s.threads.threadIds.length);
   if (count > 0) return null;
   return (
-    <p className="text-muted-foreground px-4 py-8 text-center text-sm">
-      No conversations yet
-    </p>
+    <p className="text-muted-foreground px-4 py-8 text-center text-sm">No conversations yet</p>
   );
 };
 
-export const Sidebar: FC<SidebarProps> = ({
-  open,
-  onClose,
-  onNewQuestion,
-  onSignOut,
-}) => {
+export const Sidebar: FC<SidebarProps> = ({ open, onClose, onNewQuestion, onSignOut }) => {
   return (
     <>
       {/* Drawer scrim (mobile only) */}
@@ -42,7 +35,7 @@ export const Sidebar: FC<SidebarProps> = ({
         onClick={onClose}
         className={cn(
           "fixed inset-0 z-40 cursor-default bg-primary/25 transition-opacity duration-200 lg:hidden",
-          open ? "opacity-100" : "pointer-events-none opacity-0",
+          open ? "opacity-100" : "pointer-events-none opacity-0"
         )}
       />
       <aside
@@ -51,7 +44,7 @@ export const Sidebar: FC<SidebarProps> = ({
           "bg-sidebar border-border flex h-full w-72 shrink-0 flex-col border-r",
           "fixed inset-y-0 left-0 z-50 shadow-2xl transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "-translate-x-full",
-          "lg:relative lg:translate-x-0 lg:shadow-none",
+          "lg:relative lg:translate-x-0 lg:shadow-none"
         )}
       >
         {/* Brand block */}
@@ -91,9 +84,7 @@ export const Sidebar: FC<SidebarProps> = ({
         {/* Thread history list */}
         <ThreadListPrimitive.Root className="flex-1 overflow-y-auto">
           <div className="space-y-0.5 px-2">
-            <ThreadListPrimitive.Items
-              components={{ ThreadListItem: ThreadItem }}
-            />
+            <ThreadListPrimitive.Items components={{ ThreadListItem: ThreadItem }} />
           </div>
           <EmptyThreadList />
         </ThreadListPrimitive.Root>

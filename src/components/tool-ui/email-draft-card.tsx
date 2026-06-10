@@ -80,9 +80,7 @@ function Field({ label, value }: { label: string; value: string }) {
       <span className="text-muted-foreground w-14 shrink-0 pt-0.5 font-mono text-[10px] tracking-wider uppercase">
         {label}
       </span>
-      <span className="text-primary min-w-0 flex-1 font-medium break-words">
-        {value}
-      </span>
+      <span className="text-primary min-w-0 flex-1 font-medium break-words">{value}</span>
     </div>
   );
 }

@@ -1,7 +1,4 @@
-import {
-  ComposerAttachments,
-  UserMessageAttachments,
-} from "@/components/assistant-ui/attachment";
+import { ComposerAttachments, UserMessageAttachments } from "@/components/assistant-ui/attachment";
 import {
   Reasoning,
   ReasoningContent,
@@ -44,11 +41,7 @@ import type { FC } from "react";
 import { Diamond } from "@/components/brand/diamond";
 
 export const MarkdownSkeleton: FC = () => (
-  <div
-    className="flex flex-col gap-2 py-1"
-    aria-busy="true"
-    aria-label="Loading message"
-  >
+  <div className="flex flex-col gap-2 py-1" aria-busy="true" aria-label="Loading message">
     <div className="bg-muted h-3.5 w-[92%] animate-pulse rounded" />
     <div className="bg-muted h-3.5 w-[78%] animate-pulse rounded" />
     <div className="bg-muted h-3.5 w-[85%] animate-pulse rounded" />
@@ -65,13 +58,11 @@ export const importMarkdownWithRetry = () =>
         .catch(() => {
           // Both attempts failed, return a fallback component
           const Fallback: FC = () => (
-            <p className="text-muted-foreground text-sm italic">
-              Message rendering unavailable
-            </p>
+            <p className="text-muted-foreground text-sm italic">Message rendering unavailable</p>
           );
           Fallback.displayName = "MarkdownLoadError";
           return Fallback;
-        }),
+        })
     );
 
 const MarkdownText = dynamic(importMarkdownWithRetry, {
@@ -83,8 +74,7 @@ const MarkdownText = dynamic(importMarkdownWithRetry, {
 // can vary by context (e.g., recent activity, role).
 const STARTER_SUGGESTIONS = [
   {
-    prompt:
-      "What products does Harco Fittings offer? Give me a summary from the product catalog.",
+    prompt: "What products does Harco Fittings offer? Give me a summary from the product catalog.",
     description: "Summarizes the catalog + attaches the DOCX",
   },
   {
@@ -123,13 +113,8 @@ export const Thread: FC = () => {
             <ThreadWelcome />
           </AuiIf>
 
-          <div
-            data-slot="aui_message-group"
-            className="mb-10 flex flex-col gap-y-8 empty:hidden"
-          >
-            <ThreadPrimitive.Messages>
-              {() => <ThreadMessage />}
-            </ThreadPrimitive.Messages>
+          <div data-slot="aui_message-group" className="mb-10 flex flex-col gap-y-8 empty:hidden">
+            <ThreadPrimitive.Messages>{() => <ThreadMessage />}</ThreadPrimitive.Messages>
           </div>
 
           <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer bg-background sticky bottom-0 mt-auto flex flex-col gap-4 overflow-visible rounded-t-(--composer-radius) pb-4 md:pb-6">
@@ -180,8 +165,8 @@ const ThreadWelcome: FC = () => {
           Ask the Harco library.
         </h1>
         <p className="aui-thread-welcome-sub fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground mt-3 text-base delay-100 duration-200">
-          Plain-English answers grounded in Harco&rsquo;s product docs, spec
-          sheets, and email archive — every one linked back to the source file.
+          Plain-English answers grounded in Harco&rsquo;s product docs, spec sheets, and email
+          archive — every one linked back to the source file.
         </p>
       </div>
       <ThreadStarterSuggestions />
@@ -211,9 +196,7 @@ const ThreadStarterSuggestions: FC = () => {
             <span className="text-primary text-sm leading-snug font-semibold tracking-tight">
               {s.prompt}
             </span>
-            <span className="text-muted-foreground text-xs">
-              {s.description}
-            </span>
+            <span className="text-muted-foreground text-xs">{s.description}</span>
           </ThreadPrimitive.Suggestion>
         </div>
       ))}
@@ -245,8 +228,8 @@ const Composer: FC = () => {
         </ComposerPrimitive.AttachmentDropzone>
       </ComposerPrimitive.Root>
       <p className="aui-composer-disclaimer text-muted-foreground mx-auto mt-2 max-w-(--thread-max-width) text-center text-[11px] leading-relaxed">
-        Harco Assistant can be wrong — confirm part numbers and ratings against
-        the linked source before quoting.
+        Harco Assistant can be wrong — confirm part numbers and ratings against the linked source
+        before quoting.
       </p>
     </div>
   );
@@ -420,19 +403,12 @@ const AssistantActionBar: FC = () => {
           <CopyIcon />
         </AuiIf>
       </ActionBarPrimitive.Copy>
-      <ActionBarPrimitive.Reload
-        render={<TooltipIconButton tooltip="Refresh" />}
-      >
+      <ActionBarPrimitive.Reload render={<TooltipIconButton tooltip="Refresh" />}>
         <RefreshCwIcon />
       </ActionBarPrimitive.Reload>
       <ActionBarMorePrimitive.Root>
         <ActionBarMorePrimitive.Trigger
-          render={
-            <TooltipIconButton
-              tooltip="More"
-              className="data-[state=open]:bg-accent"
-            />
-          }
+          render={<TooltipIconButton tooltip="More" className="data-[state=open]:bg-accent" />}
         >
           <MoreHorizontalIcon />
         </ActionBarMorePrimitive.Trigger>
@@ -489,12 +465,7 @@ const UserActionBar: FC = () => {
       className="aui-user-action-bar-root flex flex-col items-end"
     >
       <ActionBarPrimitive.Edit
-        render={
-          <TooltipIconButton
-            tooltip="Edit"
-            className="aui-user-action-edit p-4"
-          />
-        }
+        render={<TooltipIconButton tooltip="Edit" className="aui-user-action-edit p-4" />}
       >
         <PencilIcon />
       </ActionBarPrimitive.Edit>
@@ -504,46 +475,34 @@ const UserActionBar: FC = () => {
 
 const EditComposer: FC = () => {
   return (
-    <MessagePrimitive.Root
-      data-slot="aui_edit-composer-wrapper"
-      className="flex flex-col px-2"
-    >
+    <MessagePrimitive.Root data-slot="aui_edit-composer-wrapper" className="flex flex-col px-2">
       <ComposerPrimitive.Root className="aui-edit-composer-root border-ring/60 bg-card ring-ring/15 ms-auto flex w-full max-w-[85%] flex-col rounded-2xl rounded-br-sm border shadow-md ring-2">
         <ComposerPrimitive.Input
           className="aui-edit-composer-input text-foreground placeholder:text-muted-foreground/70 min-h-14 w-full resize-none bg-transparent p-4 text-sm leading-relaxed outline-none"
           autoFocus
         />
         <div className="aui-edit-composer-footer mx-3 mb-3 flex items-center gap-2 self-end">
-          <ComposerPrimitive.Cancel
-            render={<Button variant="ghost" size="sm" />}
-          >
+          <ComposerPrimitive.Cancel render={<Button variant="ghost" size="sm" />}>
             Cancel
           </ComposerPrimitive.Cancel>
-          <ComposerPrimitive.Send render={<Button size="sm" />}>
-            Send
-          </ComposerPrimitive.Send>
+          <ComposerPrimitive.Send render={<Button size="sm" />}>Send</ComposerPrimitive.Send>
         </div>
       </ComposerPrimitive.Root>
     </MessagePrimitive.Root>
   );
 };
 
-const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({
-  className,
-  ...rest
-}) => {
+const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({ className, ...rest }) => {
   return (
     <BranchPickerPrimitive.Root
       hideWhenSingleBranch
       className={cn(
         "aui-branch-picker-root text-muted-foreground -ms-2 me-2 inline-flex items-center text-xs",
-        className,
+        className
       )}
       {...rest}
     >
-      <BranchPickerPrimitive.Previous
-        render={<TooltipIconButton tooltip="Previous" />}
-      >
+      <BranchPickerPrimitive.Previous render={<TooltipIconButton tooltip="Previous" />}>
         <ChevronLeftIcon />
       </BranchPickerPrimitive.Previous>
       <span className="aui-branch-picker-state font-medium">

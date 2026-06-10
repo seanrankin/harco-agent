@@ -1,21 +1,10 @@
 import { describe, expect, it } from "vitest";
-import {
-  classifyDateGroup,
-  truncatePreview,
-  validateTitle,
-} from "./thread-utils";
+import { classifyDateGroup, truncatePreview, validateTitle } from "./thread-utils";
 
 describe("classifyDateGroup", () => {
   it('returns "today" for a date earlier today', () => {
     const now = new Date();
-    const earlierToday = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      1,
-      0,
-      0,
-    );
+    const earlierToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
     expect(classifyDateGroup(earlierToday)).toBe("today");
   });
 
@@ -33,14 +22,7 @@ describe("classifyDateGroup", () => {
       return;
     }
 
-    const yesterday = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - 1,
-      12,
-      0,
-      0,
-    );
+    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12, 0, 0);
     expect(classifyDateGroup(yesterday)).toBe("earlier-this-week");
   });
 

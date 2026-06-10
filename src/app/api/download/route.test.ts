@@ -23,13 +23,9 @@ describe("GET /api/download", () => {
   });
 
   it("responds 401 when requireAuth returns a 401 response", async () => {
-    vi.mocked(requireAuth).mockResolvedValue(
-      new Response("Unauthorized", { status: 401 }),
-    );
+    vi.mocked(requireAuth).mockResolvedValue(new Response("Unauthorized", { status: 401 }));
 
-    const request = new Request(
-      "http://localhost/api/download?document_id=abc",
-    );
+    const request = new Request("http://localhost/api/download?document_id=abc");
     const response = await GET(request);
 
     expect(response.status).toBe(401);
@@ -59,9 +55,7 @@ describe("GET /api/download", () => {
       }),
     });
 
-    const request = new Request(
-      "http://localhost/api/download?document_id=nonexistent",
-    );
+    const request = new Request("http://localhost/api/download?document_id=nonexistent");
     const response = await GET(request);
 
     expect(response.status).toBe(404);
@@ -91,15 +85,11 @@ describe("GET /api/download", () => {
       }),
     });
 
-    const request = new Request(
-      "http://localhost/api/download?document_id=test-id",
-    );
+    const request = new Request("http://localhost/api/download?document_id=test-id");
     const response = await GET(request);
 
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe(
-      "https://storage.example.com/signed-url",
-    );
+    expect(response.headers.get("location")).toBe("https://storage.example.com/signed-url");
   });
 
   it("responds 500 when signed URL generation fails", async () => {
@@ -125,9 +115,7 @@ describe("GET /api/download", () => {
       }),
     });
 
-    const request = new Request(
-      "http://localhost/api/download?document_id=test-id",
-    );
+    const request = new Request("http://localhost/api/download?document_id=test-id");
     const response = await GET(request);
 
     expect(response.status).toBe(500);

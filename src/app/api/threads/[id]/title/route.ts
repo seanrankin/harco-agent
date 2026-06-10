@@ -3,10 +3,7 @@ import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   const {
@@ -33,10 +30,7 @@ export async function POST(
   const { messages } = await req.json();
 
   if (!Array.isArray(messages) || messages.length === 0) {
-    return NextResponse.json(
-      { error: "messages array is required" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "messages array is required" }, { status: 400 });
   }
 
   try {
@@ -55,7 +49,7 @@ export async function POST(
                 p !== null &&
                 "type" in p &&
                 (p as { type: string }).type === "text" &&
-                "text" in p,
+                "text" in p
             )
             .map((p) => p.text)
             .join(" ");
@@ -67,7 +61,7 @@ export async function POST(
                 p !== null &&
                 "type" in p &&
                 (p as { type: string }).type === "text" &&
-                "text" in p,
+                "text" in p
             )
             .map((p) => p.text)
             .join(" ");
@@ -105,17 +99,11 @@ export async function POST(
       .eq("user_id", user.id);
 
     if (updateError) {
-      return NextResponse.json(
-        { error: "Failed to update title" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Failed to update title" }, { status: 500 });
     }
 
     return NextResponse.json({ title });
   } catch {
-    return NextResponse.json(
-      { error: "Title generation failed" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Title generation failed" }, { status: 500 });
   }
 }

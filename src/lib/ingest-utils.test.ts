@@ -22,20 +22,17 @@ describe("chunkText", () => {
     const charSize = chunkSize * 4; // 200
 
     fc.assert(
-      fc.property(
-        fc.string({ minLength: charSize + 1, maxLength: charSize * 4 }),
-        (text) => {
-          const chunks = chunkText(text, chunkSize, overlap);
-          if (chunks.length < 2) return;
+      fc.property(fc.string({ minLength: charSize + 1, maxLength: charSize * 4 }), (text) => {
+        const chunks = chunkText(text, chunkSize, overlap);
+        if (chunks.length < 2) return;
 
-          for (let i = 0; i < chunks.length - 1; i++) {
-            const overlapLen = Math.min(charOverlap, chunks[i + 1].length);
-            const endOfCurrent = chunks[i].slice(-overlapLen);
-            const startOfNext = chunks[i + 1].slice(0, overlapLen);
-            expect(endOfCurrent).toBe(startOfNext);
-          }
-        },
-      ),
+        for (let i = 0; i < chunks.length - 1; i++) {
+          const overlapLen = Math.min(charOverlap, chunks[i + 1].length);
+          const endOfCurrent = chunks[i].slice(-overlapLen);
+          const startOfNext = chunks[i + 1].slice(0, overlapLen);
+          expect(endOfCurrent).toBe(startOfNext);
+        }
+      })
     );
   });
 
@@ -54,7 +51,7 @@ describe("chunkText", () => {
           reconstructed += chunks[i].slice(charOverlap);
         }
         expect(reconstructed).toBe(text);
-      }),
+      })
     );
   });
 
@@ -70,7 +67,7 @@ describe("chunkText", () => {
         const chunks = chunkText(text, chunkSize, overlap);
         const expectedCount = Math.ceil(text.length / step);
         expect(chunks.length).toBe(expectedCount);
-      }),
+      })
     );
   });
 

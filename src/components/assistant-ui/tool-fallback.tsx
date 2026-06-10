@@ -1,13 +1,7 @@
 "use client";
 
 import { memo, useCallback, useRef, useState } from "react";
-import {
-  AlertCircleIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  LoaderIcon,
-  XCircleIcon,
-} from "lucide-react";
+import { AlertCircleIcon, CheckIcon, ChevronDownIcon, LoaderIcon, XCircleIcon } from "lucide-react";
 import {
   useScrollLock,
   type ToolCallMessagePart,
@@ -15,11 +9,7 @@ import {
   type ToolCallMessagePartStatus,
   type ToolCallMessagePartComponent,
 } from "@assistant-ui/react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -59,7 +49,7 @@ function ToolFallbackRoot({
       }
       controlledOnOpenChange?.(open);
     },
-    [lockScroll, isControlled, controlledOnOpenChange],
+    [lockScroll, isControlled, controlledOnOpenChange]
   );
 
   return (
@@ -70,7 +60,7 @@ function ToolFallbackRoot({
       onOpenChange={handleOpenChange}
       className={cn(
         "aui-tool-fallback-root group/tool-fallback-root w-full rounded-lg border py-3",
-        className,
+        className
       )}
       style={
         {
@@ -104,8 +94,7 @@ function ToolFallbackTrigger({
 }) {
   const statusType = status?.type ?? "complete";
   const isRunning = statusType === "running";
-  const isCancelled =
-    status?.type === "incomplete" && status.reason === "cancelled";
+  const isCancelled = status?.type === "incomplete" && status.reason === "cancelled";
 
   const Icon = statusIconMap[statusType];
   const label = isCancelled ? "Cancelled tool" : "Used tool";
@@ -115,7 +104,7 @@ function ToolFallbackTrigger({
       data-slot="tool-fallback-trigger"
       className={cn(
         "aui-tool-fallback-trigger group/trigger flex w-full items-center gap-2 px-4 text-sm transition-colors",
-        className,
+        className
       )}
       {...props}
     >
@@ -124,14 +113,14 @@ function ToolFallbackTrigger({
         className={cn(
           "aui-tool-fallback-trigger-icon size-4 shrink-0",
           isCancelled && "text-muted-foreground",
-          isRunning && "animate-spin",
+          isRunning && "animate-spin"
         )}
       />
       <span
         data-slot="tool-fallback-trigger-label"
         className={cn(
           "aui-tool-fallback-trigger-label-wrapper relative inline-block grow text-start leading-none",
-          isCancelled && "text-muted-foreground line-through",
+          isCancelled && "text-muted-foreground line-through"
         )}
       >
         <span>
@@ -153,7 +142,7 @@ function ToolFallbackTrigger({
           "aui-tool-fallback-trigger-chevron size-4 shrink-0",
           "transition-transform duration-(--animation-duration) ease-out",
           "group-data-[state=closed]/trigger:-rotate-90",
-          "group-data-[state=open]/trigger:rotate-0",
+          "group-data-[state=open]/trigger:rotate-0"
         )}
       />
     </CollapsibleTrigger>
@@ -177,7 +166,7 @@ function ToolFallbackContent({
         "data-[state=closed]:pointer-events-none",
         "data-[state=open]:duration-(--animation-duration)",
         "data-[state=closed]:duration-(--animation-duration)",
-        className,
+        className
       )}
       {...props}
     >
@@ -201,9 +190,7 @@ function ToolFallbackArgs({
       className={cn("aui-tool-fallback-args px-4", className)}
       {...props}
     >
-      <pre className="aui-tool-fallback-args-value whitespace-pre-wrap">
-        {argsText}
-      </pre>
+      <pre className="aui-tool-fallback-args-value whitespace-pre-wrap">{argsText}</pre>
     </div>
   );
 }
@@ -220,10 +207,7 @@ function ToolFallbackResult({
   return (
     <div
       data-slot="tool-fallback-result"
-      className={cn(
-        "aui-tool-fallback-result border-t border-dashed px-4 pt-2",
-        className,
-      )}
+      className={cn("aui-tool-fallback-result border-t border-dashed px-4 pt-2", className)}
       {...props}
     >
       <p className="aui-tool-fallback-result-header font-semibold">Result:</p>
@@ -244,11 +228,7 @@ function ToolFallbackError({
   if (status?.type !== "incomplete") return null;
 
   const error = status.error;
-  const errorText = error
-    ? typeof error === "string"
-      ? error
-      : JSON.stringify(error)
-    : null;
+  const errorText = error ? (typeof error === "string" ? error : JSON.stringify(error)) : null;
 
   if (!errorText) return null;
 
@@ -264,9 +244,7 @@ function ToolFallbackError({
       <p className="aui-tool-fallback-error-header text-muted-foreground font-semibold">
         {headerText}
       </p>
-      <p className="aui-tool-fallback-error-reason text-muted-foreground">
-        {errorText}
-      </p>
+      <p className="aui-tool-fallback-error-reason text-muted-foreground">{errorText}</p>
     </div>
   );
 }
@@ -283,9 +261,7 @@ function ToolFallbackApproval({
   respondToApproval,
   ...props
 }: React.ComponentProps<"div"> &
-  Partial<
-    Pick<ToolCallMessagePartProps, "addResult" | "resume" | "respondToApproval">
-  > & {
+  Partial<Pick<ToolCallMessagePartProps, "addResult" | "resume" | "respondToApproval">> & {
     interrupt?: ToolCallMessagePart["interrupt"];
     approval?: ToolCallMessagePart["approval"];
   }) {
@@ -294,11 +270,7 @@ function ToolFallbackApproval({
   const respond = (approved: boolean) => {
     if (submitted) return;
     setSubmitted(true);
-    if (
-      approval != null &&
-      approval.approved === undefined &&
-      respondToApproval
-    ) {
+    if (approval != null && approval.approved === undefined && respondToApproval) {
       respondToApproval({ approved });
     } else if (interrupt) {
       resume?.({ approved });
@@ -312,19 +284,14 @@ function ToolFallbackApproval({
       data-slot="tool-fallback-approval"
       className={cn(
         "aui-tool-fallback-approval flex items-center gap-2 border-t border-dashed px-4 pt-2",
-        className,
+        className
       )}
       {...props}
     >
       <Button size="sm" onClick={() => respond(true)} disabled={submitted}>
         Allow
       </Button>
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => respond(false)}
-        disabled={submitted}
-      >
+      <Button size="sm" variant="outline" onClick={() => respond(false)} disabled={submitted}>
         Deny
       </Button>
     </div>
@@ -352,9 +319,7 @@ const ToolFallbackImpl: ToolCallMessagePartComponent = ({
   );
 };
 
-const ToolFallback = memo(
-  ToolFallbackImpl,
-) as unknown as ToolCallMessagePartComponent & {
+const ToolFallback = memo(ToolFallbackImpl) as unknown as ToolCallMessagePartComponent & {
   Root: typeof ToolFallbackRoot;
   Trigger: typeof ToolFallbackTrigger;
   Content: typeof ToolFallbackContent;

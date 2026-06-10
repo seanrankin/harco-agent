@@ -4,7 +4,7 @@ const DEFAULT_CHUNK_OVERLAP = 200;
 export function chunkText(
   text: string,
   chunkSize: number = DEFAULT_CHUNK_SIZE,
-  overlap: number = DEFAULT_CHUNK_OVERLAP,
+  overlap: number = DEFAULT_CHUNK_OVERLAP
 ): string[] {
   const charSize = chunkSize * 4;
   const charOverlap = overlap * 4;

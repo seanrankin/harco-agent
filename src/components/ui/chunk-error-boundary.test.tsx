@@ -14,7 +14,7 @@ describe("ChunkErrorBoundary", () => {
     render(
       <ChunkErrorBoundary>
         <p>Content loaded</p>
-      </ChunkErrorBoundary>,
+      </ChunkErrorBoundary>
     );
 
     expect(screen.getByText("Content loaded")).toBeDefined();
@@ -27,7 +27,7 @@ describe("ChunkErrorBoundary", () => {
     render(
       <ChunkErrorBoundary>
         <ProblemChild />
-      </ChunkErrorBoundary>,
+      </ChunkErrorBoundary>
     );
 
     expect(screen.getByText("Unable to load content")).toBeDefined();
@@ -43,7 +43,7 @@ describe("ChunkErrorBoundary", () => {
         <ChunkErrorBoundary>
           <ProblemChild />
         </ChunkErrorBoundary>
-      </div>,
+      </div>
     );
 
     // Parent and sibling remain intact

@@ -30,9 +30,7 @@ export const ThreadItem: FC = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const displayTitle = state.title
-    ? state.title
-    : truncatePreview("New conversation");
+  const displayTitle = state.title ? state.title : truncatePreview("New conversation");
 
   const startRename = useCallback(() => {
     setRenameValue(state.title ?? "");
@@ -79,7 +77,7 @@ export const ThreadItem: FC = () => {
         cancelRename();
       }
     },
-    [confirmRename, cancelRename],
+    [confirmRename, cancelRename]
   );
 
   const handleArchive = useCallback(async () => {
@@ -104,7 +102,7 @@ export const ThreadItem: FC = () => {
       className={cn(
         "group relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
         "hover:bg-muted/60",
-        state.isMain && "bg-muted",
+        state.isMain && "bg-muted"
       )}
     >
       {isRenaming ? (
@@ -164,8 +162,8 @@ export const ThreadItem: FC = () => {
               <DialogHeader>
                 <DialogTitle>Delete thread</DialogTitle>
                 <DialogDescription>
-                  This will permanently delete this conversation and all its
-                  messages. This action cannot be undone.
+                  This will permanently delete this conversation and all its messages. This action
+                  cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>

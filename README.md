@@ -118,11 +118,11 @@ All colors and radii live in `src/app/globals.css` under `:root`. Brand hex valu
 
 Loaded via `next/font/google` in `src/app/layout.tsx` and exposed as CSS variables consumed by `@theme inline` in `globals.css`:
 
-| Family            | Token         | Use for                                          |
-| ----------------- | ------------- | ------------------------------------------------ |
-| Inter Tight       | `font-sans`   | Default body and UI text                         |
-| Source Serif 4    | `font-serif`  | Display headings only (empty state, login hero)  |
-| JetBrains Mono    | `font-mono`   | Labels, metadata, file metadata, eyebrows        |
+| Family         | Token        | Use for                                         |
+| -------------- | ------------ | ----------------------------------------------- |
+| Inter Tight    | `font-sans`  | Default body and UI text                        |
+| Source Serif 4 | `font-serif` | Display headings only (empty state, login hero) |
+| JetBrains Mono | `font-mono`  | Labels, metadata, file metadata, eyebrows       |
 
 ### Assistant-ui primitives first
 
@@ -135,6 +135,7 @@ The `aui-*` classnames in `src/components/assistant-ui/thread.tsx` are the libra
 Tool renderers live in `src/components/tool-ui/` and are registered at the top of `src/app/page.tsx` via `makeAssistantToolUI({ toolName, render })`. The component receives `args` directly from the backend tool call. Keep render functions pure (no side effects, no fetches).
 
 The shared spec-table aesthetic for tabular data is defined in two places that must stay visually in sync:
+
 - `src/components/tool-ui/spec-table.tsx` — single source of truth for `<SpecTable>` (used by future `lookup_spec` tool).
 - `src/components/assistant-ui/markdown-text.tsx` — `table` / `th` / `td` / `tr` component overrides that style LLM-generated markdown tables identically.
 
@@ -145,6 +146,7 @@ The assistant emits `[1]` / `[2]` style tokens in prose, paired with a `data-sou
 ### Responsive breakpoints
 
 The mockups target four sizes:
+
 - **≥1181px** desktop — full layout (sidebar + main + future preview pane)
 - **861–1180px** tablet landscape — same layout, tighter spacing
 - **≤860px** sidebar collapses to a drawer with a floating hamburger

@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ArrowLeftIcon,
-  LockIcon,
-  MailIcon,
-  RefreshCwIcon,
-  TriangleAlertIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, LockIcon, MailIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
 
 import { Diamond } from "@/components/brand/diamond";
 import { createClient } from "@/lib/supabase/client";
@@ -26,9 +20,7 @@ export default function LoginPage() {
 
     if (!isEmailAllowed(target)) {
       setStatus("error");
-      setErrorMessage(
-        `Access is limited to the Harco team. Use your @${ALLOWED_DOMAIN} email.`,
-      );
+      setErrorMessage(`Access is limited to the Harco team. Use your @${ALLOWED_DOMAIN} email.`);
       return;
     }
 
@@ -76,10 +68,8 @@ export default function LoginPage() {
           backgroundImage:
             "linear-gradient(color-mix(in oklab, var(--primary) 3.5%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--primary) 3.5%, transparent) 1px, transparent 1px)",
           backgroundSize: "30px 30px",
-          maskImage:
-            "radial-gradient(120% 90% at 50% 0%, #000, transparent 75%)",
-          WebkitMaskImage:
-            "radial-gradient(120% 90% at 50% 0%, #000, transparent 75%)",
+          maskImage: "radial-gradient(120% 90% at 50% 0%, #000, transparent 75%)",
+          WebkitMaskImage: "radial-gradient(120% 90% at 50% 0%, #000, transparent 75%)",
         }}
       />
 
@@ -141,13 +131,7 @@ interface RequestFormProps {
   error: string;
 }
 
-function RequestForm({
-  email,
-  onEmailChange,
-  onSubmit,
-  loading,
-  error,
-}: RequestFormProps) {
+function RequestForm({ email, onEmailChange, onSubmit, loading, error }: RequestFormProps) {
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col">
       <span className="text-ring mb-3 font-mono text-[10.5px] tracking-widest uppercase">
@@ -157,8 +141,8 @@ function RequestForm({
         Sign in to the Assistant
       </h1>
       <p className="text-muted-foreground mt-2.5 text-sm leading-relaxed sm:text-[14.5px]">
-        Enter your Harco email and we&rsquo;ll send a one-time sign-in link
-        — no password to remember.
+        Enter your Harco email and we&rsquo;ll send a one-time sign-in link — no password to
+        remember.
       </p>
 
       <label className="mt-6 block">
@@ -201,8 +185,7 @@ function RequestForm({
             {error || (
               <>
                 Access is limited to{" "}
-                <b className="text-foreground font-semibold">@{ALLOWED_DOMAIN}</b>{" "}
-                addresses.
+                <b className="text-foreground font-semibold">@{ALLOWED_DOMAIN}</b> addresses.
               </>
             )}
           </span>
@@ -218,8 +201,8 @@ function RequestForm({
       </button>
 
       <p className="text-muted-foreground mt-4 text-[11.5px] leading-relaxed">
-        The link works once and expires in 15 minutes. By signing in you agree
-        to Harco&rsquo;s acceptable-use policy.
+        The link works once and expires in 15 minutes. By signing in you agree to Harco&rsquo;s
+        acceptable-use policy.
       </p>
     </form>
   );
@@ -262,8 +245,8 @@ function SentPanel({ email, onBack }: { email: string; onBack: () => void }) {
       </div>
 
       <p className="text-muted-foreground mt-4 text-[13.5px] leading-relaxed">
-        Open it on this device and you&rsquo;ll land straight in the Harco
-        Assistant. The link expires in 15 minutes.
+        Open it on this device and you&rsquo;ll land straight in the Harco Assistant. The link
+        expires in 15 minutes.
       </p>
 
       <div className="mt-6 flex flex-col gap-2.5">
@@ -287,8 +270,7 @@ function SentPanel({ email, onBack }: { email: string; onBack: () => void }) {
       </div>
 
       <p className="text-muted-foreground mt-5 text-[11.5px] leading-relaxed">
-        Didn&rsquo;t get it within a minute? Check your spam folder, or resend
-        above.
+        Didn&rsquo;t get it within a minute? Check your spam folder, or resend above.
       </p>
     </div>
   );
@@ -318,10 +300,8 @@ function FeaturePanel() {
           backgroundImage:
             "linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)",
           backgroundSize: "26px 26px",
-          maskImage:
-            "radial-gradient(130% 100% at 100% 0%, #000, transparent 70%)",
-          WebkitMaskImage:
-            "radial-gradient(130% 100% at 100% 0%, #000, transparent 70%)",
+          maskImage: "radial-gradient(130% 100% at 100% 0%, #000, transparent 70%)",
+          WebkitMaskImage: "radial-gradient(130% 100% at 100% 0%, #000, transparent 70%)",
         }}
       />
 
@@ -348,14 +328,13 @@ function FeaturePanel() {
         </h2>
         {/* Long body — desktop only */}
         <p className="mt-3 max-w-[42ch] text-[13.5px] leading-relaxed text-white/70 max-lg:hidden">
-          The Harco Assistant is your team&rsquo;s source for grounded answers,
-          drawn straight from the real product library. No guessing on the
-          phone with a contractor.
+          The Harco Assistant is your team&rsquo;s source for grounded answers, drawn straight from
+          the real product library. No guessing on the phone with a contractor.
         </p>
         {/* Short body — banner mode only */}
         <p className="text-[13.5px] leading-relaxed text-white/70 max-lg:block lg:hidden">
-          Grounded answers for the sales floor — specs, submittals, and live
-          stock from the real product library.
+          Grounded answers for the sales floor — specs, submittals, and live stock from the real
+          product library.
         </p>
       </div>
 
@@ -385,10 +364,7 @@ function FeaturePanel() {
       {/* Bullets — desktop only */}
       <ul className="relative z-10 mt-5 flex flex-col gap-2.5 max-lg:hidden">
         {FEATURES.map((f) => (
-          <li
-            key={f}
-            className="flex items-start gap-3 text-[13.5px] leading-snug text-white/80"
-          >
+          <li key={f} className="flex items-start gap-3 text-[13.5px] leading-snug text-white/80">
             <span
               aria-hidden="true"
               className="bg-accent mt-1.5 inline-block size-[9px] shrink-0 rotate-45"
