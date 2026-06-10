@@ -13,6 +13,7 @@ import { type FC, memo, useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
 
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import { FileCard } from "@/components/tool-ui/file-card";
 import { cn } from "@/lib/utils";
 import {
   remarkCitations,
@@ -171,6 +172,23 @@ const defaultComponents = memoizeMarkdownComponents({
         </a>
       );
     }
+
+    // Intercept /api/download links and render as FileCard instead
+    const href = props.href ?? "";
+    if (href.includes("/api/download") && href.includes("document_id=")) {
+      const url = new URL(href, "http://localhost");
+      const documentId = url.searchParams.get("document_id") ?? "";
+      const linkText =
+        typeof children === "string"
+          ? children
+          : Array.isArray(children) && typeof children[0] === "string"
+            ? children[0]
+            : "Document";
+      return (
+        <FileCard documentId={documentId} title={linkText} fileType="pdf" />
+      );
+    }
+
     return (
       <a
         title={title}
