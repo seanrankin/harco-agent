@@ -98,7 +98,7 @@ describe("MarkdownSkeleton", () => {
     const { MarkdownSkeleton } = await import("./thread");
 
     // Call the component function directly (no React DOM needed)
-    const element = MarkdownSkeleton({});
+    const element = MarkdownSkeleton({}) as React.ReactElement<any>;
 
     expect(element).toBeDefined();
     expect(element.props["aria-busy"]).toBe("true");
@@ -108,7 +108,7 @@ describe("MarkdownSkeleton", () => {
   it("MarkdownSkeleton renders three animated pulse placeholder lines", async () => {
     const { MarkdownSkeleton } = await import("./thread");
 
-    const element = MarkdownSkeleton({});
+    const element = MarkdownSkeleton({}) as React.ReactElement<any>;
     const children = element.props.children;
 
     expect(children).toHaveLength(3);

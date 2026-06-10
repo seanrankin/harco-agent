@@ -5,7 +5,7 @@ import { ChunkErrorBoundary } from "./chunk-error-boundary";
 
 afterEach(cleanup);
 
-function ProblemChild() {
+function ProblemChild(): React.ReactNode {
   throw new Error("Chunk load failed");
 }
 

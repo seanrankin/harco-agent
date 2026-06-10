@@ -1,29 +1,32 @@
 "use client";
 
+import { type FC } from "react";
+import { ThreadListPrimitive } from "@assistant-ui/react";
+import { useAuiState } from "@assistant-ui/store";
 import { Diamond } from "@/components/brand/diamond";
 import { Button } from "@/components/ui/button";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
+import { ThreadItem } from "./thread-item";
 import { LogOutIcon, PlusIcon, XIcon } from "lucide-react";
-import type { FC } from "react";
 
 interface SidebarProps {
-  /** Whether the drawer is open on mobile breakpoints. Ignored on desktop. */
   open: boolean;
   onClose: () => void;
   onNewQuestion: () => void;
   onSignOut: () => void;
 }
 
-/**
- * Left rail. Renders inline at ≥861px and as a slide-in drawer at ≤860px.
- *
- * Currently shows brand + "New question" + sign-out only.
- *
- * TODO(redesign): replace with `ThreadListPrimitive` + `useRemoteThreadListRuntime`
- * once thread persistence exists in Supabase. The Today / Earlier this week
- * grouping is a thin Compose wrapper on top of the primitive's flat list.
- */
+const EmptyThreadList: FC = () => {
+  const count = useAuiState((s) => s.threads.threadIds.length);
+  if (count > 0) return null;
+  return (
+    <p className="text-muted-foreground px-4 py-8 text-center text-sm">
+      No conversations yet
+    </p>
+  );
+};
+
 export const Sidebar: FC<SidebarProps> = ({
   open,
   onClose,
@@ -46,10 +49,8 @@ export const Sidebar: FC<SidebarProps> = ({
         aria-label="Knowledge base navigation"
         className={cn(
           "bg-sidebar border-border flex h-full w-72 shrink-0 flex-col border-r",
-          // Mobile: position-fixed drawer that slides in
           "fixed inset-y-0 left-0 z-50 shadow-2xl transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "-translate-x-full",
-          // Desktop: in-flow, always visible
           "lg:relative lg:translate-x-0 lg:shadow-none",
         )}
       >
@@ -64,7 +65,6 @@ export const Sidebar: FC<SidebarProps> = ({
               Knowledge Base
             </span>
           </div>
-          {/* Close button — drawer only */}
           <TooltipIconButton
             tooltip="Close menu"
             onClick={onClose}
@@ -88,8 +88,15 @@ export const Sidebar: FC<SidebarProps> = ({
           </Button>
         </div>
 
-        {/* History list intentionally omitted — see TODO above */}
-        <div className="flex-1" aria-hidden="true" />
+        {/* Thread history list */}
+        <ThreadListPrimitive.Root className="flex-1 overflow-y-auto">
+          <div className="space-y-0.5 px-2">
+            <ThreadListPrimitive.Items
+              components={{ ThreadListItem: ThreadItem }}
+            />
+          </div>
+          <EmptyThreadList />
+        </ThreadListPrimitive.Root>
 
         {/* Footer — sign out */}
         <div className="border-border/60 flex items-center justify-end border-t p-3">

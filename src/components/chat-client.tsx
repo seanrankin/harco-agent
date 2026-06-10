@@ -4,10 +4,13 @@ import {
   AssistantRuntimeProvider,
   makeAssistantToolUI,
   useAssistantRuntime,
+  useRemoteThreadListRuntime,
 } from "@assistant-ui/react";
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
+
+import { threadListAdapter } from "@/lib/thread-adapter";
 
 import { Thread } from "@/components/assistant-ui/thread";
 import { Sidebar } from "@/components/app-shell/sidebar";
@@ -120,7 +123,10 @@ const EmailDraftToolUI = makeAssistantToolUI({
 });
 
 export function ChatClient() {
-  const runtime = useChatRuntime();
+  const runtime = useRemoteThreadListRuntime({
+    runtimeHook: useChatRuntime,
+    adapter: threadListAdapter,
+  });
   const [navOpen, setNavOpen] = useState(false);
 
   return (

@@ -10,7 +10,9 @@
     "lint": "eslint",
     "test": "vitest run",
     "analyze": "ANALYZE=true npm run build --webpack",
-    "ingest": "node --max-old-space-size=8192 scripts/ingest.js"
+    "ingest": "node --max-old-space-size=8192 scripts/ingest.js",
+    "db:push": "supabase db push",
+    "functions:deploy": "supabase functions deploy"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.68",

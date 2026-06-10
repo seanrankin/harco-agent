@@ -42,19 +42,12 @@ The mockup also shows date-bucketed groups ("Today" / "Earlier this week") which
 
 **Where:** `src/app/page.tsx` (`adapters = { attachments: new SimpleImageAttachmentAdapter() }`)
 
-**Current behavior:** The paperclip button in the composer opens a file picker, accepts an image, and shows it as an attachment chip on the user's next message.
-
-**Limit:** `SimpleImageAttachmentAdapter` from assistant-ui holds files in **browser memory only**. Refresh the page → the attachment is gone. Server-side, the attachment payload arrives in the chat route but isn't persisted anywhere.
-
-**To do:**
-- [ ] Decide what file types beyond images should be allowed (the mockup mentions drawings, POs, photos — likely PDFs and Office docs too)
-- [ ] Add a Supabase Storage bucket for chat attachments (per-user prefix, signed URLs)
-- [ ] Replace `SimpleImageAttachmentAdapter` with a custom adapter that uploads to Storage and returns the public/signed URL
-- [ ] On the chat route side, pass attachment URLs to the model so it can reference them in responses
-
+Removed upload / attach paperclip.
 ---
 
 ## 4. Inline `[N]` citations — **frontend-only, works against current data**
+
+***_Status: Not in the MVP_***
 
 **Where:**
 - `src/lib/citations/remark-citations.ts` — remark plugin
@@ -71,6 +64,8 @@ The mockup also shows date-bucketed groups ("Today" / "Earlier this week") which
 
 ## 5. Feedback thumbs (👍 / 👎) — **not built**
 
+***_Status: Not in the MVP_***
+
 **Where:** Not in the codebase. Mentioned in the mockup; explicitly cut from v1 per the plan.
 
 **Why it's cut:** assistant-ui's `FeedbackAdapter` slot needs a backend endpoint to post submissions to. No such endpoint exists.
@@ -85,6 +80,8 @@ The mockup also shows date-bucketed groups ("Today" / "Earlier this week") which
 
 ## 6. Document preview pane — **not built**
 
+***_Status: Not in the MVP_***
+
 **Where:** Not in the codebase. Mentioned in the mockup; explicitly cut from v1.
 
 **Why it's cut:** No backend endpoint to fetch document preview content (the body of a PDF page, the relevant DOCX paragraphs, etc.). Without that, the pane has nothing meaningful to show beyond what's already on the FileCard.
@@ -98,6 +95,8 @@ The mockup also shows date-bucketed groups ("Today" / "Earlier this week") which
 ---
 
 ## 7. `lookup_spec` / `check_stock` tool UIs — **stubbed component, no backend**
+
+***_Status: Not in the MVP_***
 
 **Where:** `src/components/tool-ui/spec-table.tsx` (component exists, not registered)
 
@@ -137,54 +136,3 @@ The mockup also shows date-bucketed groups ("Today" / "Earlier this week") which
 - [ ] The "synced today" suffix — decide whether to keep static, drop, or compute from `MAX(created_at)`
 
 ---
-
-## 10. Email draft card — "Edit" button **intentionally dropped**
-
-**Where:** `src/components/tool-ui/email-draft-card.tsx` (used to have three buttons; now two)
-
-**Current behavior:** Two buttons in the footer: amber "Draft an Email" (opens `mailto:` link) and ghost "Copy" (copies body to clipboard). No "Edit" affordance.
-
-**Why it's a TODO:** The mockup showed an Edit button but it was a no-op toast. We dropped it as a fake affordance. If a real inline edit flow is wanted later:
-
-**To do (if/when prioritized):**
-- [ ] Add local state for editable subject/body
-- [ ] Toggle button → textarea, regenerate the mailto link from the edited values
-
----
-
-## 11. Dark mode — **not themed**
-
-**Where:** `src/app/globals.css` (`.dark` block)
-
-**Current behavior:** The dark-mode CSS variables are left as neutral OKLch fallbacks — not mapped to a Harco dark palette.
-
-**Why it's a TODO:** Mockup has no dark mode. Out of v1 scope.
-
-**To do (if/when prioritized):**
-- [ ] Design dark variants for the Harco palette (navy, amber, paper)
-- [ ] Update `.dark` block in `globals.css` accordingly
-- [ ] Add a theme toggle somewhere if user preference matters
-
----
-
-## 12. Document preview anchor on FileCard hover — **says "Download"**
-
-**Where:** `src/components/tool-ui/file-card.tsx`
-
-**Current behavior:** Hovering a FileCard reveals a "Download" affordance that opens the file via `/api/download`.
-
-**Why mentioning:** The mockup showed a "Preview" affordance because it had a preview pane. Since the preview pane is cut (#6), we ship "Download" instead. If the preview pane returns, change the hover label and route the click through a context handler instead of the download URL.
-
----
-
-## Quick reference — file → TODO
-
-| File | What's stubbed |
-|---|---|
-| `src/components/app-shell/sidebar.tsx` | History list entirely (#1) |
-| `src/app/page.tsx` | New-question full multi-thread behavior (#2), attachment persistence (#3) |
-| `src/components/tool-ui/spec-table.tsx` | Component built, not wired to a tool (#7) |
-| `src/components/assistant-ui/thread.tsx` | Hardcoded starter suggestions (#8) |
-| `src/app/login/page.tsx` | Hardcoded indexed-doc count (#9) |
-| `src/app/globals.css` | Dark mode not themed (#11) |
-| (not in code) | Feedback thumbs (#5), preview pane (#6), inline-citation backend (#4), email-draft inline edit (#10) |

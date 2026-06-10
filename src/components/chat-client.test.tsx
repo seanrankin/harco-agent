@@ -12,6 +12,7 @@ const mockDynamic = vi.fn((loader: () => Promise<any>) => {
 });
 
 const mockUseChatRuntime = vi.fn(() => ({ type: "mock-runtime" }));
+const mockUseRemoteThreadListRuntime = vi.fn(() => ({ type: "mock-runtime" }));
 
 describe("DevToolsModal gating", () => {
   beforeEach(() => {
@@ -25,9 +26,13 @@ describe("DevToolsModal gating", () => {
       useAssistantRuntime: vi.fn(() => ({
         threads: { switchToNewThread: vi.fn() },
       })),
+      useRemoteThreadListRuntime: mockUseRemoteThreadListRuntime,
     }));
     vi.doMock("@assistant-ui/react-ai-sdk", () => ({
       useChatRuntime: mockUseChatRuntime,
+    }));
+    vi.doMock("@/lib/thread-adapter", () => ({
+      threadListAdapter: {},
     }));
     vi.doMock("@/components/assistant-ui/thread", () => ({
       Thread: () => null,
@@ -120,6 +125,7 @@ describe("ChatClient without SimpleImageAttachmentAdapter", () => {
   beforeEach(() => {
     vi.resetModules();
     mockUseChatRuntime.mockClear();
+    mockUseRemoteThreadListRuntime.mockClear();
 
     vi.doMock("next/dynamic", () => ({ default: mockDynamic }));
     vi.doMock("@assistant-ui/react", () => ({
@@ -128,9 +134,13 @@ describe("ChatClient without SimpleImageAttachmentAdapter", () => {
       useAssistantRuntime: vi.fn(() => ({
         threads: { switchToNewThread: vi.fn() },
       })),
+      useRemoteThreadListRuntime: mockUseRemoteThreadListRuntime,
     }));
     vi.doMock("@assistant-ui/react-ai-sdk", () => ({
       useChatRuntime: mockUseChatRuntime,
+    }));
+    vi.doMock("@/lib/thread-adapter", () => ({
+      threadListAdapter: {},
     }));
     vi.doMock("@/components/assistant-ui/thread", () => ({
       Thread: () => null,
