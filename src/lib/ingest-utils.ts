@@ -29,6 +29,18 @@ export function chunkText(
   return chunks;
 }
 
+/**
+ * Patterns that indicate the start of an email signature block.
+ * Add new entries here when staff signatures change.
+ */
+const SIGNATURE_START_PATTERNS = [
+  /^--\s*$/, // standard sig delimiter
+  /^John D\. Fralick/,
+  /^National Sales Manager/,
+  /^Harco Fittings LLC/,
+  /^\(\d{3}\) \d{3}-\d{4}/, // phone number as first item on a line
+];
+
 export function stripEmailNoise(text: string): string {
   // Remove image CID references like [cid:image001.gif@01DCF764.4F68C9D0]
   text = text.replace(/\[cid:[^\]]+\]/g, "");
@@ -48,15 +60,13 @@ export function stripEmailNoise(text: string): string {
   let inSignature = false;
 
   for (const line of lines) {
-    if (
-      /^(John D\. Fralick|National Sales Manager|Harco Fittings LLC|\(\d{3}\) \d{3}-\d{4})/.test(
-        line.trim(),
-      )
-    ) {
+    const trimmed = line.trim();
+
+    if (SIGNATURE_START_PATTERNS.some((p) => p.test(trimmed))) {
       inSignature = true;
       continue;
     }
-    if (/^From:/.test(line.trim()) && inSignature) {
+    if (/^From:/.test(trimmed) && inSignature) {
       inSignature = false;
     }
     if (!inSignature) {

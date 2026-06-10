@@ -1,19 +1,10 @@
 import { NextResponse } from "next/server";
-import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(request: Request) {
-  // Dev-only auth bypass
-  if (process.env.SKIP_AUTH !== "true") {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-  }
+  const authResponse = await requireAuth();
+  if (authResponse) return authResponse;
 
   const { searchParams } = new URL(request.url);
   const documentId = searchParams.get("document_id");

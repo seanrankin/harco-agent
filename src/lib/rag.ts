@@ -1,20 +1,14 @@
 import { openai } from "@ai-sdk/openai";
-import { embedMany, embed } from "ai";
+import { embed } from "ai";
 import { createServiceClient } from "@/lib/supabase/server";
+import type { SourceDocument } from "@/lib/types";
 
 const MATCH_THRESHOLD = 0.3;
-const MATCH_COUNT = 8;
-
-interface RetrievedDocument {
-  id: string;
-  title: string;
-  file_type: string;
-  file_size_bytes: number;
-}
+export const MATCH_COUNT = 8;
 
 interface RetrievalResult {
   contextText: string;
-  documents: RetrievedDocument[];
+  documents: SourceDocument[];
 }
 
 export async function retrieveContext(query: string): Promise<RetrievalResult> {
@@ -33,12 +27,17 @@ export async function retrieveContext(query: string): Promise<RetrievalResult> {
     match_count: MATCH_COUNT,
   });
 
-  if (error || !chunks || chunks.length === 0) {
+  if (error) {
+    console.error("RAG retrieval failed:", error.message);
+    return { contextText: "", documents: [] };
+  }
+
+  if (!chunks || chunks.length === 0) {
     return { contextText: "", documents: [] };
   }
 
   // Deduplicate documents
-  const seenDocs = new Map<string, RetrievedDocument>();
+  const seenDocs = new Map<string, SourceDocument>();
   const contextParts: string[] = [];
 
   for (const chunk of chunks) {

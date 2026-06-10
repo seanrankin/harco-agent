@@ -1,9 +1,4 @@
-export interface SourceDocument {
-  id: string;
-  title: string;
-  file_type: string;
-  file_size_bytes: number;
-}
+import type { SourceDocument } from "@/lib/types";
 
 export function deduplicateSources(
   sourceDocuments: SourceDocument[],

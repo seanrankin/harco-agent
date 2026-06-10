@@ -1,15 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const mockGetUser = vi.fn();
 const mockFrom = vi.fn();
 const mockStorageFrom = vi.fn();
 
+vi.mock("@/lib/auth", () => ({
+  requireAuth: vi.fn(),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn(async () => ({
-    auth: { getUser: mockGetUser },
-    from: mockFrom,
-    storage: { from: mockStorageFrom },
-  })),
   createServiceClient: vi.fn(() => ({
     from: mockFrom,
     storage: { from: mockStorageFrom },
@@ -17,33 +15,17 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 import { GET } from "./route";
+import { requireAuth } from "@/lib/auth";
 
 describe("GET /api/download", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    delete process.env.SKIP_AUTH;
   });
 
-  it("responds 401 when auth returns an error", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: null },
-      error: { message: "Invalid token" },
-    });
-
-    const request = new Request(
-      "http://localhost/api/download?document_id=abc",
+  it("responds 401 when requireAuth returns a 401 response", async () => {
+    vi.mocked(requireAuth).mockResolvedValue(
+      new Response("Unauthorized", { status: 401 }),
     );
-    const response = await GET(request);
-
-    expect(response.status).toBe(401);
-    expect(await response.text()).toBe("Unauthorized");
-  });
-
-  it("responds 401 when auth returns no user", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: null },
-      error: null,
-    });
 
     const request = new Request(
       "http://localhost/api/download?document_id=abc",
@@ -55,10 +37,7 @@ describe("GET /api/download", () => {
   });
 
   it("responds 400 when document_id query parameter is missing", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-1" } },
-      error: null,
-    });
+    vi.mocked(requireAuth).mockResolvedValue(null);
 
     const request = new Request("http://localhost/api/download");
     const response = await GET(request);
@@ -68,10 +47,7 @@ describe("GET /api/download", () => {
   });
 
   it("responds 404 when document is not found", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-1" } },
-      error: null,
-    });
+    vi.mocked(requireAuth).mockResolvedValue(null);
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
@@ -93,10 +69,7 @@ describe("GET /api/download", () => {
   });
 
   it("responds 307 redirect to signed URL on success", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-1" } },
-      error: null,
-    });
+    vi.mocked(requireAuth).mockResolvedValue(null);
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
@@ -130,10 +103,7 @@ describe("GET /api/download", () => {
   });
 
   it("responds 500 when signed URL generation fails", async () => {
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: "user-1" } },
-      error: null,
-    });
+    vi.mocked(requireAuth).mockResolvedValue(null);
     mockFrom.mockReturnValue({
       select: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({

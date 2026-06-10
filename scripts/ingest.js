@@ -42,6 +42,15 @@ if (!OPENAI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 }
 
 const EMBEDDING_MODEL = "text-embedding-3-small";
+const CHUNK_INSERT_BATCH_SIZE = 20;
+
+const CONTENT_TYPES = {
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  doc: "application/msword",
+  pdf: "application/pdf",
+  eml: "message/rfc822",
+  msg: "application/vnd.ms-outlook",
+};
 
 // --- Supabase REST helpers ---
 
@@ -120,19 +129,21 @@ async function generateEmbeddings(texts) {
   return results;
 }
 
-// --- File Parsers ---
+// --- Text Extraction ---
 
-async function parseDocx(filePath) {
-  const buffer = await readFile(filePath);
-  const result = await mammoth.extractRawText({ buffer });
-  return result.value;
+async function extractTextFromBuffer(buffer, fileType) {
+  if (fileType === "docx" || fileType === "doc") {
+    const result = await mammoth.extractRawText({ buffer });
+    return result.value;
+  }
+  if (fileType === "pdf") {
+    const data = await pdf(buffer);
+    return data.text;
+  }
+  return null;
 }
 
-async function parsePdf(filePath) {
-  const buffer = await readFile(filePath);
-  const data = await pdf(buffer);
-  return data.text;
-}
+// --- Email Parsers ---
 
 async function parseEml(filePath) {
   const source = await readFile(filePath);
@@ -189,12 +200,20 @@ async function parseMsg(filePath) {
   return { text, attachments, subject: fileData.subject || basename(filePath) };
 }
 
-// --- Main Ingestion ---
+// --- Core Ingestion ---
 
-async function ingestFile(filePath, title, fileType) {
-  const fileBuffer = await readFile(filePath);
-  const fileStat = await stat(filePath);
-  const contentHash = hashContent(fileBuffer);
+/**
+ * Ingest a single document from a buffer.
+ *
+ * @param {Object} params
+ * @param {Buffer} params.buffer - Raw file content
+ * @param {string} params.filename - Original filename (used for storage path)
+ * @param {string} params.title - Display title for the document
+ * @param {string} params.fileType - Extension without dot (docx, pdf, eml, msg)
+ * @param {string} [params.text] - Pre-extracted text (for emails where parsing is separate)
+ */
+async function ingestDocument({ buffer, filename, title, fileType, text }) {
+  const contentHash = hashContent(buffer);
 
   // Check if already ingested
   const existing = await supabaseRest(
@@ -203,7 +222,6 @@ async function ingestFile(filePath, title, fileType) {
   );
 
   if (existing.length > 0) {
-    // Verify chunks exist too (handles incomplete prior runs)
     const existingChunks = await supabaseRest(
       `document_chunks?document_id=eq.${existing[0].id}&select=id&limit=1`,
       { method: "GET" },
@@ -212,28 +230,19 @@ async function ingestFile(filePath, title, fileType) {
       console.log(`  ⏭  Already ingested: ${title}`);
       return;
     }
-    // Incomplete, delete stale record and re-process
     console.log(`  🔄 Incomplete ingestion found, re-processing: ${title}`);
     await supabaseRest(`documents?id=eq.${existing[0].id}`, {
       method: "DELETE",
     });
   }
 
-  // Extract text
-  let text = "";
-  if (fileType === "docx" || fileType === "doc") {
-    text = await parseDocx(filePath);
-  } else if (fileType === "pdf") {
-    text = await parsePdf(filePath);
-  } else if (fileType === "eml") {
-    const result = await parseEml(filePath);
-    text = result.text;
-  } else if (fileType === "msg") {
-    const result = await parseMsg(filePath);
-    text = result.text;
-  } else {
-    console.log(`  ⚠  Unsupported file type: ${fileType}, skipping`);
-    return;
+  // Extract text if not pre-provided
+  if (!text) {
+    text = await extractTextFromBuffer(buffer, fileType);
+    if (text === null) {
+      console.log(`  ⚠  Unsupported file type: ${fileType}, skipping`);
+      return;
+    }
   }
 
   if (!text || text.trim().length < 10) {
@@ -242,19 +251,11 @@ async function ingestFile(filePath, title, fileType) {
   }
 
   // Upload original file to Supabase Storage
-  const storagePath = `${contentHash}/${basename(filePath)}`;
-  const contentTypes = {
-    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    doc: "application/msword",
-    pdf: "application/pdf",
-    eml: "message/rfc822",
-    msg: "application/vnd.ms-outlook",
-  };
-
+  const storagePath = `${contentHash}/${filename}`;
   await supabaseStorageUpload(
     storagePath,
-    fileBuffer,
-    contentTypes[fileType] || "application/octet-stream",
+    buffer,
+    CONTENT_TYPES[fileType] || "application/octet-stream",
   );
 
   // Insert document record
@@ -263,7 +264,7 @@ async function ingestFile(filePath, title, fileType) {
     body: JSON.stringify({
       title,
       file_type: fileType,
-      file_size_bytes: fileStat.size,
+      file_size_bytes: buffer.length,
       storage_path: storagePath,
       content_hash: contentHash,
     }),
@@ -283,8 +284,8 @@ async function ingestFile(filePath, title, fileType) {
     chunk_index: i,
   }));
 
-  for (let i = 0; i < chunkRows.length; i += 20) {
-    const batch = chunkRows.slice(i, i + 20);
+  for (let i = 0; i < chunkRows.length; i += CHUNK_INSERT_BATCH_SIZE) {
+    const batch = chunkRows.slice(i, i + CHUNK_INSERT_BATCH_SIZE);
     await supabaseRest("document_chunks", {
       method: "POST",
       body: JSON.stringify(batch),
@@ -294,104 +295,31 @@ async function ingestFile(filePath, title, fileType) {
   console.log(`  ✓  Ingested: ${title} (${chunks.length} chunks)`);
 }
 
-async function ingestAttachment(attachment, emailSubject) {
-  const { filename, content } = attachment;
-  const ext = extname(filename).toLowerCase().slice(1);
-  const title = basename(filename, extname(filename));
-  const contentHash = hashContent(content);
+// --- Directory Processing ---
 
-  // Check if already ingested
-  const existing = await supabaseRest(
-    `documents?content_hash=eq.${contentHash}&select=id`,
-    { method: "GET" },
-  );
+async function processEmailFile(filePath, ext) {
+  const parser = ext === "eml" ? parseEml : parseMsg;
+  const { text, attachments, subject } = await parser(filePath);
+  const buffer = await readFile(filePath);
 
-  if (existing.length > 0) {
-    const existingChunks = await supabaseRest(
-      `document_chunks?document_id=eq.${existing[0].id}&select=id&limit=1`,
-      { method: "GET" },
-    );
-    if (existingChunks.length > 0) {
-      console.log(`  ⏭  Already ingested attachment: ${filename}`);
-      return;
-    }
-    await supabaseRest(`documents?id=eq.${existing[0].id}`, {
-      method: "DELETE",
-    });
-  }
-
-  // Extract text from attachment buffer
-  let text = "";
-  if (ext === "docx" || ext === "doc") {
-    const result = await mammoth.extractRawText({ buffer: content });
-    text = result.value;
-  } else if (ext === "pdf") {
-    const data = await pdf(content);
-    text = data.text;
-  } else {
-    console.log(`  ⚠  Unsupported attachment type: ${ext}, skipping`);
-    return;
-  }
-
-  if (!text || text.trim().length < 10) {
-    console.log(
-      `  ⚠  No extractable text in attachment: ${filename}, skipping`,
-    );
-    return;
-  }
-
-  // Upload to storage
-  const storagePath = `${contentHash}/${filename}`;
-  const contentTypes = {
-    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    doc: "application/msword",
-    pdf: "application/pdf",
-  };
-
-  await supabaseStorageUpload(
-    storagePath,
-    content,
-    contentTypes[ext] || "application/octet-stream",
-  );
-
-  // Insert document record
-  const [doc] = await supabaseRest("documents", {
-    method: "POST",
-    body: JSON.stringify({
-      title,
-      file_type: ext,
-      file_size_bytes: content.length,
-      storage_path: storagePath,
-      content_hash: contentHash,
-    }),
+  await ingestDocument({
+    buffer,
+    filename: basename(filePath),
+    title: subject,
+    fileType: ext,
+    text,
   });
 
-  // Chunk and embed
-  const chunks = chunkText(text);
-  console.log(
-    `  📄 Attachment: ${chunks.length} chunks, generating embeddings...`,
-  );
-
-  const embeddings = await generateEmbeddings(chunks);
-
-  const chunkRows = chunks.map((chunkContent, i) => ({
-    document_id: doc.id,
-    content: chunkContent,
-    embedding: JSON.stringify(embeddings[i]),
-    chunk_index: i,
-  }));
-
-  for (let i = 0; i < chunkRows.length; i += 20) {
-    const batch = chunkRows.slice(i, i + 20);
-    await supabaseRest("document_chunks", {
-      method: "POST",
-      body: JSON.stringify(batch),
+  for (const attachment of attachments) {
+    console.log(`  📎 Processing attachment: ${attachment.filename}`);
+    const attExt = extname(attachment.filename).toLowerCase().slice(1);
+    await ingestDocument({
+      buffer: attachment.content,
+      filename: attachment.filename,
+      title: basename(attachment.filename, extname(attachment.filename)),
+      fileType: attExt,
     });
   }
-
-  console.log(
-    `  ✓  Ingested attachment: ${filename} (${chunks.length} chunks)`,
-  );
 }
 
 async function ingestDirectory(dirPath) {
@@ -413,28 +341,15 @@ async function ingestDirectory(dirPath) {
   for (const file of supported) {
     const filePath = join(dirPath, file);
     const ext = extname(file).toLowerCase().slice(1);
-    const title = basename(file, extname(file));
 
     console.log(`Processing: ${file}`);
 
-    if (ext === "eml") {
-      const { text, attachments, subject } = await parseEml(filePath);
-      await ingestFile(filePath, subject, "eml");
-
-      for (const attachment of attachments) {
-        console.log(`  📎 Processing attachment: ${attachment.filename}`);
-        await ingestAttachment(attachment, subject);
-      }
-    } else if (ext === "msg") {
-      const { text, attachments, subject } = await parseMsg(filePath);
-      await ingestFile(filePath, subject, "msg");
-
-      for (const attachment of attachments) {
-        console.log(`  📎 Processing attachment: ${attachment.filename}`);
-        await ingestAttachment(attachment, subject);
-      }
+    if (ext === "eml" || ext === "msg") {
+      await processEmailFile(filePath, ext);
     } else {
-      await ingestFile(filePath, title, ext);
+      const buffer = await readFile(filePath);
+      const title = basename(file, extname(file));
+      await ingestDocument({ buffer, filename: file, title, fileType: ext });
     }
   }
 

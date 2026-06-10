@@ -1,10 +1,8 @@
 "use client";
 
 import { makeAssistantDataUI, useMessage } from "@assistant-ui/react";
-import {
-  deduplicateSources,
-  type SourceDocument,
-} from "@/lib/deduplicate-sources";
+import { deduplicateSources } from "@/components/tool-ui/deduplicate-sources";
+import type { SourceDocument } from "@/lib/types";
 
 interface SourcesData {
   documents: SourceDocument[];
