@@ -57,7 +57,7 @@ export function EmailDraftCard({ to, subject, body }: EmailDraftCardProps) {
         <button
           type="button"
           onClick={handleCopy}
-          className="text-foreground bg-card hover:bg-muted/60 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors"
+          className="text-foreground bg-card hover:bg-muted/60 inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors"
         >
           {copied ? (
             <>

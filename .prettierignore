@@ -6,3 +6,4 @@ package-lock.json
 .kiro
 doc
 ingest
+*.sql

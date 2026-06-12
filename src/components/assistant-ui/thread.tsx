@@ -36,9 +36,10 @@ import {
   SquareIcon,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import type { FC } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import { Diamond } from "@/components/brand/diamond";
+import { pickRandomSuggestions, type StarterSuggestion } from "@/lib/starter-suggestions";
 
 export const MarkdownSkeleton: FC = () => (
   <div className="flex flex-col gap-2 py-1" aria-busy="true" aria-label="Loading message">
@@ -68,30 +69,6 @@ export const importMarkdownWithRetry = () =>
 const MarkdownText = dynamic(importMarkdownWithRetry, {
   loading: () => <MarkdownSkeleton />,
 });
-
-// Four starter prompts mirrored from the design mockup. Hardcoded for v1.
-// TODO(redesign): source these from runtime/runtime-extras once suggestions
-// can vary by context (e.g., recent activity, role).
-const STARTER_SUGGESTIONS = [
-  {
-    prompt: "What products does Harco Fittings offer? Give me a summary from the product catalog.",
-    description: "Summarizes the catalog + attaches the DOCX",
-  },
-  {
-    prompt: "Is PE pipe actually good for rocky sites?",
-    description: "Answers from the Info Blurt email archive",
-  },
-  {
-    prompt:
-      "Draft an email explaining that AVK Series 66 gate valves with PE ends meet Buy America Act requirements and are made in Minden, NV.",
-    description: "Builds an Outlook-ready draft",
-  },
-  {
-    prompt:
-      "A contractor is bidding a project and asked for everything we have on 10-inch PE ball valves — what should I send?",
-    description: "Surfaces the comparison PDF as an attachment",
-  },
-];
 
 export const Thread: FC = () => {
   return (
@@ -175,9 +152,15 @@ const ThreadWelcome: FC = () => {
 };
 
 const ThreadStarterSuggestions: FC = () => {
+  const [suggestions, setSuggestions] = useState<StarterSuggestion[]>([]);
+
+  useEffect(() => {
+    setSuggestions(pickRandomSuggestions(4));
+  }, []);
+
   return (
     <div className="aui-thread-welcome-suggestions mt-8 grid w-full max-w-2xl gap-3 pb-4 @md:grid-cols-2">
-      {STARTER_SUGGESTIONS.map((s, i) => (
+      {suggestions.map((s, i) => (
         <div
           key={s.prompt}
           className="fade-in slide-in-from-bottom-2 animate-in fill-mode-both duration-200"
@@ -196,7 +179,9 @@ const ThreadStarterSuggestions: FC = () => {
             <span className="text-primary text-sm leading-snug font-semibold tracking-tight">
               {s.prompt}
             </span>
-            <span className="text-muted-foreground text-xs">{s.description}</span>
+            {s.description && (
+              <span className="text-muted-foreground text-xs">{s.description}</span>
+            )}
           </ThreadPrimitive.Suggestion>
         </div>
       ))}

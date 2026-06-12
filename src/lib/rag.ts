@@ -6,6 +6,8 @@ import type { SourceDocument } from "@/lib/types";
 const MATCH_THRESHOLD = 0.3;
 export const MATCH_COUNT = 8;
 
+const EMAIL_TYPES = new Set(["eml", "msg"]);
+
 interface RetrievalResult {
   contextText: string;
   documents: SourceDocument[];
@@ -50,6 +52,32 @@ export async function retrieveContext(query: string): Promise<RetrievalResult> {
         file_type: chunk.document_file_type,
         file_size_bytes: chunk.document_file_size_bytes,
       });
+    }
+  }
+
+  // Enrich: for any email documents in context, fetch their child attachments
+  const emailDocIds = Array.from(seenDocs.values())
+    .filter((d) => EMAIL_TYPES.has(d.file_type))
+    .map((d) => d.id);
+
+  if (emailDocIds.length > 0) {
+    const { data: attachments } = await supabase
+      .from("documents")
+      .select("id, title, file_type, file_size_bytes, source_email_id")
+      .in("source_email_id", emailDocIds);
+
+    if (attachments) {
+      for (const att of attachments) {
+        if (!seenDocs.has(att.id)) {
+          seenDocs.set(att.id, {
+            id: att.id,
+            title: att.title,
+            file_type: att.file_type,
+            file_size_bytes: att.file_size_bytes,
+            source_email_id: att.source_email_id,
+          });
+        }
+      }
     }
   }
 

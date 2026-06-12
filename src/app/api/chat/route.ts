@@ -12,6 +12,8 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/auth";
 import { retrieveContext, MATCH_COUNT } from "@/lib/rag";
 import { SYSTEM_PROMPT } from "@/lib/system-prompt";
+import { classifyEmailSources } from "@/lib/email-sources";
+import { formatDocumentContext } from "@/lib/format-context";
 import type { SourceDocument } from "@/lib/types";
 
 export const maxDuration = 30;
@@ -42,19 +44,12 @@ export async function POST(req: Request) {
     contextDocs = retrieved.documents;
   }
 
-  const systemWithContext = `${SYSTEM_PROMPT}
+  const { otherSources: attachmentDocs } = classifyEmailSources(contextDocs);
 
-## Available Documents for Reference
-${contextDocs.map((d) => `- [${d.id}] "${d.title}" (${d.file_type}, ${d.file_size_bytes} bytes)`).join("\n")}
-
-## Retrieved Context
-${contextText || "No relevant context found for this query."}`;
+  const systemWithContext = `${SYSTEM_PROMPT}\n\n${formatDocumentContext(contextDocs, contextText)}`;
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
-      const EMAIL_TYPES = new Set(["eml", "msg"]);
-      const attachmentDocs = contextDocs.filter((d) => !EMAIL_TYPES.has(d.file_type));
-
       const result = streamText({
         model: openai("gpt-4o-mini"),
         system: systemWithContext,
@@ -85,8 +80,12 @@ ${contextText || "No relevant context found for this query."}`;
             ),
           }),
           emailDraft: tool({
-            description:
-              "Generate an email draft that the user can open in Outlook. Use this when the user asks you to write or draft an email.",
+            description: `Generate an email draft that the user can open in Outlook. Use this when:
+- The user explicitly asks for an email draft
+- You detect implicit outreach intent AND email sources are in context
+- The user accepts a proactive offer to draft an email
+Do not include signature lines or placeholder fields in the body.
+Leave "to" as empty string unless the user provides a specific recipient.`,
             inputSchema: zodSchema(
               z.object({
                 to: z.string().describe("Recipient email address"),

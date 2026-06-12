@@ -3,4 +3,5 @@ export interface SourceDocument {
   title: string;
   file_type: string;
   file_size_bytes: number;
+  source_email_id?: string | null;
 }

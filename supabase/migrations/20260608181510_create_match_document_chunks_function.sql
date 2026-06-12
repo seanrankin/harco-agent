@@ -13,11 +13,8 @@ returns table (
   document_file_type text,
   document_file_size_bytes bigint
 )
-language plpgsql
-set search_path = public, extensions
+language sql stable
 as $$
-begin
-  return query
   select
     dc.id,
     dc.document_id,
@@ -32,5 +29,4 @@ begin
   where 1 - (dc.embedding <=> query_embedding) > match_threshold
   order by dc.embedding <=> query_embedding
   limit match_count;
-end;
-$$;
+$$;;

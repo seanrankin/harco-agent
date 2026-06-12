@@ -1,3 +1,33 @@
--- No-op: search_path fix already included in 20260608181510_create_match_document_chunks_function.sql
--- This migration was applied remotely to fix the function in-place.
--- Kept here to maintain parity with the remote migration history.
+create or replace function public.match_document_chunks(
+  query_embedding extensions.vector(1536),
+  match_threshold float default 0.7,
+  match_count int default 5
+)
+returns table (
+  id uuid,
+  document_id uuid,
+  content text,
+  chunk_index integer,
+  similarity float,
+  document_title text,
+  document_file_type text,
+  document_file_size_bytes bigint
+)
+language sql stable
+set search_path = public, extensions
+as $$
+  select
+    dc.id,
+    dc.document_id,
+    dc.content,
+    dc.chunk_index,
+    1 - (dc.embedding <=> query_embedding) as similarity,
+    d.title as document_title,
+    d.file_type as document_file_type,
+    d.file_size_bytes as document_file_size_bytes
+  from public.document_chunks dc
+  join public.documents d on d.id = dc.document_id
+  where 1 - (dc.embedding <=> query_embedding) > match_threshold
+  order by dc.embedding <=> query_embedding
+  limit match_count;
+$$;;

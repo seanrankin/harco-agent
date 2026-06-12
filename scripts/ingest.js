@@ -253,8 +253,9 @@ async function parseMsg(filePath) {
  * @param {string} params.title - Display title for the document
  * @param {string} params.fileType - Extension without dot (docx, pdf, eml, msg)
  * @param {string} [params.text] - Pre-extracted text (for emails where parsing is separate)
+ * @param {string} [params.sourceEmailId] - Parent email document ID (for attachments extracted from emails)
  */
-async function ingestDocument({ buffer, filename, title, fileType, text }) {
+async function ingestDocument({ buffer, filename, title, fileType, text, sourceEmailId }) {
   const contentHash = hashContent(buffer);
 
   // Check if already ingested
@@ -269,7 +270,7 @@ async function ingestDocument({ buffer, filename, title, fileType, text }) {
     );
     if (existingChunks.length > 0) {
       console.log(`  ⏭  Already ingested: ${title}`);
-      return;
+      return existing[0].id;
     }
     console.log(`  🔄 Incomplete ingestion found, re-processing: ${title}`);
     await supabaseRest(`documents?id=eq.${existing[0].id}`, {
@@ -282,13 +283,13 @@ async function ingestDocument({ buffer, filename, title, fileType, text }) {
     text = await extractTextFromBuffer(buffer, fileType);
     if (text === null) {
       console.log(`  ⚠  Unsupported file type: ${fileType}, skipping`);
-      return;
+      return null;
     }
   }
 
   if (!text || text.trim().length < 10) {
     console.log(`  ⚠  No extractable text in: ${title}, skipping`);
-    return;
+    return null;
   }
 
   // Upload original file to Supabase Storage
@@ -300,15 +301,19 @@ async function ingestDocument({ buffer, filename, title, fileType, text }) {
   );
 
   // Insert document record
+  const docPayload = {
+    title,
+    file_type: fileType,
+    file_size_bytes: buffer.length,
+    storage_path: storagePath,
+    content_hash: contentHash,
+  };
+  if (sourceEmailId) {
+    docPayload.source_email_id = sourceEmailId;
+  }
   const [doc] = await supabaseRest("documents", {
     method: "POST",
-    body: JSON.stringify({
-      title,
-      file_type: fileType,
-      file_size_bytes: buffer.length,
-      storage_path: storagePath,
-      content_hash: contentHash,
-    }),
+    body: JSON.stringify(docPayload),
   });
 
   // Chunk and embed
@@ -334,6 +339,7 @@ async function ingestDocument({ buffer, filename, title, fileType, text }) {
   }
 
   console.log(`  ✓  Ingested: ${title} (${chunks.length} chunks)`);
+  return doc.id;
 }
 
 // --- Directory Processing ---
@@ -343,7 +349,7 @@ async function processEmailFile(filePath, ext) {
   const { text, attachments, subject } = await parser(filePath);
   const buffer = await readFile(filePath);
 
-  await ingestDocument({
+  const emailDocId = await ingestDocument({
     buffer,
     filename: basename(filePath),
     title: subject,
@@ -359,6 +365,7 @@ async function processEmailFile(filePath, ext) {
       filename: attachment.filename,
       title: basename(attachment.filename, extname(attachment.filename)),
       fileType: attExt,
+      sourceEmailId: emailDocId,
     });
   }
 }

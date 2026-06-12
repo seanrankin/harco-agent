@@ -195,7 +195,7 @@ function RequestForm({ email, onEmailChange, onSubmit, loading, error }: Request
       <button
         type="submit"
         disabled={loading}
-        className="bg-primary text-primary-foreground hover:bg-navy-2 mt-6 inline-flex w-full items-center justify-center gap-2.5 rounded-[10px] px-5 py-[15px] text-[14.5px] font-semibold tracking-tight shadow-[0_6px_18px_color-mix(in_oklab,var(--primary)_18%,transparent)] transition-colors active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+        className="bg-primary text-primary-foreground hover:bg-navy-2 mt-6 inline-flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-[10px] px-5 py-[15px] text-[14.5px] font-semibold tracking-tight shadow-[0_6px_18px_color-mix(in_oklab,var(--primary)_18%,transparent)] transition-colors active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
       >
         {loading ? "Sending link…" : "Email me a sign-in link"}
       </button>
@@ -254,7 +254,7 @@ function SentPanel({ email, onBack }: { email: string; onBack: () => void }) {
           type="button"
           onClick={handleResend}
           disabled={resending || resent}
-          className="text-primary bg-card border-border hover:bg-muted/60 inline-flex w-full items-center justify-center gap-2 rounded-[10px] border-[1.5px] px-5 py-[14px] text-[14px] font-semibold transition-colors disabled:opacity-60"
+          className="text-primary bg-card border-border hover:bg-muted/60 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-[1.5px] px-5 py-[14px] text-[14px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
         >
           <RefreshCwIcon className="size-3.5" />
           {resent ? "Link resent" : resending ? "Resending…" : "Resend link"}
@@ -262,7 +262,7 @@ function SentPanel({ email, onBack }: { email: string; onBack: () => void }) {
         <button
           type="button"
           onClick={onBack}
-          className="text-muted-foreground hover:text-primary inline-flex items-center justify-center gap-2 py-1.5 text-[13px] font-semibold transition-colors"
+          className="text-muted-foreground hover:text-primary inline-flex cursor-pointer items-center justify-center gap-2 py-1.5 text-[13px] font-semibold transition-colors"
         >
           <ArrowLeftIcon className="size-3.5" />
           Use a different email
