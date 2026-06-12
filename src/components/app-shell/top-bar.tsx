@@ -53,15 +53,8 @@ export const TopBar: FC<TopBarProps> = ({ onMenuClick }) => {
       </h1>
 
       <div className="text-muted-foreground hidden items-center gap-2 font-mono text-[11px] tracking-wide sm:flex">
-        <span
-          aria-hidden
-          className="size-1.5 rounded-full bg-emerald-500"
-        />
-        {count !== null && (
-          <span>
-            {count.toLocaleString()} documents indexed · synced today
-          </span>
-        )}
+        <span aria-hidden className="size-1.5 rounded-full bg-emerald-500" />
+        {count !== null && <span>{count.toLocaleString()} documents indexed · synced today</span>}
       </div>
     </header>
   );

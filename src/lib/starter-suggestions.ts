@@ -69,7 +69,7 @@ export const STARTER_SUGGESTIONS: StarterSuggestion[] = [
   },
   {
     prompt:
-      "A sewer authority says they need a \"quick disconnect\" feature for ARV maintenance. Do we offer that configuration, and how should I describe it?",
+      'A sewer authority says they need a "quick disconnect" feature for ARV maintenance. Do we offer that configuration, and how should I describe it?',
     description: "Confirms the config + suggests phrasing",
   },
   {
@@ -89,7 +89,7 @@ export const STARTER_SUGGESTIONS: StarterSuggestion[] = [
   },
   {
     prompt:
-      "We're competing against a Korean-made PE ball valve. The spec says \"Made in USA.\" How do I use this to our advantage?",
+      'We\'re competing against a Korean-made PE ball valve. The spec says "Made in USA." How do I use this to our advantage?',
     description: "Builds a Made-in-USA positioning angle",
   },
   {
@@ -119,7 +119,7 @@ export const STARTER_SUGGESTIONS: StarterSuggestion[] = [
   },
   {
     prompt:
-      "I met with a utility but they said they need to \"discuss internally.\" It's been three weeks. Help me write a check-in email.",
+      'I met with a utility but they said they need to "discuss internally." It\'s been three weeks. Help me write a check-in email.',
     description: "Drafts a three-week check-in",
   },
   {
