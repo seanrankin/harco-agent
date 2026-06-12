@@ -11,6 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "clean": "rm -rf .next",
     "analyze": "ANALYZE=true npm run build --webpack",
     "ingest": "node --max-old-space-size=8192 scripts/ingest.js",
     "db:push": "supabase db push",
