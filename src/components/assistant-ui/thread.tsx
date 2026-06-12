@@ -39,6 +39,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState, type FC } from "react";
 
 import { Diamond } from "@/components/brand/diamond";
+import { AssistantTextPart } from "@/components/assistant-ui/assistant-text-part";
 import { pickRandomSuggestions, type StarterSuggestion } from "@/lib/starter-suggestions";
 
 export const MarkdownSkeleton: FC = () => (
@@ -323,7 +324,7 @@ const AssistantMessage: FC = () => {
                 case "group-tool":
                   return <>{children}</>;
                 case "text":
-                  return <MarkdownText />;
+                  return <AssistantTextPart />;
                 case "reasoning":
                   return <Reasoning {...part} />;
                 case "tool-call":

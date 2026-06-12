@@ -88,6 +88,9 @@ describe("MarkdownSkeleton", () => {
     vi.doMock("@/components/assistant-ui/markdown-text", () => ({
       MarkdownText: () => "MarkdownRendered",
     }));
+    vi.doMock("@/components/assistant-ui/assistant-text-part", () => ({
+      AssistantTextPart: () => null,
+    }));
   });
 
   afterEach(() => {
@@ -201,6 +204,9 @@ describe("importMarkdownWithRetry", () => {
     }));
     vi.doMock("@/components/brand/diamond", () => ({
       Diamond: () => null,
+    }));
+    vi.doMock("@/components/assistant-ui/assistant-text-part", () => ({
+      AssistantTextPart: () => null,
     }));
   });
 
