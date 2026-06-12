@@ -14,11 +14,14 @@ import { readdir, readFile, stat } from "fs/promises";
 import { join, extname, basename } from "path";
 import { createHash } from "crypto";
 import { createRequire } from "module";
+import { execFile } from "child_process";
+import { promisify } from "util";
+import { tmpdir } from "os";
 import mammoth from "mammoth";
 import { simpleParser } from "mailparser";
 import MsgReader from "@kenjiuno/msgreader";
 import { Agent, request } from "undici";
-import { chunkText, stripEmailNoise } from "../src/lib/ingest-utils.js";
+import { chunkText, stripEmailNoise, stripForwardLayer } from "../src/lib/ingest-utils.ts";
 
 // Force HTTP/1.1 to work around Node 26 HTTP/2 memory leak
 const agent = new Agent({ allowH2: false });
@@ -128,14 +131,30 @@ async function generateEmbeddings(texts) {
 
 // --- Text Extraction ---
 
+const execFileAsync = promisify(execFile);
+
 async function extractTextFromBuffer(buffer, fileType) {
-  if (fileType === "docx" || fileType === "doc") {
-    const result = await mammoth.extractRawText({ buffer });
-    return result.value;
-  }
-  if (fileType === "pdf") {
-    const data = await pdf(buffer);
-    return data.text;
+  try {
+    if (fileType === "docx") {
+      const result = await mammoth.extractRawText({ buffer });
+      return result.value;
+    }
+    if (fileType === "doc") {
+      // mammoth doesn't support legacy .doc; use macOS textutil
+      const tmpPath = join(tmpdir(), `ingest-${Date.now()}.doc`);
+      const { writeFile, unlink } = await import("fs/promises");
+      await writeFile(tmpPath, buffer);
+      const { stdout } = await execFileAsync("textutil", ["-convert", "txt", "-stdout", tmpPath]);
+      await unlink(tmpPath);
+      return stdout;
+    }
+    if (fileType === "pdf") {
+      const data = await pdf(buffer);
+      return data.text;
+    }
+  } catch (err) {
+    console.log(`  ⚠  Failed to extract text (${err.message})`);
+    return null;
   }
   return null;
 }
@@ -146,13 +165,29 @@ async function parseEml(filePath) {
   const source = await readFile(filePath);
   const parsed = await simpleParser(source);
 
-  let text = "";
-  if (parsed.subject) text += `Subject: ${parsed.subject}\n\n`;
+  const toAddress = parsed.to?.text || "";
+  const wasForwardedToSean = toAddress.includes("sean.rankin@gmail.com");
+
+  let rawText = "";
   if (parsed.text) {
-    text += stripEmailNoise(parsed.text);
+    rawText = parsed.text;
   } else if (parsed.html) {
-    text += stripEmailNoise(parsed.html.replace(/<[^>]+>/g, " "));
+    rawText = parsed.html.replace(/<[^>]+>/g, " ");
   }
+
+  // If the last forward was to sean.rankin@gmail.com, strip the forwarding layer
+  if (wasForwardedToSean) {
+    rawText = stripForwardLayer(rawText);
+  }
+
+  let subject = parsed.subject || basename(filePath);
+  if (wasForwardedToSean) {
+    subject = subject.replace(/^FW:\s*/i, "").replace(/^Fwd:\s*/i, "");
+  }
+
+  let text = "";
+  if (subject) text += `Subject: ${subject}\n\n`;
+  text += stripEmailNoise(rawText);
 
   const attachments = (parsed.attachments || []).filter(
     (a) =>
@@ -160,7 +195,7 @@ async function parseEml(filePath) {
       (a.filename.endsWith(".docx") || a.filename.endsWith(".doc") || a.filename.endsWith(".pdf"))
   );
 
-  return { text, attachments, subject: parsed.subject || basename(filePath) };
+  return { text, attachments, subject };
 }
 
 async function parseMsg(filePath) {
@@ -168,9 +203,23 @@ async function parseMsg(filePath) {
   const msgReader = new MsgReader(buffer);
   const fileData = msgReader.getFileData();
 
+  // Check if forwarded to sean.rankin@gmail.com
+  const recipients = (fileData.recipients || []).map((r) => r.email || r.smtpAddress || "");
+  const wasForwardedToSean = recipients.some((e) => e.includes("sean.rankin@gmail.com"));
+
+  let rawText = fileData.body || "";
+  if (wasForwardedToSean) {
+    rawText = stripForwardLayer(rawText);
+  }
+
+  let subject = fileData.subject || basename(filePath);
+  if (wasForwardedToSean) {
+    subject = subject.replace(/^FW:\s*/i, "").replace(/^Fwd:\s*/i, "");
+  }
+
   let text = "";
-  if (fileData.subject) text += `Subject: ${fileData.subject}\n\n`;
-  if (fileData.body) text += fileData.body;
+  if (subject) text += `Subject: ${subject}\n\n`;
+  text += rawText;
 
   const attachments = [];
   if (fileData.attachments && fileData.attachments.length > 0) {

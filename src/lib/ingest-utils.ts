@@ -30,6 +30,57 @@ export function chunkText(
 }
 
 /**
+ * Strips the last forwarding layer from an email body.
+ * Removes everything before (and including) the forwarded message's
+ * From:/Sent:/To:/Subject: header block, leaving only the original content.
+ */
+export function stripForwardLayer(text: string): string {
+  const lines = text.split("\n");
+
+  // Find the forwarded message header block: a "From:" line followed by
+  // optional Sent:/To:/Subject: lines, then the actual content.
+  let forwardHeaderStart = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^From:\s/.test(lines[i].trim())) {
+      forwardHeaderStart = i;
+      break;
+    }
+  }
+
+  if (forwardHeaderStart === -1) {
+    return text;
+  }
+
+  // Skip past the header block (From, Sent, To, Subject lines and continuations)
+  let contentStart = forwardHeaderStart + 1;
+  const headerLinePattern = /^(Sent|To|Subject|Cc|Bcc):\s/;
+  while (contentStart < lines.length) {
+    const trimmed = lines[contentStart].trim();
+    // A header continuation line (starts with whitespace or contains @ in multi-line To:)
+    if (trimmed === "") {
+      contentStart++;
+      continue;
+    }
+    if (headerLinePattern.test(trimmed)) {
+      contentStart++;
+      // Skip continuation lines (indented or multi-line address lists)
+      while (contentStart < lines.length) {
+        const next = lines[contentStart];
+        if (next.startsWith(" ") || next.startsWith("\t")) {
+          contentStart++;
+        } else {
+          break;
+        }
+      }
+      continue;
+    }
+    break;
+  }
+
+  return lines.slice(contentStart).join("\n").trim();
+}
+
+/**
  * Patterns that indicate the start of an email signature block.
  * Add new entries here when staff signatures change.
  */

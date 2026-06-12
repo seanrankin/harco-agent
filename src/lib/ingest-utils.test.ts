@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
-import { chunkText, stripEmailNoise } from "./ingest-utils";
+import { chunkText, stripEmailNoise, stripForwardLayer } from "./ingest-utils";
 
 describe("chunkText", () => {
   it("returns empty array for empty string", () => {
@@ -145,5 +145,70 @@ describe("stripEmailNoise", () => {
     const input = "This is a normal paragraph.\n\nAnother paragraph here.";
     const result = stripEmailNoise(input);
     expect(result).toBe(input);
+  });
+});
+
+describe("stripForwardLayer", () => {
+  it("strips everything before and including forwarded headers", () => {
+    const input = [
+      "",
+      "John D. Fralick",
+      "National Sales Manager",
+      "Harco Fittings LLC",
+      "(434) 845-7094",
+      "",
+      "From: John Riordan <JRiordan@harcofittings.com>",
+      "Sent: Saturday, April 27, 2013 2:07 PM",
+      "To: Brian Hurley <BHurley@harcofittings.com>",
+      "Subject: Info Blurt #30: Chris Menno",
+      "",
+      "All,",
+      "",
+      "Here is the actual content.",
+    ].join("\n");
+
+    const result = stripForwardLayer(input);
+    expect(result).toBe("All,\n\nHere is the actual content.");
+  });
+
+  it("handles multi-line To: fields", () => {
+    const input = [
+      "Some signature",
+      "",
+      "From: John Riordan <JRiordan@harcofittings.com>",
+      "Sent: Saturday, April 27, 2013 2:07 PM",
+      "To: Brian Hurley <BHurley@harcofittings.com>;",
+      "  Ed Eichmann <EEichmann@harcofittings.com>;",
+      "  Jack Harrington <harcojbh@msn.com>",
+      "Subject: Test subject",
+      "",
+      "Body content here.",
+    ].join("\n");
+
+    const result = stripForwardLayer(input);
+    expect(result).toBe("Body content here.");
+  });
+
+  it("returns original text when no From: line found", () => {
+    const input = "Just some text with no forward headers.";
+    const result = stripForwardLayer(input);
+    expect(result).toBe(input);
+  });
+
+  it("handles Cc: in forwarded headers", () => {
+    const input = [
+      "Signature stuff",
+      "",
+      "From: Someone <someone@example.com>",
+      "Sent: Monday, January 1, 2024",
+      "To: Recipient <recipient@example.com>",
+      "Cc: Another <another@example.com>",
+      "Subject: Test",
+      "",
+      "The real content.",
+    ].join("\n");
+
+    const result = stripForwardLayer(input);
+    expect(result).toBe("The real content.");
   });
 });
