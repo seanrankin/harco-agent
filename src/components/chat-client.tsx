@@ -14,7 +14,7 @@ import { threadListAdapter } from "@/lib/thread-adapter";
 
 import { Thread } from "@/components/assistant-ui/thread";
 import { Sidebar } from "@/components/app-shell/sidebar";
-import { MobileMenuButton } from "@/components/app-shell/mobile-menu-button";
+import { TopBar } from "@/components/app-shell/top-bar";
 import { ChunkErrorBoundary } from "@/components/ui/chunk-error-boundary";
 
 // Skeleton loading placeholders for dynamically-loaded Tool UI components
@@ -163,7 +163,7 @@ function AppShell({
         onSignOut={handleSignOut}
       />
       <main className="relative flex h-full min-w-0 flex-1 flex-col">
-        <MobileMenuButton open={navOpen} onClick={() => setNavOpen(true)} />
+        <TopBar onMenuClick={() => setNavOpen(true)} />
         <Thread />
       </main>
     </div>

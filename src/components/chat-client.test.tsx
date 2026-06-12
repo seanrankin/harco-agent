@@ -40,8 +40,8 @@ describe("DevToolsModal gating", () => {
     vi.doMock("@/components/app-shell/sidebar", () => ({
       Sidebar: () => null,
     }));
-    vi.doMock("@/components/app-shell/mobile-menu-button", () => ({
-      MobileMenuButton: () => null,
+    vi.doMock("@/components/app-shell/top-bar", () => ({
+      TopBar: () => null,
     }));
     vi.doMock("@/components/tool-ui/file-card", () => ({
       FileCard: () => null,
@@ -148,8 +148,8 @@ describe("ChatClient without SimpleImageAttachmentAdapter", () => {
     vi.doMock("@/components/app-shell/sidebar", () => ({
       Sidebar: () => null,
     }));
-    vi.doMock("@/components/app-shell/mobile-menu-button", () => ({
-      MobileMenuButton: () => null,
+    vi.doMock("@/components/app-shell/top-bar", () => ({
+      TopBar: () => null,
     }));
     vi.doMock("@/components/tool-ui/file-card", () => ({
       FileCard: () => null,
