@@ -5,147 +5,149 @@ export type StarterSuggestion = {
 
 export const STARTER_SUGGESTIONS: StarterSuggestion[] = [
   {
-    prompt: "What products does Harco Fittings offer? Give me a summary from the product catalog.",
-    description: "Summarizes the catalog + attaches the DOCX",
-  },
-  {
-    prompt: "Is PE pipe actually good for rocky sites?",
-    description: "Answers from the Info Blurt email archive",
+    prompt:
+      "A contractor asked why they should use the ControlFlo 360 ball valve instead of a standard PE ball valve. Help me write a response that highlights the key advantages.",
+    description: "Drafts a competitive response from the AF1051 spec sheets",
   },
   {
     prompt:
-      "Draft an email explaining that AVK Series 66 gate valves with PE ends meet Buy America Act requirements and are made in Minden, NV.",
-    description: "Builds an Outlook-ready draft",
+      "I need to explain the difference between Philmac 2G and 3G compression fittings to a new rep. Can you give me a clear breakdown?",
+    description: "Summarizes from the Info Blurt archive on 2G/3G",
   },
   {
     prompt:
-      "A contractor is bidding a project and asked for everything we have on 10-inch PE ball valves — what should I send?",
-    description: "Surfaces the comparison PDF as an attachment",
+      "Draft an email to an engineer explaining why PE fusion joints have excellent slow crack growth resistance, and attach the relevant data.",
+    description: "Pulls from the Fusion Joint SCG Resistance PDF",
   },
   {
     prompt:
-      "A utility just told me their current ARV risers are corroding within 3 years. How should I position the Harco ARV Riser Assembly in my follow-up email?",
-    description: "Drafts a corrosion-angle follow-up",
+      "A utility engineer asked about DR and SDR ratings for PE pipe. What's the simple explanation I should give them?",
+    description: "Answers from Info Blurt #83 on DR/SDR",
   },
   {
     prompt:
-      "I dropped off a sample of the ARV riser assembly two weeks ago and haven't heard back. Can you help me write a follow-up email that doesn't sound pushy?",
-    description: "Writes a low-pressure check-in",
+      "We're bidding against a competitor's PE ball valve that doesn't meet Buy America. Help me write an email that positions our Made in USA advantage without being too aggressive.",
+    description: "Builds a Buy America positioning email",
   },
   {
     prompt:
-      "An engineer said they \"don't see an improvement over what they spec now.\" What's my next move, and what should I say to reopen the conversation?",
-    description: "Suggests a reframe + reply draft",
+      "An engineer wants to know if Philmac fittings can handle PVC pipe, not just PE. What's the compatibility answer and can you draft a quick reply?",
+    description: "Pulls PVC collet info from the Blurt archive",
   },
   {
     prompt:
-      "A customer asked if the Philmac 3G compression fittings can handle their 200 psi system. What's the pressure rating I should reference in my response?",
-    description: "Pulls the spec from the product catalog",
+      "I'm presenting to a golf course superintendent about the AquaFuse fusible service saddle for their irrigation system. Help me build talking points.",
+    description: "Creates talking points from the AquaFuse golf saddle spec",
   },
   {
     prompt:
-      "I'm trying to get a lunch-and-learn scheduled with an engineering firm. Can you draft an email requesting 20-30 minutes to present the ARV riser concept?",
-    description: "Drafts a lunch-and-learn invite",
+      "A customer had an HDPE pipe failure and is blaming the fusion joint. What do I need to know about PE transmission line failures before I respond?",
+    description: "Briefs from the Florida failure case emails",
   },
   {
     prompt:
-      "A prospect asked about NSF 61 approval for our ductile iron nipples. We don't have a direct listing. How do I handle this in an email without losing credibility?",
-    description: "Frames the NSF 61 response honestly",
+      "Help me write a spec for a 160 PSI HDPE system. What standards and language should I include?",
+    description: "References the Generic Specification Deck",
   },
   {
     prompt:
-      "The engineer wants to know what tools are needed to install the ARV riser assembly. What should I tell them?",
-    description: "Lists install tools from the spec sheet",
+      "A prospect is comparing PVC vs HDPE for a new water main project. Give me the key arguments for PE and help me draft an email making the case.",
+    description: "Pulls from the PVC vs HDPE pressure pipe PDF",
   },
   {
     prompt:
-      "A customer is comparing our Polyvalve PE ball valve against the Central Plastics valve. What are the key differentiators I should lead with?",
-    description: "Builds a head-to-head battle card",
+      "Someone asked about stiffener requirements for PE pipe with our compression fittings. When are they needed and when can we skip them?",
+    description: "Answers from multiple Info Blurts on stiffener policy",
   },
   {
     prompt:
-      "I just had a great meeting where the engineer liked the concept. Help me write the thank-you email with the submittal info and spec language attached.",
-    description: "Drafts a recap email + attaches submittal",
+      "I need to explain electrofusion guidance for lateral connections using PE ball valves. What are the key steps I should communicate?",
+    description: "Pulls from Info Blurt #46 on EF guidance",
   },
   {
     prompt:
-      'A sewer authority says they need a "quick disconnect" feature for ARV maintenance. Do we offer that configuration, and how should I describe it?',
-    description: "Confirms the config + suggests phrasing",
+      "A utility wants to know about thrust anchors and flex restraints in PE systems. What's our position and what should I tell them?",
+    description: "Answers from Info Blurt #69 on thrust/restraints",
   },
   {
     prompt:
-      "Someone asked me if PE pipe is better in rocky soil conditions. What's the real answer I should give?",
-    description: "Answers from the Info Blurt email archive",
+      "Draft a cold email to an engineer who specs stainless steel risers, pitching our DI nipple and PE ball valve alternative as more corrosion-resistant and cost-effective.",
+    description: "Drafts a switching pitch with product details",
   },
   {
     prompt:
-      "I'm reaching out to an engineer about a specific project that shows force mains but no ARV detail in their drawings. Help me craft a cold outreach email.",
-    description: "Drafts a project-specific cold email",
+      "What's the deal with chlorine-induced oxidative degradation in PE pipe? A customer brought it up and I need to be prepared.",
+    description: "Briefs from Info Blurt #57 on chlorine degradation",
   },
   {
     prompt:
-      "A prospect asked where Harco fittings are manufactured. What's the full answer covering our locations and distribution?",
-    description: "Summarizes manufacturing + distribution",
+      "I'm meeting with a sewer authority next week. What sewer products do we offer and what's our market strategy? Help me prep.",
+    description: "Summarizes from the Sewer Product Map and Blurts 70-72",
   },
   {
     prompt:
-      'We\'re competing against a Korean-made PE ball valve. The spec says "Made in USA." How do I use this to our advantage?',
-    description: "Builds a Made-in-USA positioning angle",
+      "A contractor asked about the Cambridge Coupling. What is it, when would they use it, and can you help me write a follow-up with the spec attached?",
+    description: "Pulls from the Cambridge Coupling PDF",
   },
   {
     prompt:
-      "An engineer asked about the warranty on the ARV riser assembly. What do I say, and how do I position it positively?",
-    description: "Frames the warranty as a selling point",
+      "An engineer is concerned about butt-fusing pipes with different DR ratios. What's the industry rule of thumb and what should I advise?",
+    description: "Answers from Info Blurts on unlike-DR fusions",
   },
   {
     prompt:
-      "A customer is worried about height restrictions in their manhole. How does our ARV assembly address limited vertical cover?",
-    description: "Answers from the ARV spec sheet",
+      "Help me write a lunch-and-learn invite for an engineering firm focused on HDPE advantages over PVC in aggressive soil conditions.",
+    description: "Drafts invite pulling from PE rocky-site data",
   },
   {
     prompt:
-      "I'm trying to introduce the Philmac ball/check valve for low-pressure sewer. Can you help me write the initial outreach email to a contractor who has projects in construction?",
-    description: "Drafts a contractor intro email",
+      "We got a question about NSF 61 listings for our FBE and bituminous coatings. What do we actually have listed, and how do I frame the answer?",
+    description: "Pulls from Info Blurt #25 on NSF coatings",
   },
   {
     prompt:
-      "What's the difference between the C900 tapped tee approach and using a saddle? When should I recommend one over the other?",
-    description: "Compares both with a recommendation guide",
+      "What are the installation instructions for the updated 2-inch IPS-OD Philmac fitting? A distributor needs a quick summary they can share with crews.",
+    description: "Summarizes from the Philmac installation PDFs",
   },
   {
     prompt:
-      "A customer currently specs stainless steel nipples and ball valves for their ARV risers. What's my argument for switching to our solution?",
-    description: "Builds a switching-cost argument",
+      "Our LIV valve vs. the CMF PE ball valve. What are the real differences and how should I position ours in a head-to-head?",
+    description: "Builds a comparison from the LIV vs CMF chart",
   },
   {
     prompt:
-      'I met with a utility but they said they need to "discuss internally." It\'s been three weeks. Help me write a check-in email.',
-    description: "Drafts a three-week check-in",
+      "A customer asked if our Harco pipe-to-pipe restraints work on IPEX Canadian IPS pipe. What do I tell them?",
+    description: "Answers from Info Blurt #34 on IPEX compatibility",
   },
   {
     prompt:
-      "An engineer asked about PE fusion joint reliability for a long-life application. What should I know about slow crack growth before responding?",
-    description: "Briefs you on SCG before you reply",
+      "I need to send a contractor everything we have on C907 tapped tees in 4, 6, and 8 inch. What should I include and can you draft the cover email?",
+    description: "Surfaces the C907 tee PDFs with a cover note",
   },
   {
     prompt:
-      "A utility wants references of other water/sewer authorities using the ARV riser. How should I ask existing customers for references in a follow-up?",
-    description: "Writes a reference-request email",
+      "An engineer heard about a PE pipe failure at a Fairpoint Utility project. What happened and how should I address concerns about PE reliability?",
+    description: "Briefs from the Fairpoint failure documentation",
   },
   {
     prompt:
-      "I need to write a spec for the ARV riser assembly components. What are the correct standards and pressure ratings I should include?",
-    description: "Generates spec language with citations",
+      "Help me write a follow-up email to a prospect I met at a trade show who was interested in the AquaFuse PolyBaSS system for their ball valve assemblies.",
+    description: "Drafts a trade-show follow-up with catalog reference",
   },
   {
     prompt:
-      "A customer asked if our compression fittings work on both PE and PVC pipe. What's the compatibility story for the Philmac 3G line?",
-    description: "Pulls compatibility from the 3G catalog",
+      "A rep is confused about Philmac product line terminology. What's the difference between the metric, IPS-OD, and CTS lines? Give me a cheat sheet.",
+    description: "Summarizes from Info Blurt #81 on Philmac lines",
   },
   {
     prompt:
-      "I've been emailing a prospect for months with no meeting scheduled. They haven't said no, but they're not engaging. What's my strategy to break through, and can you write one more attempt?",
-    description: "Suggests a break-through strategy + draft",
+      "What's the current state of the PE pipe market and pipe production? I need background before a meeting with a utility director.",
+    description: "Briefs from Info Blurt #78 on market state",
+  },
+  {
+    prompt:
+      "Draft an email explaining why galling happens with stainless steel fasteners and why anti-seize lubricant matters for our assemblies.",
+    description: "Pulls from Info Blurt #84 on SS galling",
   },
 ];
 

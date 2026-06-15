@@ -293,12 +293,27 @@ async function ingestDocument({ buffer, filename, title, fileType, text, sourceE
   }
 
   // Upload original file to Supabase Storage
-  const storagePath = `${contentHash}/${filename}`;
-  await supabaseStorageUpload(
-    storagePath,
-    buffer,
-    CONTENT_TYPES[fileType] || "application/octet-stream"
-  );
+  // Sanitize filename for storage key:
+  // - Strip non-ASCII (®, ™, accented chars, etc.)
+  // - Strip URL-unsafe chars (#, ?, %, [, ], {, })
+  // - Collapse multiple spaces/dots, trim whitespace
+  const safeFilename = filename
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/[#?%[\]{}]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\.{2,}/g, ".")
+    .trim();
+  const storagePath = `${contentHash}/${safeFilename}`;
+  try {
+    await supabaseStorageUpload(
+      storagePath,
+      buffer,
+      CONTENT_TYPES[fileType] || "application/octet-stream"
+    );
+  } catch (err) {
+    console.log(`  ⚠  Storage upload failed for "${filename}": ${err.message}, skipping`);
+    return null;
+  }
 
   // Insert document record
   const docPayload = {

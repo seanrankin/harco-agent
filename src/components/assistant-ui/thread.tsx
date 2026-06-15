@@ -30,6 +30,7 @@ import {
   ChevronRightIcon,
   CopyIcon,
   DownloadIcon,
+  LoaderIcon,
   MoreHorizontalIcon,
   PencilIcon,
   RefreshCwIcon,
@@ -347,6 +348,7 @@ const AssistantMessage: FC = () => {
               }
             }}
           </MessagePrimitive.GroupedParts>
+          <WaitingForResponseSpinner />
           <MessageError />
         </div>
 
@@ -359,6 +361,26 @@ const AssistantMessage: FC = () => {
         </div>
       </div>
     </MessagePrimitive.Root>
+  );
+};
+
+const WaitingForResponseSpinner: FC = () => {
+  const isWaiting = useAuiState((s) => {
+    if (s.message.status?.type !== "running") return false;
+    return !s.message.parts.some((p) => p.type === "text" && p.text.length > 0);
+  });
+
+  if (!isWaiting) return null;
+
+  return (
+    <div
+      data-slot="aui_assistant-message-waiting"
+      className="flex items-center py-1"
+      aria-label="Waiting for response"
+      aria-busy="true"
+    >
+      <LoaderIcon className="text-muted-foreground size-4 animate-spin" />
+    </div>
   );
 };
 
