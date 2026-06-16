@@ -82,7 +82,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="auth-stage bg-background relative flex min-h-full flex-col items-center justify-center px-5 py-8 max-sm:p-0 sm:py-12">
+    <main className="auth-stage bg-background relative min-h-full overflow-y-auto">
       {/* Subtle grid + radial-glow backdrop (desktop/tablet only) */}
       <div
         aria-hidden="true"
@@ -104,42 +104,44 @@ export default function LoginPage() {
         }}
       />
 
-      <div className="bg-card border-border w-full max-w-[960px] overflow-hidden shadow-2xl max-sm:min-h-dvh max-sm:border-none max-sm:shadow-none sm:rounded-2xl sm:border lg:max-w-[960px]">
-        <div className="flex flex-col lg:grid lg:grid-cols-[0.92fr_1fr]">
-          {/* Form side — left on desktop, second (below banner) on tablet, only content on phone */}
-          <div className="bg-card order-2 flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-12 lg:order-1 lg:px-11 lg:py-12">
-            {/* Brand block — visible at phone (no banner) and on desktop (always) */}
-            <BrandBlock className="mb-7 max-sm:flex max-lg:hidden sm:hidden lg:flex" />
-            {status === "sent" ? (
-              <SentPanel name={name.trim()} email={email.trim()} onBack={handleBack} />
-            ) : (
-              <RequestForm
-                name={name}
-                showName={showName}
-                onNameChange={(v) => {
-                  setName(v);
-                  if (errorMessage) setErrorMessage("");
-                }}
-                email={email}
-                onEmailChange={(v) => {
-                  setEmail(v);
-                  if (errorMessage) setErrorMessage("");
-                }}
-                onSubmit={handleSubmit}
-                loading={status === "loading"}
-                error={status === "error" ? errorMessage : ""}
-              />
-            )}
+      <div className="relative flex min-h-full flex-col items-center justify-center px-5 py-8 max-sm:p-0 sm:py-12">
+        <div className="bg-card border-border w-full max-w-[960px] overflow-hidden shadow-2xl max-sm:min-h-dvh max-sm:border-none max-sm:shadow-none sm:rounded-2xl sm:border lg:max-w-[960px]">
+          <div className="flex flex-col lg:grid lg:grid-cols-[0.92fr_1fr]">
+            {/* Form side — left on desktop, second (below banner) on tablet, only content on phone */}
+            <div className="bg-card order-2 flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-12 lg:order-1 lg:px-11 lg:py-12">
+              {/* Brand block — visible at phone (no banner) and on desktop (always) */}
+              <BrandBlock className="mb-7 max-sm:flex max-lg:hidden sm:hidden lg:flex" />
+              {status === "sent" ? (
+                <SentPanel name={name.trim()} email={email.trim()} onBack={handleBack} />
+              ) : (
+                <RequestForm
+                  name={name}
+                  showName={showName}
+                  onNameChange={(v) => {
+                    setName(v);
+                    if (errorMessage) setErrorMessage("");
+                  }}
+                  email={email}
+                  onEmailChange={(v) => {
+                    setEmail(v);
+                    if (errorMessage) setErrorMessage("");
+                  }}
+                  onSubmit={handleSubmit}
+                  loading={status === "loading"}
+                  error={status === "error" ? errorMessage : ""}
+                />
+              )}
+            </div>
+
+            {/* Feature side — right on desktop, top-banner on tablet, hidden on phone */}
+            <FeaturePanel />
           </div>
-
-          {/* Feature side — right on desktop, top-banner on tablet, hidden on phone */}
-          <FeaturePanel />
         </div>
-      </div>
 
-      <p className="text-muted-foreground mt-7 text-center font-mono text-[10.5px] tracking-wider max-sm:hidden">
-        © Harco Fittings · Lynchburg, VA · For authorized Harco personnel only
-      </p>
+        <p className="text-muted-foreground mt-7 text-center font-mono text-[10.5px] tracking-wider max-sm:hidden">
+          © Harco Fittings · Lynchburg, VA · For authorized Harco personnel only
+        </p>
+      </div>
     </main>
   );
 }
