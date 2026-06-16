@@ -2,11 +2,14 @@
 
 import { CheckIcon, CopyIcon, MailIcon } from "lucide-react";
 import { useState } from "react";
+import { OutlookButton } from "./outlook-button";
 
 interface EmailDraftCardProps {
   to: string;
   subject: string;
   body: string;
+  documentIds?: string[];
+  outlookEnabled?: boolean;
 }
 
 function buildMailtoLink({ to, subject, body }: EmailDraftCardProps): string {
@@ -15,7 +18,13 @@ function buildMailtoLink({ to, subject, body }: EmailDraftCardProps): string {
   return `mailto:${encodeURIComponent(to)}?subject=${subject_}&body=${body_}`;
 }
 
-export function EmailDraftCard({ to, subject, body }: EmailDraftCardProps) {
+export function EmailDraftCard({
+  to,
+  subject,
+  body,
+  documentIds,
+  outlookEnabled,
+}: EmailDraftCardProps) {
   const mailtoLink = buildMailtoLink({ to, subject, body });
   const [copied, setCopied] = useState(false);
 
@@ -47,6 +56,9 @@ export function EmailDraftCard({ to, subject, body }: EmailDraftCardProps) {
 
       {/* Actions */}
       <div className="border-border/60 bg-muted/30 flex flex-wrap items-center gap-2 border-t px-4 py-3">
+        {outlookEnabled && (
+          <OutlookButton to={to} subject={subject} body={body} documentIds={documentIds ?? []} />
+        )}
         <a
           href={mailtoLink}
           className="bg-accent text-accent-foreground inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold tracking-tight transition-[filter] hover:brightness-105 active:translate-y-px"

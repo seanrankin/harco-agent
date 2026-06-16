@@ -4,6 +4,7 @@ import {
   AssistantRuntimeProvider,
   makeAssistantToolUI,
   useAssistantRuntime,
+  useMessage,
   useRemoteThreadListRuntime,
 } from "@assistant-ui/react";
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
@@ -97,23 +98,54 @@ const FileReferenceToolUI = makeAssistantToolUI({
   },
 });
 
+// Module-level flag set by ChatClient from server-provided prop
+let _outlookEnabled = false;
+
 const EmailDraftToolUI = makeAssistantToolUI({
   toolName: "emailDraft",
-  render: ({ args }) => {
+  render: function EmailDraftWithContext({ args }) {
     if (!args) return null;
+
+    const message = useMessage();
+
+    const fileRefIds = message.content
+      .filter(
+        (part): part is Extract<typeof part, { type: "tool-call" }> =>
+          part.type === "tool-call" && part.toolName === "fileReference"
+      )
+      .map((part) => (part.args as { document_id?: string }).document_id ?? "")
+      .filter(Boolean);
+
+    const sourceIds = message.content
+      .filter(
+        (part): part is Extract<typeof part, { type: "data" }> =>
+          part.type === "data" && part.name === "sources"
+      )
+      .flatMap((part) => {
+        const docs = (part.data?.documents ?? []) as Array<{ id: string }>;
+        return docs.map((doc) => doc.id);
+      })
+      .filter(Boolean);
+
+    const documentIds = Array.from(new Set([...fileRefIds, ...sourceIds]));
+
     return (
       <ChunkErrorBoundary>
         <EmailDraftCard
           to={args.to as string}
           subject={args.subject as string}
           body={args.body as string}
+          documentIds={documentIds}
+          outlookEnabled={_outlookEnabled}
         />
       </ChunkErrorBoundary>
     );
   },
 });
 
-export function ChatClient() {
+export function ChatClient({ outlookEnabled = false }: { outlookEnabled?: boolean }) {
+  _outlookEnabled = outlookEnabled;
+
   const runtime = useRemoteThreadListRuntime({
     runtimeHook: useChatRuntime,
     adapter: threadListAdapter,
