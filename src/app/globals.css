@@ -146,3 +146,21 @@
     @apply font-sans;
   }
 }
+
+/* Always-visible scrollbar on the login stage when content overflows a short viewport.
+   Styling ::-webkit-scrollbar forces a classic (non-overlay) bar in Chrome/Safari that
+   reserves space and stays visible while scrollable, instead of macOS's auto-hiding overlay.
+   The standard scrollbar-width/scrollbar-color props are intentionally omitted: setting them
+   makes Chrome ignore these pseudo-element rules and fall back to the overlay bar. */
+.auth-stage::-webkit-scrollbar {
+  width: 10px;
+}
+.auth-stage::-webkit-scrollbar-track {
+  background: transparent;
+}
+.auth-stage::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--primary) 28%, transparent);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 9999px;
+}
