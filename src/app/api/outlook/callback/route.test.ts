@@ -6,7 +6,6 @@ vi.mock("@/lib/outlook/token-manager", () => ({
   setTokens: mockSetTokens,
 }));
 
-// Mock environment variables
 const ENV_VARS = {
   MICROSOFT_CLIENT_ID: "test-client-id",
   MICROSOFT_CLIENT_SECRET: "test-client-secret",
@@ -24,45 +23,48 @@ describe("GET /api/outlook/callback", () => {
   });
 
   async function importRoute() {
-    // Dynamic import to pick up fresh env vars
     const mod = await import("./route");
     return mod.GET;
   }
 
-  it("redirects with consent_denied error when error param is present", async () => {
+  it("returns HTML that closes popup with error when error param is present", async () => {
     const GET = await importRoute();
     const request = new Request(
-      "http://localhost/api/outlook/callback?error=access_denied&state=/chat/123"
+      "http://localhost/api/outlook/callback?error=access_denied&state=popup"
     );
     const response = await GET(request);
 
-    expect(response.status).toBe(307);
-    const location = response.headers.get("location")!;
-    expect(location).toContain("/chat/123");
-    expect(location).toContain("outlook_error=consent_denied");
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("text/html");
+
+    const body = await response.text();
+    expect(body).toContain("window.close()");
+    expect(body).toContain("consent_denied");
   });
 
-  it("redirects with missing_code error when no code param is present", async () => {
+  it("returns HTML with missing_code error when no code param is present", async () => {
     const GET = await importRoute();
-    const request = new Request("http://localhost/api/outlook/callback?state=/chat/123");
+    const request = new Request("http://localhost/api/outlook/callback?state=popup");
     const response = await GET(request);
 
-    expect(response.status).toBe(307);
-    const location = response.headers.get("location")!;
-    expect(location).toContain("outlook_error=missing_code");
+    expect(response.status).toBe(200);
+    const body = await response.text();
+    expect(body).toContain("window.close()");
+    expect(body).toContain("missing_code");
   });
 
-  it("redirects with not_configured error when env vars are missing", async () => {
+  it("returns HTML with not_configured error when env vars are missing", async () => {
     vi.stubEnv("MICROSOFT_CLIENT_ID", "");
     const GET = await importRoute();
     const request = new Request(
-      "http://localhost/api/outlook/callback?code=auth_code_123&state=/chat/123"
+      "http://localhost/api/outlook/callback?code=auth_code_123&state=popup"
     );
     const response = await GET(request);
 
-    expect(response.status).toBe(307);
-    const location = response.headers.get("location")!;
-    expect(location).toContain("outlook_error=not_configured");
+    expect(response.status).toBe(200);
+    const body = await response.text();
+    expect(body).toContain("window.close()");
+    expect(body).toContain("not_configured");
   });
 
   it("exchanges code for tokens and sets cookies on success", async () => {
@@ -79,13 +81,15 @@ describe("GET /api/outlook/callback", () => {
 
     const GET = await importRoute();
     const request = new Request(
-      "http://localhost/api/outlook/callback?code=auth_code_123&state=/chat/123"
+      "http://localhost/api/outlook/callback?code=auth_code_123&state=popup"
     );
     const response = await GET(request);
 
-    expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toContain("/chat/123");
-    expect(response.headers.get("location")).not.toContain("outlook_error");
+    expect(response.status).toBe(200);
+    const body = await response.text();
+    expect(body).toContain("window.close()");
+    expect(body).toContain("success");
+    expect(body).toContain("outlook-auth");
 
     expect(mockFetch).toHaveBeenCalledWith(
       "https://login.microsoftonline.com/common/oauth2/v2.0/token",
@@ -102,7 +106,7 @@ describe("GET /api/outlook/callback", () => {
     });
   });
 
-  it("redirects with exchange_failed error when token endpoint returns non-OK", async () => {
+  it("returns HTML with exchange_failed error when token endpoint returns non-OK", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -112,17 +116,16 @@ describe("GET /api/outlook/callback", () => {
     );
 
     const GET = await importRoute();
-    const request = new Request(
-      "http://localhost/api/outlook/callback?code=bad_code&state=/chat/123"
-    );
+    const request = new Request("http://localhost/api/outlook/callback?code=bad_code&state=popup");
     const response = await GET(request);
 
-    expect(response.status).toBe(307);
-    const location = response.headers.get("location")!;
-    expect(location).toContain("outlook_error=exchange_failed");
+    expect(response.status).toBe(200);
+    const body = await response.text();
+    expect(body).toContain("window.close()");
+    expect(body).toContain("exchange_failed");
   });
 
-  it("redirects with timeout error when fetch is aborted", async () => {
+  it("returns HTML with timeout error when fetch is aborted", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockRejectedValue(Object.assign(new Error("Aborted"), { name: "AbortError" }))
@@ -130,38 +133,28 @@ describe("GET /api/outlook/callback", () => {
 
     const GET = await importRoute();
     const request = new Request(
-      "http://localhost/api/outlook/callback?code=auth_code_123&state=/chat/123"
+      "http://localhost/api/outlook/callback?code=auth_code_123&state=popup"
     );
     const response = await GET(request);
 
-    expect(response.status).toBe(307);
-    const location = response.headers.get("location")!;
-    expect(location).toContain("outlook_error=timeout");
+    expect(response.status).toBe(200);
+    const body = await response.text();
+    expect(body).toContain("window.close()");
+    expect(body).toContain("timeout");
   });
 
-  it("redirects with exchange_failed on network errors", async () => {
+  it("returns HTML with exchange_failed on network errors", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network failure")));
 
     const GET = await importRoute();
     const request = new Request(
-      "http://localhost/api/outlook/callback?code=auth_code_123&state=/chat/123"
+      "http://localhost/api/outlook/callback?code=auth_code_123&state=popup"
     );
     const response = await GET(request);
 
-    expect(response.status).toBe(307);
-    const location = response.headers.get("location")!;
-    expect(location).toContain("outlook_error=exchange_failed");
-  });
-
-  it("defaults returnUrl to / when state is not provided", async () => {
-    const GET = await importRoute();
-    const request = new Request("http://localhost/api/outlook/callback?error=access_denied");
-    const response = await GET(request);
-
-    expect(response.status).toBe(307);
-    const location = response.headers.get("location")!;
-    const url = new URL(location);
-    expect(url.pathname).toBe("/");
-    expect(url.searchParams.get("outlook_error")).toBe("consent_denied");
+    expect(response.status).toBe(200);
+    const body = await response.text();
+    expect(body).toContain("window.close()");
+    expect(body).toContain("exchange_failed");
   });
 });

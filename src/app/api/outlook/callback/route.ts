@@ -4,25 +4,30 @@ import { setTokens } from "@/lib/outlook/token-manager";
 const TOKEN_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
 const EXCHANGE_TIMEOUT_MS = 10_000;
 
+function closePopupResponse(success: boolean, error?: string): NextResponse {
+  const message = JSON.stringify({ type: "outlook-auth", success, error });
+  const html = `<!DOCTYPE html><html><body><script>
+    window.opener && window.opener.postMessage(${JSON.stringify(message)}, window.location.origin);
+    window.close();
+  </script><p>You can close this window.</p></body></html>`;
+
+  return new NextResponse(html, {
+    headers: { "Content-Type": "text/html" },
+  });
+}
+
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
 
   const error = searchParams.get("error");
   const code = searchParams.get("code");
-  const state = searchParams.get("state");
-  const returnUrl = state || "/";
 
-  // User denied consent or authorization failed (Req 2.7)
   if (error) {
-    const redirectUrl = new URL(returnUrl, origin);
-    redirectUrl.searchParams.set("outlook_error", "consent_denied");
-    return NextResponse.redirect(redirectUrl.toString());
+    return closePopupResponse(false, "consent_denied");
   }
 
   if (!code) {
-    const redirectUrl = new URL(returnUrl, origin);
-    redirectUrl.searchParams.set("outlook_error", "missing_code");
-    return NextResponse.redirect(redirectUrl.toString());
+    return closePopupResponse(false, "missing_code");
   }
 
   const clientId = process.env.MICROSOFT_CLIENT_ID;
@@ -30,12 +35,9 @@ export async function GET(request: Request) {
   const redirectUri = process.env.MICROSOFT_REDIRECT_URI;
 
   if (!clientId || !clientSecret || !redirectUri) {
-    const redirectUrl = new URL(returnUrl, origin);
-    redirectUrl.searchParams.set("outlook_error", "not_configured");
-    return NextResponse.redirect(redirectUrl.toString());
+    return closePopupResponse(false, "not_configured");
   }
 
-  // Exchange authorization code for tokens (Req 2.3 - within 10 seconds)
   const body = new URLSearchParams({
     client_id: clientId,
     client_secret: clientSecret,
@@ -59,17 +61,12 @@ export async function GET(request: Request) {
     clearTimeout(timeout);
 
     if (!tokenResponse.ok) {
-      // Token exchange failed (Req 2.8)
-      const redirectUrl = new URL(returnUrl, origin);
-      redirectUrl.searchParams.set("outlook_error", "exchange_failed");
-      return NextResponse.redirect(redirectUrl.toString());
+      return closePopupResponse(false, "exchange_failed");
     }
 
     const data = await tokenResponse.json();
 
-    // Set cookies on the redirect response (Req 2.4)
-    const redirectUrl = new URL(returnUrl, origin);
-    const response = NextResponse.redirect(redirectUrl.toString());
+    const response = closePopupResponse(true);
 
     setTokens(response, {
       accessToken: data.access_token,
@@ -79,11 +76,8 @@ export async function GET(request: Request) {
 
     return response;
   } catch (err: unknown) {
-    // Timeout or network failure (Req 2.8)
-    const redirectUrl = new URL(returnUrl, origin);
     const errorType =
       err instanceof Error && err.name === "AbortError" ? "timeout" : "exchange_failed";
-    redirectUrl.searchParams.set("outlook_error", errorType);
-    return NextResponse.redirect(redirectUrl.toString());
+    return closePopupResponse(false, errorType);
   }
 }

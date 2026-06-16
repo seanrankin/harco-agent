@@ -62,17 +62,37 @@ export function OutlookButton({ to, subject, body, documentIds }: OutlookButtonP
 
   const waitForAuthPopup = useCallback((popup: Window): Promise<void> => {
     return new Promise((resolve, reject) => {
-      const interval = setInterval(() => {
+      const onMessage = (event: MessageEvent) => {
+        if (event.origin !== window.location.origin) return;
         try {
-          if (popup.closed) {
-            clearInterval(interval);
+          const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+          if (data?.type === "outlook-auth") {
+            cleanup();
             resolve();
           }
         } catch {
-          clearInterval(interval);
+          // ignore non-JSON messages
+        }
+      };
+
+      const interval = setInterval(() => {
+        try {
+          if (popup.closed) {
+            cleanup();
+            resolve();
+          }
+        } catch {
+          cleanup();
           reject(new Error("Please allow popups for this site"));
         }
       }, 500);
+
+      const cleanup = () => {
+        clearInterval(interval);
+        window.removeEventListener("message", onMessage);
+      };
+
+      window.addEventListener("message", onMessage);
     });
   }, []);
 
@@ -85,8 +105,7 @@ export function OutlookButton({ to, subject, body, documentIds }: OutlookButtonP
       const statusRes = await fetch("/api/outlook/status");
 
       if (statusRes.status === 401) {
-        const returnUrl = encodeURIComponent(window.location.pathname);
-        const authUrl = `/api/outlook/auth?returnUrl=${returnUrl}`;
+        const authUrl = `/api/outlook/auth`;
         const popup = window.open(authUrl, "outlook-auth", "width=600,height=700");
 
         if (!popup) {

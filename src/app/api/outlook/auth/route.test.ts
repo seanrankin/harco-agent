@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { GET } from "./route";
 
 describe("GET /api/outlook/auth", () => {
@@ -17,8 +17,7 @@ describe("GET /api/outlook/auth", () => {
   });
 
   it("redirects to Microsoft authorization URL with correct params", async () => {
-    const request = new Request("http://localhost/api/outlook/auth?returnUrl=/chat/123");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(307);
 
@@ -34,24 +33,13 @@ describe("GET /api/outlook/auth", () => {
       "https://app.example.com/api/outlook/callback"
     );
     expect(url.searchParams.get("scope")).toBe("Mail.ReadWrite offline_access");
-    expect(url.searchParams.get("state")).toBe("/chat/123");
-  });
-
-  it("defaults returnUrl to / when not provided", async () => {
-    const request = new Request("http://localhost/api/outlook/auth");
-    const response = await GET(request);
-
-    const location = response.headers.get("location")!;
-    const url = new URL(location);
-
-    expect(url.searchParams.get("state")).toBe("/");
+    expect(url.searchParams.get("state")).toBe("popup");
   });
 
   it("returns 500 when MICROSOFT_CLIENT_ID is missing", async () => {
     delete process.env.MICROSOFT_CLIENT_ID;
 
-    const request = new Request("http://localhost/api/outlook/auth");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(500);
     const body = await response.json();
@@ -61,8 +49,7 @@ describe("GET /api/outlook/auth", () => {
   it("returns 500 when MICROSOFT_REDIRECT_URI is missing", async () => {
     delete process.env.MICROSOFT_REDIRECT_URI;
 
-    const request = new Request("http://localhost/api/outlook/auth");
-    const response = await GET(request);
+    const response = await GET();
 
     expect(response.status).toBe(500);
     const body = await response.json();
