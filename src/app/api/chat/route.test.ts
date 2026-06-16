@@ -4,6 +4,12 @@ vi.mock("@/lib/auth", () => ({
   requireAuth: vi.fn(),
 }));
 
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn(async () => ({
+    auth: { getUser: vi.fn(async () => ({ data: { user: null } })) },
+  })),
+}));
+
 vi.mock("ai", () => ({
   streamText: vi.fn(),
   tool: vi.fn((config) => config),

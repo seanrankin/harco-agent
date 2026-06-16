@@ -9,9 +9,10 @@ import {
 } from "@assistant-ui/react";
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { threadListAdapter } from "@/lib/thread-adapter";
+import { SIGNED_IN_FLAG } from "@/lib/onboarding";
 
 import { Thread } from "@/components/assistant-ui/thread";
 import { Sidebar } from "@/components/app-shell/sidebar";
@@ -151,6 +152,12 @@ export function ChatClient({ outlookEnabled = false }: { outlookEnabled?: boolea
     adapter: threadListAdapter,
   });
   const [navOpen, setNavOpen] = useState(false);
+
+  // Reaching the authenticated app means the user has signed in on this device,
+  // so the login form can stop asking for their name on future visits.
+  useEffect(() => {
+    localStorage.setItem(SIGNED_IN_FLAG, "1");
+  }, []);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>

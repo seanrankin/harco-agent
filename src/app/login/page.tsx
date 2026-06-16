@@ -1,22 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeftIcon, LockIcon, MailIcon, RefreshCwIcon, TriangleAlertIcon } from "lucide-react";
+import { useState, useSyncExternalStore } from "react";
+import {
+  ArrowLeftIcon,
+  LockIcon,
+  MailIcon,
+  RefreshCwIcon,
+  TriangleAlertIcon,
+  UserIcon,
+} from "lucide-react";
 
 import { Diamond } from "@/components/brand/diamond";
 import { createClient } from "@/lib/supabase/client";
 import { ALLOWED_DOMAIN, isEmailAllowed } from "@/lib/email";
+import { SIGNED_IN_FLAG } from "@/lib/onboarding";
 
 type Status = "idle" | "loading" | "sent" | "error";
 
 export default function LoginPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  // First-time visitors on this device supply their name; returning users skip it.
+  // Read via useSyncExternalStore so it is SSR-safe (server assumes returning => no field)
+  // and hydrates to the real localStorage value without a mismatch.
+  const showName = useSyncExternalStore(
+    () => () => {},
+    () => !localStorage.getItem(SIGNED_IN_FLAG),
+    () => false
+  );
 
   const sendLink = async (target: string) => {
     setStatus("loading");
     setErrorMessage("");
+
+    const trimmedName = name.trim();
+    if (showName && !trimmedName) {
+      setStatus("error");
+      setErrorMessage("Enter your name so we know who to greet.");
+      return;
+    }
+
+    if (!target) {
+      setStatus("error");
+      setErrorMessage("Enter your email so we can send your sign-in link.");
+      return;
+    }
 
     if (!isEmailAllowed(target)) {
       setStatus("error");
@@ -29,6 +59,7 @@ export default function LoginPage() {
       email: target,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: trimmedName ? { display_name: trimmedName } : undefined,
       },
     });
 
@@ -80,9 +111,15 @@ export default function LoginPage() {
             {/* Brand block — visible at phone (no banner) and on desktop (always) */}
             <BrandBlock className="mb-7 max-sm:flex max-lg:hidden sm:hidden lg:flex" />
             {status === "sent" ? (
-              <SentPanel email={email.trim()} onBack={handleBack} />
+              <SentPanel name={name.trim()} email={email.trim()} onBack={handleBack} />
             ) : (
               <RequestForm
+                name={name}
+                showName={showName}
+                onNameChange={(v) => {
+                  setName(v);
+                  if (errorMessage) setErrorMessage("");
+                }}
                 email={email}
                 onEmailChange={(v) => {
                   setEmail(v);
@@ -124,6 +161,9 @@ function BrandBlock({ className = "" }: { className?: string }) {
 }
 
 interface RequestFormProps {
+  name: string;
+  showName: boolean;
+  onNameChange: (value: string) => void;
   email: string;
   onEmailChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -131,7 +171,20 @@ interface RequestFormProps {
   error: string;
 }
 
-function RequestForm({ email, onEmailChange, onSubmit, loading, error }: RequestFormProps) {
+function RequestForm({
+  name,
+  showName,
+  onNameChange,
+  email,
+  onEmailChange,
+  onSubmit,
+  loading,
+  error,
+}: RequestFormProps) {
+  // A blank-name error belongs to the name field; otherwise the error is the email's.
+  const nameError = showName && Boolean(error) && !name.trim();
+  const emailError = Boolean(error) && !nameError;
+
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col">
       <span className="text-ring mb-3 font-mono text-[10.5px] tracking-widest uppercase">
@@ -145,13 +198,46 @@ function RequestForm({ email, onEmailChange, onSubmit, loading, error }: Request
         remember.
       </p>
 
+      {showName && (
+        <label className="mt-6 block">
+          <span className="text-primary mb-2 block text-[12.5px] font-semibold tracking-tight">
+            Your name <span className="text-destructive">*</span>
+          </span>
+          <div
+            className={`bg-background flex items-center rounded-[10px] border-[1.5px] transition focus-within:bg-card focus-within:ring-4 ${
+              nameError
+                ? "border-destructive focus-within:ring-destructive/12"
+                : "border-border focus-within:border-ring focus-within:ring-ring/12"
+            }`}
+          >
+            <UserIcon className="text-muted-foreground/65 ml-4 size-4 shrink-0" strokeWidth={1.8} />
+            <input
+              type="text"
+              autoComplete="name"
+              required
+              placeholder="Jane Doe"
+              value={name}
+              onChange={(e) => onNameChange(e.target.value)}
+              aria-invalid={nameError}
+              className="text-primary placeholder:text-muted-foreground/65 w-full bg-transparent px-3 py-3.5 text-[15.5px] outline-none"
+            />
+          </div>
+          {nameError && (
+            <span className="text-destructive mt-2.5 flex items-start gap-2 text-[12.5px] leading-snug font-medium">
+              <TriangleAlertIcon className="mt-0.5 size-3.5 shrink-0" />
+              <span>{error}</span>
+            </span>
+          )}
+        </label>
+      )}
+
       <label className="mt-6 block">
         <span className="text-primary mb-2 block text-[12.5px] font-semibold tracking-tight">
-          Work email
+          Work email <span className="text-destructive">*</span>
         </span>
         <div
           className={`bg-background flex items-center rounded-[10px] border-[1.5px] transition focus-within:bg-card focus-within:ring-4 ${
-            error
+            emailError
               ? "border-destructive focus-within:ring-destructive/12"
               : "border-border focus-within:border-ring focus-within:ring-ring/12"
           }`}
@@ -165,7 +251,7 @@ function RequestForm({ email, onEmailChange, onSubmit, loading, error }: Request
             placeholder={`you@${ALLOWED_DOMAIN}`}
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
-            aria-invalid={Boolean(error)}
+            aria-invalid={emailError}
             aria-describedby="email-hint"
             className="text-primary placeholder:text-muted-foreground/65 w-full bg-transparent px-4 py-3.5 text-[15.5px] outline-none"
           />
@@ -173,16 +259,16 @@ function RequestForm({ email, onEmailChange, onSubmit, loading, error }: Request
         <span
           id="email-hint"
           className={`mt-2.5 flex items-start gap-2 text-[12.5px] leading-snug ${
-            error ? "text-destructive font-medium" : "text-muted-foreground"
+            emailError ? "text-destructive font-medium" : "text-muted-foreground"
           }`}
         >
-          {error ? (
+          {emailError ? (
             <TriangleAlertIcon className="mt-0.5 size-3.5 shrink-0" />
           ) : (
             <LockIcon className="mt-0.5 size-3.5 shrink-0" />
           )}
           <span>
-            {error || (
+            {(emailError && error) || (
               <>
                 Access is limited to{" "}
                 <b className="text-foreground font-semibold">@{ALLOWED_DOMAIN}</b> addresses.
@@ -208,7 +294,7 @@ function RequestForm({ email, onEmailChange, onSubmit, loading, error }: Request
   );
 }
 
-function SentPanel({ email, onBack }: { email: string; onBack: () => void }) {
+function SentPanel({ name, email, onBack }: { name: string; email: string; onBack: () => void }) {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
 
@@ -218,7 +304,10 @@ function SentPanel({ email, onBack }: { email: string; onBack: () => void }) {
     const supabase = createClient();
     await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: name ? { display_name: name } : undefined,
+      },
     });
     setResending(false);
     setResent(true);

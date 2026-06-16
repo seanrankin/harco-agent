@@ -10,8 +10,9 @@ import {
 import type { UIMessage } from "ai";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { retrieveContext, MATCH_COUNT } from "@/lib/rag";
-import { SYSTEM_PROMPT } from "@/lib/system-prompt";
+import { SYSTEM_PROMPT, buildUserPreamble } from "@/lib/system-prompt";
 import { classifyEmailSources } from "@/lib/email-sources";
 import { formatDocumentContext } from "@/lib/format-context";
 import type { SourceDocument } from "@/lib/types";
@@ -21,6 +22,12 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
   const authResponse = await requireAuth();
   if (authResponse) return authResponse;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const displayName = user?.user_metadata?.display_name as string | undefined;
 
   const { messages }: { messages: UIMessage[] } = await req.json();
 
@@ -46,7 +53,8 @@ export async function POST(req: Request) {
 
   const { otherSources: attachmentDocs } = classifyEmailSources(contextDocs);
 
-  const systemWithContext = `${SYSTEM_PROMPT}\n\n${formatDocumentContext(contextDocs, contextText)}`;
+  const preamble = buildUserPreamble(displayName);
+  const systemWithContext = `${SYSTEM_PROMPT}${preamble ? `\n\n${preamble}` : ""}\n\n${formatDocumentContext(contextDocs, contextText)}`;
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {

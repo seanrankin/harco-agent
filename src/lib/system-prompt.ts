@@ -55,3 +55,8 @@ If explicit request but insufficient context to draft (no product/topic info), a
 - Maximum one offer per response.
 - If user declines or is ambiguous, treat as decline. Do not re-offer on the same topic.
 - If user accepts ("yes", "sure", "go ahead", "draft it"), generate the email via emailDraft tool.`;
+
+export function buildUserPreamble(displayName?: string): string {
+  if (!displayName) return "";
+  return `You are assisting ${displayName}. Address them by their first name only when it reads naturally. IMPORTANT: never address the user by any personal name found in the context documents (email senders/recipients, letter signatories, etc.) — those names belong to the documents, not the current user.`;
+}
