@@ -367,10 +367,10 @@ function SentPanel({ name, email, onBack }: { name: string; email: string; onBac
   );
 }
 
-const FEATURES = [
-  "Pressure ratings, standards & part numbers — pulled from the catalog",
-  "Submittals and spec sheets, ready to forward to an engineer",
-  "Live will-call stock & availability by branch",
+const AGENT_PROPS: [string, string][] = [
+  ["Instant", "Every answer in seconds — no callbacks, no hold music."],
+  ["Grounded", "Pulled straight from what Harco actually knows."],
+  ["Always on", "2 a.m. quote or a Sunday rush — it never clocks out."],
 ];
 
 function FeaturePanel() {
@@ -410,66 +410,46 @@ function FeaturePanel() {
       </div>
 
       <div className="relative z-10 max-lg:mt-3.5 lg:mt-1.5">
-        <span className="text-accent mb-4 block font-mono text-[10.5px] tracking-widest uppercase max-lg:mb-2">
-          The sales team&rsquo;s answer desk
+        <span className="text-accent mb-[22px] inline-flex items-center gap-2.5 font-mono text-[11px] tracking-[0.18em] uppercase max-lg:mb-2">
+          <span aria-hidden="true" className="bg-accent h-px w-6 opacity-85" />
+          Meet the Harco Agent
         </span>
-        {/* Long headline — desktop only */}
-        <h2 className="font-serif text-[26px] leading-[1.18] font-semibold tracking-tight text-white text-balance max-lg:hidden">
-          Every spec, submittal, and stock check — one question away.
+        {/* Headline — desktop only */}
+        <h2 className="font-serif text-[43px] leading-[1.05] font-semibold tracking-[-0.028em] text-white text-balance max-lg:hidden">
+          Stop guessing.
+          <br />
+          <span className="text-accent">Start closing.</span>
         </h2>
         {/* Long body — desktop only */}
-        <p className="mt-3 max-w-[42ch] text-[13.5px] leading-relaxed text-white/70 max-lg:hidden">
-          The Harco Assistant is your team&rsquo;s source for grounded answers, drawn straight from
-          the real product library. No guessing on the phone with a contractor.
+        <p className="mt-5 max-w-[33ch] text-[15px] leading-relaxed text-white/[0.74] max-lg:hidden">
+          A straight answer the moment a customer asks — so your team never says &ldquo;let me get
+          back to you&rdquo; again.
         </p>
         {/* Short body — banner mode only */}
-        <p className="text-[13.5px] leading-relaxed text-white/70 max-lg:block lg:hidden">
-          Grounded answers for the sales floor — specs, submittals, and live stock from the real
-          product library.
+        <p className="text-[13.5px] leading-relaxed text-white/[0.72] max-lg:block lg:hidden">
+          A straight answer the moment a customer asks — no callbacks, no guessing.
         </p>
       </div>
 
-      {/* Product preview — desktop only */}
-      <div className="relative z-10 mt-5 rounded-[13px] border border-white/12 bg-white/[0.05] p-[13px] pb-3 max-lg:hidden">
-        <div className="bg-background grid h-[94px] place-items-center overflow-hidden rounded-lg">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/product-shots/fittings.png"
-            alt=""
-            className="max-h-[82%] max-w-[82%] object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </div>
-        <div className="mt-3 flex flex-col gap-[3px]">
-          <span className="font-mono text-[12.5px] font-semibold tracking-wider text-white">
-            HSDR-1212-MJ
-          </span>
-          <span className="font-mono text-[10.5px] text-white/55">
-            12″ Push-On × MJ · AWWA C907 · 235 PSI
-          </span>
-        </div>
-      </div>
-
-      {/* Bullets — desktop only */}
-      <ul className="relative z-10 mt-5 flex flex-col gap-2.5 max-lg:hidden">
-        {FEATURES.map((f) => (
-          <li key={f} className="flex items-start gap-3 text-[13.5px] leading-snug text-white/80">
-            <span
-              aria-hidden="true"
-              className="bg-accent mt-1.5 inline-block size-[9px] shrink-0 rotate-45"
-            />
-            {f}
+      {/* Value props — desktop only */}
+      <ul className="relative z-10 mt-auto flex flex-col max-lg:hidden">
+        {AGENT_PROPS.map(([key, val]) => (
+          <li
+            key={key}
+            className="flex items-baseline gap-4 border-t border-white/12 py-[17px]"
+          >
+            <span className="w-24 shrink-0 font-serif text-[19px] font-semibold tracking-tight text-white">
+              {key}
+            </span>
+            <span className="text-[13.5px] leading-[1.45] text-white/[0.66]">{val}</span>
           </li>
         ))}
       </ul>
 
-      {/* Status — desktop only */}
-      <div className="relative z-10 mt-auto flex items-center gap-2.5 pt-5 font-mono text-[10.5px] tracking-wide text-white/50 max-lg:hidden">
-        <span className="bg-xlsx ring-xlsx/25 size-[6px] rounded-full ring-[3px]" />
-        {/* TODO(redesign): pull live count from indexed-documents query */}
-        Grounded in 112 indexed Harco documents · synced today
+      {/* Footer — desktop only */}
+      <div className="relative z-10 mt-[26px] flex items-center gap-2.5 border-t border-white/12 pt-[18px] font-mono text-[10.5px] tracking-wide text-white/55 uppercase max-lg:hidden">
+        <span className="bg-accent ring-accent/20 size-1.5 rounded-full ring-[3px]" />
+        Built for the people who pick up the phone
       </div>
     </aside>
   );
