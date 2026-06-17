@@ -16,6 +16,7 @@ import { SYSTEM_PROMPT, buildUserPreamble } from "@/lib/system-prompt";
 import { classifyEmailSources } from "@/lib/email-sources";
 import { detectEmailIntent } from "@/lib/detect-email-intent";
 import { formatDocumentContext } from "@/lib/format-context";
+import { appendSignature } from "@/lib/email-signature";
 import type { SourceDocument } from "@/lib/types";
 
 export const maxDuration = 30;
@@ -78,7 +79,17 @@ Leave "to" as empty string unless the user provides a specific recipient.`,
         body: z.string().describe("Email body text"),
       })
     ),
+    execute: async ({ to, subject, body }: { to: string; subject: string; body: string }) => {
+      const signedBody = user?.email ? appendSignature(body, displayName, user.email) : body;
+      return { to, subject, body: signedBody };
+    },
   });
+
+  // Authoritative document metadata, keyed by id, from RAG (the same DB rows the
+  // download endpoint streams). The model only supplies document_id; title,
+  // file_type, and file_size_bytes are resolved here so the card can never
+  // disagree with the file that actually downloads.
+  const docsById = new Map(contextDocs.map((d) => [d.id, d]));
 
   const fileReferenceTool = tool({
     description:
@@ -86,11 +97,18 @@ Leave "to" as empty string unless the user provides a specific recipient.`,
     inputSchema: zodSchema(
       z.object({
         document_id: z.string().describe("The document UUID from the available documents list"),
-        title: z.string().describe("The document title"),
-        file_type: z.string().describe("File extension (docx, pdf, etc)"),
-        file_size_bytes: z.number().describe("File size in bytes"),
       })
     ),
+    execute: async ({ document_id }: { document_id: string }) => {
+      const doc = docsById.get(document_id);
+      if (!doc) return null;
+      return {
+        document_id,
+        title: doc.title,
+        file_type: doc.file_type,
+        file_size_bytes: doc.file_size_bytes,
+      };
+    },
   });
 
   const stream = createUIMessageStream({
