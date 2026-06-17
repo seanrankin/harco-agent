@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/server";
 import { retrieveContext, MATCH_COUNT } from "@/lib/rag";
 import { SYSTEM_PROMPT, buildUserPreamble } from "@/lib/system-prompt";
 import { classifyEmailSources } from "@/lib/email-sources";
+import { detectEmailIntent } from "@/lib/detect-email-intent";
 import { formatDocumentContext } from "@/lib/format-context";
 import type { SourceDocument } from "@/lib/types";
 
@@ -51,10 +52,33 @@ export async function POST(req: Request) {
     contextDocs = retrieved.documents;
   }
 
+  const { hasEmailIntent } = detectEmailIntent(userQuery);
+
   const { otherSources: attachmentDocs } = classifyEmailSources(contextDocs);
 
   const preamble = buildUserPreamble(displayName);
-  const systemWithContext = `${SYSTEM_PROMPT}${preamble ? `\n\n${preamble}` : ""}\n\n${formatDocumentContext(contextDocs, contextText)}`;
+  let systemWithContext = `${SYSTEM_PROMPT}${preamble ? `\n\n${preamble}` : ""}\n\n${formatDocumentContext(contextDocs, contextText)}`;
+
+  if (hasEmailIntent && contextDocs.length > 0) {
+    systemWithContext +=
+      "\n\nMANDATORY: The user has explicitly requested an email draft. You MUST call the emailDraft tool in this response. Do NOT skip it even if you are also calling fileReference. Call fileReference for documents AND emailDraft for the email. Both are required.";
+  }
+
+  const emailDraftTool = tool({
+    description: `Generate an email draft that the user can open in Outlook. Use this when:
+- The user explicitly asks for an email draft
+- You detect implicit outreach intent AND email sources are in context
+- The user accepts a proactive offer to draft an email
+Do not include signature lines or placeholder fields in the body.
+Leave "to" as empty string unless the user provides a specific recipient.`,
+    inputSchema: zodSchema(
+      z.object({
+        to: z.string().describe("Recipient email address"),
+        subject: z.string().describe("Email subject line"),
+        body: z.string().describe("Email body text"),
+      })
+    ),
+  });
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
@@ -62,16 +86,6 @@ export async function POST(req: Request) {
         model: openai("gpt-4o-mini"),
         system: systemWithContext,
         messages: await convertToModelMessages(messages),
-        onFinish: () => {
-          // Emit sources AFTER the model finishes so the Sources block
-          // renders beneath the assistant's prose, not above it.
-          if (attachmentDocs.length > 0) {
-            writer.write({
-              type: "data-sources",
-              data: { documents: attachmentDocs.slice(0, MATCH_COUNT) },
-            });
-          }
-        },
         tools: {
           fileReference: tool({
             description:
@@ -87,25 +101,41 @@ export async function POST(req: Request) {
               })
             ),
           }),
-          emailDraft: tool({
-            description: `Generate an email draft that the user can open in Outlook. Use this when:
-- The user explicitly asks for an email draft
-- You detect implicit outreach intent AND email sources are in context
-- The user accepts a proactive offer to draft an email
-Do not include signature lines or placeholder fields in the body.
-Leave "to" as empty string unless the user provides a specific recipient.`,
-            inputSchema: zodSchema(
-              z.object({
-                to: z.string().describe("Recipient email address"),
-                subject: z.string().describe("Email subject line"),
-                body: z.string().describe("Email body text"),
-              })
-            ),
-          }),
+          emailDraft: emailDraftTool,
         },
       });
 
       writer.merge(result.toUIMessageStream());
+
+      // Wait for tool calls to complete
+      const toolCalls = await result.toolCalls;
+      const emailDraftCalled = toolCalls.some(
+        (tc: { toolName: string }) => tc.toolName === "emailDraft"
+      );
+
+      // Two-pass fallback: if email intent was detected but emailDraft wasn't called
+      if (hasEmailIntent && contextDocs.length > 0 && !emailDraftCalled) {
+        const fallbackResult = streamText({
+          model: openai("gpt-4o-mini"),
+          system:
+            systemWithContext +
+            "\n\nYou MUST call the emailDraft tool now. The user requested an email draft. Draft the email based on the documents in context.",
+          messages: await convertToModelMessages(messages),
+          tools: {
+            emailDraft: emailDraftTool,
+          },
+        });
+        writer.merge(fallbackResult.toUIMessageStream());
+        await fallbackResult.toolCalls;
+      }
+
+      // Emit sources after everything completes
+      if (attachmentDocs.length > 0) {
+        writer.write({
+          type: "data-sources",
+          data: { documents: attachmentDocs.slice(0, MATCH_COUNT) },
+        });
+      }
     },
   });
 

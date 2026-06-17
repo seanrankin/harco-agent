@@ -67,6 +67,7 @@ describe("Chat Route Auth Guard", () => {
 
     vi.mocked(streamText).mockReturnValue({
       toUIMessageStream: () => new ReadableStream(),
+      toolCalls: Promise.resolve([]),
     } as any);
 
     vi.mocked(retrieveContext).mockResolvedValue({
