@@ -80,6 +80,19 @@ Leave "to" as empty string unless the user provides a specific recipient.`,
     ),
   });
 
+  const fileReferenceTool = tool({
+    description:
+      "Show a downloadable file card to the user. Use this when referencing a specific source document that the user might want to download.",
+    inputSchema: zodSchema(
+      z.object({
+        document_id: z.string().describe("The document UUID from the available documents list"),
+        title: z.string().describe("The document title"),
+        file_type: z.string().describe("File extension (docx, pdf, etc)"),
+        file_size_bytes: z.number().describe("File size in bytes"),
+      })
+    ),
+  });
+
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
       const result = streamText({
@@ -87,20 +100,7 @@ Leave "to" as empty string unless the user provides a specific recipient.`,
         system: systemWithContext,
         messages: await convertToModelMessages(messages),
         tools: {
-          fileReference: tool({
-            description:
-              "Show a downloadable file card to the user. Use this when referencing a specific source document that the user might want to download.",
-            inputSchema: zodSchema(
-              z.object({
-                document_id: z
-                  .string()
-                  .describe("The document UUID from the available documents list"),
-                title: z.string().describe("The document title"),
-                file_type: z.string().describe("File extension (docx, pdf, etc)"),
-                file_size_bytes: z.number().describe("File size in bytes"),
-              })
-            ),
-          }),
+          fileReference: fileReferenceTool,
           emailDraft: emailDraftTool,
         },
       });
@@ -111,6 +111,9 @@ Leave "to" as empty string unless the user provides a specific recipient.`,
       const toolCalls = await result.toolCalls;
       const emailDraftCalled = toolCalls.some(
         (tc: { toolName: string }) => tc.toolName === "emailDraft"
+      );
+      const fileReferenceCalled = toolCalls.some(
+        (tc: { toolName: string }) => tc.toolName === "fileReference"
       );
 
       // Two-pass fallback: if email intent was detected but emailDraft wasn't called
@@ -127,6 +130,25 @@ Leave "to" as empty string unless the user provides a specific recipient.`,
         });
         writer.merge(fallbackResult.toUIMessageStream());
         await fallbackResult.toolCalls;
+      }
+
+      // Two-pass fallback: surface downloadable reference docs the model didn't card.
+      // gpt-4o-mini often answers without calling fileReference even when relevant docs
+      // are in context. A focused second pass decides whether to card the most relevant
+      // documents, and may call nothing if none are genuinely germane.
+      if (attachmentDocs.length > 0 && !fileReferenceCalled && contextText !== "") {
+        const docFallbackResult = streamText({
+          model: openai("gpt-4o-mini"),
+          system:
+            systemWithContext +
+            "\n\nThe user's question has already been answered. Your ONLY job now is to optionally surface downloadable reference documents. If 1-2 of the downloadable documents (pdf, doc, docx) in the Available Documents list directly support that answer, call the fileReference tool for each, preceded by a lead-in of at most 12 words. If no document is genuinely relevant, output nothing and call no tool. Do NOT re-answer the question.",
+          messages: await convertToModelMessages(messages),
+          tools: {
+            fileReference: fileReferenceTool,
+          },
+        });
+        writer.merge(docFallbackResult.toUIMessageStream());
+        await docFallbackResult.toolCalls;
       }
 
       // Emit sources after everything completes

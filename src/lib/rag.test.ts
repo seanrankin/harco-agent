@@ -15,6 +15,11 @@ const mockRpc = vi.fn();
 vi.mock("@/lib/supabase/server", () => ({
   createServiceClient: vi.fn(() => ({
     rpc: mockRpc,
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        in: vi.fn().mockResolvedValue({ data: [] }),
+      })),
+    })),
   })),
 }));
 
