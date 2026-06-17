@@ -12,18 +12,23 @@ The flow: user clicks button → OAuth if needed → client POSTs to `/api/outlo
 sequenceDiagram
     participant User
     participant EmailDraftCard
+    participant AuthPopup as Popup: /api/outlook/auth
     participant OAuthCallback as /api/outlook/callback
     participant SendDraft as /api/outlook/send-draft
     participant Supabase
     participant Graph as Microsoft Graph API
 
     User->>EmailDraftCard: Clicks "Send to Outlook"
-    alt No Microsoft token
-        EmailDraftCard->>User: Redirect to Microsoft OAuth
+    EmailDraftCard->>EmailDraftCard: GET /api/outlook/status
+    alt No Microsoft token (status 401)
+        EmailDraftCard->>AuthPopup: window.open(/api/outlook/auth)
+        AuthPopup->>User: Redirect to Microsoft login (in popup)
         User->>OAuthCallback: Returns with auth code
         OAuthCallback->>Graph: Exchange code for tokens
         Graph-->>OAuthCallback: Access + refresh tokens
-        OAuthCallback->>User: Set HTTP-only cookie, redirect back
+        OAuthCallback->>OAuthCallback: Set HTTP-only cookies on response
+        OAuthCallback->>EmailDraftCard: postMessage({ type: "outlook-auth", success: true })
+        Note over AuthPopup: Popup closes itself
     end
     EmailDraftCard->>SendDraft: POST {to, subject, body, documentIds}
     SendDraft->>Supabase: Query documents table
@@ -76,8 +81,9 @@ type ButtonState =
 The component:
 - Checks `outlookEnabled` prop (derived from a server-rendered flag based on env var presence) to decide whether to render at all.
 - On click, checks for Microsoft auth by calling `GET /api/outlook/status` (returns 200 if tokens present, 401 if not).
-- If no tokens, opens a popup/redirect to `/api/outlook/auth` which initiates the OAuth flow.
-- After auth, automatically retries the send-draft call.
+- If no tokens, opens a **popup window** via `window.open("/api/outlook/auth", "outlook-auth", "width=600,height=700")`.
+- Listens for a `postMessage` from the popup (type `"outlook-auth"`) indicating auth completed.
+- After auth completes (or popup closes), re-checks `/api/outlook/status` and proceeds to send the draft.
 - Resets to idle after 3s (success/partial) or 5s (error).
 
 #### Modified `EmailDraftCard`
@@ -92,23 +98,26 @@ Pass document IDs collected from sibling fileReference tool calls and source dat
 
 #### `GET /api/outlook/auth` (new)
 
-Constructs the Microsoft OAuth authorization URL and redirects the user.
+Constructs the Microsoft OAuth authorization URL and redirects the user (intended to run inside a popup window opened by `OutlookButton`).
 
 ```typescript
-// Query params: ?returnUrl=<url to redirect back to after auth>
+// No query params required (state is hardcoded to "popup")
 // Redirects to: https://login.microsoftonline.com/common/oauth2/v2.0/authorize
-//   with client_id, redirect_uri, scope=Mail.ReadWrite offline_access, response_type=code, state
+//   with client_id, redirect_uri, scope=Mail.ReadWrite offline_access, response_type=code, state="popup"
+// Returns 500 JSON error if MICROSOFT_CLIENT_ID or MICROSOFT_REDIRECT_URI are missing
 ```
 
 #### `GET /api/outlook/callback` (new)
 
-Handles the OAuth callback from Microsoft.
+Handles the OAuth callback from Microsoft. Returns an HTML page that posts a message to the opener window and closes itself (popup-based flow).
 
 ```typescript
-// Receives: ?code=<auth_code>&state=<encoded_state>
-// Exchanges code for tokens via POST to token endpoint
-// Sets tokens in HTTP-only cookies (ms_access_token, ms_refresh_token)
-// Redirects user back to the original page
+// Receives: ?code=<auth_code> (or ?error=<error_type> on denial)
+// Exchanges code for tokens via POST to Microsoft token endpoint (10s timeout)
+// Sets encrypted tokens in HTTP-only cookies on the response
+// Returns HTML that calls: window.opener.postMessage({ type: "outlook-auth", success, error }, origin)
+// Then closes the popup via window.close()
+// Error cases: consent_denied, missing_code, not_configured, exchange_failed, timeout
 ```
 
 #### `GET /api/outlook/status` (new)
@@ -301,10 +310,11 @@ const sendDraftSchema = z.object({
 |----------|----------|-------------|
 | Microsoft env vars missing | Button not rendered | User sees only mailto and copy buttons |
 | OAuth popup blocked | Error state on button | Message: "Please allow popups for this site" |
-| OAuth denied by user | Error state on button | Message: "Microsoft permissions not granted" |
-| Token exchange fails | Error state on button | Message: "Sign-in could not be completed" |
+| OAuth denied by user | Popup posts error, closes | Message: "Microsoft permissions not granted" |
+| Token exchange fails | Popup posts error, closes | Message: "Microsoft permissions not granted" |
+| Token exchange timeout | Popup posts error, closes | Message: "Microsoft permissions not granted" |
 | Access token expired, refresh succeeds | Transparent retry | No user impact |
-| Refresh token expired/revoked | 401 from API, triggers re-auth | User prompted to sign in again |
+| Refresh token expired/revoked | 401 from API, triggers re-auth popup | User prompted to sign in again |
 | Document not found in DB | Skipped, draft still created | Partial success with count |
 | Signed URL generation fails | Skipped, draft still created | Partial success with count |
 | File download from Supabase fails | Skipped, draft still created | Partial success with count |

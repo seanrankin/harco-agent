@@ -16,7 +16,11 @@ An internal AI-powered knowledge base for Harco Fittings salespeople. Ask questi
 - Conversational Q&A grounded in ingested company documents
 - RAG retrieval with pgvector (HNSW index, cosine similarity)
 - Source document cards with signed download links
-- Email draft generation (opens in mail client)
+- Proactive email drafting (detects email intent and drafts automatically)
+- Send to Outlook: one-click draft creation in Microsoft 365 via Graph API (with file attachments)
+- Thread history with sidebar navigation and persistence
+- Inline email draft rendering in assistant messages
+- Personalized responses (captures user name at signup, injects into system prompt)
 - Magic link auth with domain restriction
 - Document ingestion script supporting .docx, .pdf, .eml, and .msg files (with attachment extraction)
 
@@ -45,6 +49,14 @@ Required variables:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key                                  |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Supabase service role key                                 |
 | `ALLOWED_EMAILS`                | Comma-separated emails allowed outside @harcofittings.com |
+
+Optional (enables Send to Outlook):
+
+| Variable                  | Description                                                              |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `MICROSOFT_CLIENT_ID`     | Azure AD app client ID                                                   |
+| `MICROSOFT_CLIENT_SECRET` | Azure AD app client secret                                               |
+| `MICROSOFT_REDIRECT_URI`  | OAuth callback URL (e.g. `https://your-domain.com/api/outlook/callback`) |
 
 ### Database Migrations
 
@@ -81,25 +93,47 @@ Email files (`.eml` and `.msg`) are parsed for both body text and attachments. S
 src/
 ├── app/
 │   ├── api/
-│   │   ├── chat/route.ts       # Chat endpoint (streaming, RAG, tools)
-│   │   └── download/route.ts   # Signed URL redirect for doc downloads
-│   ├── auth/callback/route.ts  # Magic link callback
-│   ├── login/page.tsx          # Login page
-│   └── page.tsx                # Main chat UI
+│   │   ├── chat/route.ts             # Chat endpoint (streaming, RAG, tools, email intent detection)
+│   │   ├── documents/count/route.ts  # Indexed document count for top bar
+│   │   ├── download/route.ts         # Signed URL redirect for doc downloads
+│   │   ├── outlook/
+│   │   │   ├── auth/route.ts         # Microsoft OAuth initiation
+│   │   │   ├── callback/route.ts     # OAuth callback (popup postMessage flow)
+│   │   │   ├── send-draft/route.ts   # Create draft in Outlook with attachments
+│   │   │   └── status/route.ts       # Check Microsoft auth status
+│   │   └── threads/route.ts          # Thread CRUD for history sidebar
+│   ├── auth/callback/route.ts        # Magic link callback
+│   ├── login/page.tsx                # Login page (with name capture on first sign-in)
+│   └── page.tsx                      # App shell and chat page
 ├── components/
-│   ├── assistant-ui/           # Chat thread components
-│   ├── tool-ui/                # File card, email draft card
-│   └── ui/                     # Shared UI primitives
+│   ├── app-shell/                    # Sidebar, top bar, thread list
+│   ├── assistant-ui/                 # Chat thread components (message parts, markdown)
+│   ├── brand/                        # Brand marks (diamond, logo)
+│   ├── tool-ui/                      # File card, email draft card, Outlook button, spec table
+│   └── ui/                           # Shared UI primitives (shadcn)
+│   └── chat-client.tsx               # Main chat client component
 ├── lib/
-│   ├── rag.ts                  # Vector similarity retrieval
-│   └── supabase/               # Supabase client helpers
-└── middleware.ts               # Session refresh middleware
+│   ├── citations/                    # Remark plugin for inline source citations
+│   ├── outlook/                      # Graph client, token manager, attachment resolver, config
+│   ├── supabase/                     # Supabase client helpers (browser + server)
+│   ├── auth.ts                       # requireAuth helper
+│   ├── detect-email-intent.ts        # Pre-classifies explicit email drafting intent
+│   ├── email-sources.ts              # Extracts document IDs from tool calls for attachments
+│   ├── format-context.ts             # Formats RAG docs into system prompt context
+│   ├── onboarding.ts                 # Device-local signed-in flag constant
+│   ├── parse-inline-email.ts         # Parses inline email blocks from assistant text
+│   ├── rag.ts                        # Vector similarity retrieval
+│   ├── starter-suggestions.ts        # Rotating starter prompt suggestions
+│   ├── system-prompt.ts              # System prompt builder (with user name preamble)
+│   ├── thread-adapter.tsx            # Thread runtime adapter for assistant-ui
+│   └── thread-utils.ts               # Thread serialization utilities
+└── middleware.ts                     # Session refresh middleware
 
 scripts/
-└── ingest.js                   # Document ingestion CLI
+└── ingest.js                         # Document ingestion CLI
 
 supabase/
-└── migrations/                 # Database schema (pgvector, RLS, storage)
+└── migrations/                       # Database schema (pgvector, RLS, storage, threads)
 ```
 
 ## Styling & UI conventions

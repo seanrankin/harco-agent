@@ -35,14 +35,14 @@ Add a "Send to Outlook" button to the EmailDraftCard component that uses the Mic
 
 #### Acceptance Criteria
 
-1. WHEN the user clicks the Outlook_Button and no valid access token or refresh token exists in the current session, THE OAuth_Flow SHALL redirect the user to the Microsoft identity platform authorization endpoint.
+1. WHEN the user clicks the Outlook_Button and no valid access token or refresh token exists in the current session, THE OAuth_Flow SHALL open a popup window to the Microsoft identity platform authorization endpoint.
 2. THE OAuth_Flow SHALL request the `Mail.ReadWrite` permission scope to create draft messages with attachments.
 3. WHEN Microsoft returns an authorization code, THE Graph_API_Client SHALL exchange the code for access and refresh tokens within 10 seconds.
 4. THE Graph_API_Client SHALL store tokens in an HTTP-only, Secure, SameSite=Strict cookie or server-side session inaccessible to client-side JavaScript.
 5. WHEN a stored access token has expired and an API call is attempted, THE Graph_API_Client SHALL use the refresh token to obtain a new access token without user interaction.
-6. IF the refresh token is invalid or revoked, THEN THE OAuth_Flow SHALL redirect the user to re-authenticate and display a message indicating the session has expired.
-7. IF the user denies consent or the authorization request fails, THEN THE OAuth_Flow SHALL redirect the user back to the application and display an error message indicating that Microsoft permissions were not granted.
-8. IF the token exchange request fails or times out, THEN THE Graph_API_Client SHALL display an error message indicating the sign-in could not be completed and allow the user to retry.
+6. IF the refresh token is invalid or revoked, THEN THE OAuth_Flow SHALL open a popup for the user to re-authenticate and display a message indicating the session has expired.
+7. IF the user denies consent or the authorization request fails, THEN THE OAuth_Flow SHALL close the popup and display an error message indicating that Microsoft permissions were not granted.
+8. IF the token exchange request fails or times out, THEN THE OAuth_Flow SHALL close the popup and display an error message indicating the sign-in could not be completed and allow the user to retry.
 
 ### Requirement 3: Create Draft with Attachments
 
