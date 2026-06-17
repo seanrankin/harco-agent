@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
 import { ThreadItem } from "./thread-item";
+import { UserIdentity } from "./user-identity";
 import { LogOutIcon, PlusIcon, XIcon } from "lucide-react";
 
 interface SidebarProps {
@@ -15,6 +16,8 @@ interface SidebarProps {
   onClose: () => void;
   onNewQuestion: () => void;
   onSignOut: () => void;
+  userDisplayName?: string | null;
+  userEmail?: string | null;
 }
 
 const EmptyThreadList: FC = () => {
@@ -25,7 +28,14 @@ const EmptyThreadList: FC = () => {
   );
 };
 
-export const Sidebar: FC<SidebarProps> = ({ open, onClose, onNewQuestion, onSignOut }) => {
+export const Sidebar: FC<SidebarProps> = ({
+  open,
+  onClose,
+  onNewQuestion,
+  onSignOut,
+  userDisplayName,
+  userEmail,
+}) => {
   return (
     <>
       {/* Drawer scrim (mobile only) */}
@@ -90,11 +100,12 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose, onNewQuestion, onSign
         </ThreadListPrimitive.Root>
 
         {/* Footer — sign out */}
-        <div className="border-border/60 flex items-center justify-end border-t p-3">
+        <div className="border-border/60 flex items-center border-t p-3">
+          <UserIdentity displayName={userDisplayName} email={userEmail} />
           <TooltipIconButton
             tooltip="Sign out"
             onClick={onSignOut}
-            className="text-muted-foreground hover:text-primary size-9"
+            className="text-muted-foreground hover:text-primary size-9 shrink-0"
             aria-label="Sign out"
           >
             <LogOutIcon className="size-4" />

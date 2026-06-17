@@ -11,6 +11,7 @@ import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 
+import { createClient } from "@/lib/supabase/client";
 import { threadListAdapter } from "@/lib/thread-adapter";
 import { SIGNED_IN_FLAG } from "@/lib/onboarding";
 
@@ -84,7 +85,7 @@ const DevToolsModal =
 
 const FileReferenceToolUI = makeAssistantToolUI({
   toolName: "fileReference",
-  render: function FileReference({ args, toolCallId }) {
+  render: function FileReference({ args, result, toolCallId }) {
     const message = useMessage();
     if (!args) return null;
 
@@ -101,13 +102,22 @@ const FileReferenceToolUI = makeAssistantToolUI({
 
     if (firstToolCallId && firstToolCallId !== toolCallId) return null;
 
+    // Metadata is resolved server-side from the authoritative documents row, so
+    // the card matches the file that downloads. Until the result arrives (or if
+    // the id wasn't in context), render nothing.
+    const meta = result as
+      | { title: string; file_type: string; file_size_bytes: number }
+      | null
+      | undefined;
+    if (!meta) return null;
+
     return (
       <ChunkErrorBoundary>
         <FileCard
           documentId={documentId}
-          title={args.title as string}
-          fileType={args.file_type as string}
-          fileSizeBytes={args.file_size_bytes as number}
+          title={meta.title}
+          fileType={meta.file_type}
+          fileSizeBytes={meta.file_size_bytes}
         />
       </ChunkErrorBoundary>
     );
@@ -186,6 +196,18 @@ function AppShell({
   setNavOpen: (open: boolean) => void;
 }) {
   const assistantRuntime = useAssistantRuntime();
+  const [userDisplayName, setUserDisplayName] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUserDisplayName((data.user.user_metadata?.display_name as string) ?? null);
+        setUserEmail(data.user.email ?? null);
+      }
+    });
+  }, []);
 
   const handleNewQuestion = useCallback(() => {
     void assistantRuntime.threads.switchToNewThread();
@@ -193,7 +215,6 @@ function AppShell({
   }, [assistantRuntime, setNavOpen]);
 
   const handleSignOut = useCallback(async () => {
-    const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
     await supabase.auth.signOut();
     window.location.href = "/login";
@@ -206,6 +227,8 @@ function AppShell({
         onClose={() => setNavOpen(false)}
         onNewQuestion={handleNewQuestion}
         onSignOut={handleSignOut}
+        userDisplayName={userDisplayName}
+        userEmail={userEmail}
       />
       <main className="relative flex h-full min-w-0 flex-1 flex-col">
         <TopBar onMenuClick={() => setNavOpen(true)} />
