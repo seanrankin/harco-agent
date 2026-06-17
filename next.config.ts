@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "@assistant-ui/react", "radix-ui", "@base-ui/react"],
   },
+  devIndicators: false,
 };
 
 export default withBundleAnalyzer(nextConfig);
