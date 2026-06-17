@@ -3,8 +3,9 @@ export function appendSignature(
   displayName: string | null | undefined,
   email: string
 ): string {
-  const identificationLine = displayName && displayName.trim().length > 0 ? displayName : email;
-  return `${body}\n\nBest,\n${identificationLine}\nHarco Fittings`;
+  const hasName = displayName != null && displayName.trim().length > 0;
+  const identityLines = hasName ? `${displayName}\n${email}` : email;
+  return `${body}\n\nBest,\n${identityLines}\nHarco Fittings`;
 }
 
 export function getInitials(displayName?: string | null, email?: string | null): string {

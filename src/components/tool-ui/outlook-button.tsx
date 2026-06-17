@@ -1,7 +1,23 @@
 "use client";
 
-import { CheckIcon, LoaderIcon, MailIcon, AlertCircleIcon } from "lucide-react";
+import { CheckIcon, LoaderIcon, AlertCircleIcon } from "lucide-react";
 import { useState, useCallback, useRef, useEffect } from "react";
+
+function OutlookIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 32 32"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M19.484 7.937v5.477l1.916 1.205c.089.053.19.08.291.08s.202-.027.291-.08L30 9.446V8.198a1.664 1.664 0 0 0-1.664-1.664h-8.852v1.403z" />
+      <path d="M19.484 15.457l1.747 1.2a.593.593 0 0 0 .637 0c.089-.053 8.132-5.507 8.132-5.507v10.184a1.664 1.664 0 0 1-1.664 1.664H19.484V15.457z" />
+      <path d="M2 5.497l14.264-2.166v25.326L2 26.462V5.497z" />
+      <path d="M9.16 20.07c-3.26 0-4.76-3.37-4.76-5.86 0-2.69 1.69-5.91 4.82-5.91 3.13 0 4.64 3.27 4.64 5.97 0 2.67-1.59 5.8-4.7 5.8zm.07-10.2c-1.96 0-2.86 2.4-2.86 4.29 0 1.94.96 4.34 2.83 4.34 1.87 0 2.75-2.45 2.75-4.39 0-1.87-.88-4.24-2.72-4.24z" />
+    </svg>
+  );
+}
 
 interface OutlookButtonProps {
   to: string;
@@ -168,7 +184,7 @@ function renderContent(state: ButtonState) {
     case "idle":
       return (
         <>
-          <MailIcon className="size-4" />
+          <OutlookIcon className="size-4" />
           Send to Outlook
         </>
       );

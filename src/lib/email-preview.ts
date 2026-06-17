@@ -8,6 +8,19 @@ export interface EmailPreviewAttachment {
   documentId?: string;
 }
 
+/**
+ * True for legacy Exchange / X.500 directory addresses that aren't human-readable,
+ * e.g. "IMCEAEX-_O=HARCO_OU=...CN=RECIPIENTS_CN=JRIORDAN@eurprd05.prod.outlook.com".
+ * These leak into the from/to fields of some .msg/.eml files and should be hidden.
+ */
+export function isLegacyExchangeAddress(value: string | null | undefined): boolean {
+  if (!value) return false;
+  if (/^IMCEAEX/i.test(value)) return true;
+  const localPart = value.split("@")[0];
+  if (/[_/](?:O|OU|CN)=/i.test(localPart)) return true;
+  return localPart.length > 64;
+}
+
 export interface EmailPreview {
   subject: string;
   fromName: string;

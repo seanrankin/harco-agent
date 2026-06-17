@@ -4,6 +4,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { DownloadIcon, LoaderIcon, MailIcon, PaperclipIcon, XIcon } from "lucide-react";
 import { Fragment } from "react";
 import type { EmailPreview, EmailPreviewAttachment } from "@/lib/email-preview";
+import { isLegacyExchangeAddress } from "@/lib/email-preview";
 import { useEmailPreview } from "./use-email-preview";
 import { DocIcon } from "./doc-icon";
 
@@ -97,6 +98,12 @@ export function EmailReaderModal({ documentId, title, open, onOpenChange }: Emai
 
 function EmailBody({ data, fallbackTitle }: { data: EmailPreview; fallbackTitle: string }) {
   const subject = data.subject || fallbackTitle;
+  // Hide unreadable legacy Exchange/X.500 addresses, including when they leak
+  // into the name fields as a fallback.
+  const fromName = isLegacyExchangeAddress(data.fromName) ? "" : data.fromName;
+  const fromAddr = isLegacyExchangeAddress(data.from) ? "" : data.from;
+  const toName = isLegacyExchangeAddress(data.toName) ? "" : data.toName;
+  const toAddr = isLegacyExchangeAddress(data.to) ? "" : data.to;
   return (
     <>
       <DialogPrimitive.Title className="text-primary mb-5 font-serif text-2xl leading-tight font-semibold tracking-tight text-pretty">
@@ -105,20 +112,22 @@ function EmailBody({ data, fallbackTitle }: { data: EmailPreview; fallbackTitle:
 
       <div className="flex items-start gap-3.5">
         <div className="bg-primary grid size-10.5 shrink-0 place-items-center rounded-full text-sm font-bold tracking-wide text-white">
-          {initialsOf(data.fromName)}
+          {initialsOf(fromName || fromAddr)}
         </div>
         <div className="min-w-0 flex-1 pt-px">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="text-primary text-sm font-bold">{data.fromName || data.from}</span>
-            {data.from && (
+            <span className="text-primary text-sm font-bold">
+              {fromName || fromAddr || "Unknown sender"}
+            </span>
+            {fromAddr && (
               <span className="text-muted-foreground font-mono text-[11.5px]">
-                &lt;{data.from}&gt;
+                &lt;{fromAddr}&gt;
               </span>
             )}
           </div>
-          {(data.toName || data.to) && (
+          {(toName || toAddr) && (
             <div className="text-muted-foreground mt-0.5 text-xs">
-              to {data.toName} {data.to && `<${data.to}>`}
+              to {toName} {toAddr && `<${toAddr}>`}
             </div>
           )}
         </div>

@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 import { appendSignature, getInitials } from "./email-signature";
 
 describe("appendSignature", () => {
-  it("appends signature with displayName", () => {
+  it("appends signature with displayName and email", () => {
     const result = appendSignature("Hello there", "John Smith", "john@harco.com");
-    expect(result).toBe("Hello there\n\nBest,\nJohn Smith\nHarco Fittings");
+    expect(result).toBe("Hello there\n\nBest,\nJohn Smith\njohn@harco.com\nHarco Fittings");
   });
 
   it("falls back to email when displayName is null", () => {
