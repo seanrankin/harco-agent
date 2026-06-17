@@ -73,6 +73,8 @@ const EmailDraftCard = dynamic(
   { ssr: false, loading: () => <EmailDraftCardSkeleton /> }
 );
 
+type EmailDraftAttachment = import("@/components/tool-ui/email-draft-card").EmailDraftAttachment;
+
 const SourceAttachmentsDataUI = dynamic(
   () => import("@/components/tool-ui/source-attachments").then((m) => m.SourceAttachmentsDataUI),
   { ssr: false, loading: () => <SourceAttachmentsSkeleton /> }
@@ -83,6 +85,8 @@ const DevToolsModal =
     ? dynamic(() => import("@assistant-ui/react-devtools").then((m) => m.DevToolsModal))
     : () => null;
 
+const EMAIL_FILE_TYPES = new Set(["eml", "msg"]);
+
 const FileReferenceToolUI = makeAssistantToolUI({
   toolName: "fileReference",
   render: function FileReference({ args, result, toolCallId }) {
@@ -90,6 +94,20 @@ const FileReferenceToolUI = makeAssistantToolUI({
     if (!args) return null;
 
     const documentId = args.document_id as string;
+
+    const meta = result as
+      | { title: string; file_type: string; file_size_bytes: number }
+      | null
+      | undefined;
+
+    // When the message also drafts an email, document references are the draft's
+    // attachments and render inside the EmailDraftCard instead of as standalone
+    // cards. Emails are never email attachments, so they still show on their own.
+    const hasEmailDraft = message.content.some(
+      (part) => part.type === "tool-call" && part.toolName === "emailDraft"
+    );
+    const isEmail = meta ? EMAIL_FILE_TYPES.has(meta.file_type.toLowerCase()) : false;
+    if (hasEmailDraft && !isEmail) return null;
 
     // Render only the first fileReference card per document, so a document the
     // model references more than once shows a single download card.
@@ -105,10 +123,6 @@ const FileReferenceToolUI = makeAssistantToolUI({
     // Metadata is resolved server-side from the authoritative documents row, so
     // the card matches the file that downloads. Until the result arrives (or if
     // the id wasn't in context), render nothing.
-    const meta = result as
-      | { title: string; file_type: string; file_size_bytes: number }
-      | null
-      | undefined;
     if (!meta) return null;
 
     return (
@@ -134,17 +148,26 @@ const EmailDraftToolUI = makeAssistantToolUI({
 
     const message = useMessage();
 
-    const fileRefIds = message.content
-      .filter(
-        (part): part is Extract<typeof part, { type: "tool-call" }> =>
-          part.type === "tool-call" && part.toolName === "fileReference"
-      )
-      .map((part) => (part.args as { document_id?: string }).document_id ?? "")
-      .filter(Boolean);
-
-    // Only attach files the LLM surfaced as downloadable file cards (fileReference).
-    // RAG source documents are intentionally excluded from email attachments.
-    const documentIds = Array.from(new Set(fileRefIds));
+    // Collect the documents the model surfaced as file cards (fileReference),
+    // with their authoritative metadata, to show as attachments inside the draft.
+    // RAG source documents are intentionally excluded. Emails aren't attachments.
+    const seen = new Set<string>();
+    const attachments: EmailDraftAttachment[] = [];
+    for (const part of message.content) {
+      if (part.type !== "tool-call" || part.toolName !== "fileReference") continue;
+      const docId = (part.args as { document_id?: string }).document_id;
+      if (!docId || seen.has(docId)) continue;
+      const result = (part as { result?: { title: string; file_type: string; file_size_bytes: number } | null })
+        .result;
+      if (!result || EMAIL_FILE_TYPES.has(result.file_type.toLowerCase())) continue;
+      seen.add(docId);
+      attachments.push({
+        documentId: docId,
+        title: result.title,
+        fileType: result.file_type,
+        fileSizeBytes: result.file_size_bytes,
+      });
+    }
 
     return (
       <ChunkErrorBoundary>
@@ -152,7 +175,7 @@ const EmailDraftToolUI = makeAssistantToolUI({
           to={args.to as string}
           subject={args.subject as string}
           body={args.body as string}
-          documentIds={documentIds}
+          attachments={attachments}
           outlookEnabled={_outlookEnabled}
         />
       </ChunkErrorBoundary>

@@ -101,8 +101,8 @@ export const ThreadItem: FC = () => {
     <ThreadListItemPrimitive.Root
       className={cn(
         "group relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
-        "hover:bg-muted/60",
-        state.isMain && "bg-muted"
+        "hover:bg-primary/[0.06]",
+        state.isMain && "bg-primary/10"
       )}
     >
       {isRenaming ? (
@@ -117,7 +117,12 @@ export const ThreadItem: FC = () => {
           aria-label="Rename thread"
         />
       ) : (
-        <ThreadListItemPrimitive.Trigger className="min-w-0 flex-1 cursor-pointer truncate text-left text-foreground">
+        <ThreadListItemPrimitive.Trigger
+          className={cn(
+            "min-w-0 flex-1 cursor-pointer truncate text-left",
+            state.isMain ? "text-primary font-medium" : "text-foreground"
+          )}
+        >
           {displayTitle}
         </ThreadListItemPrimitive.Trigger>
       )}

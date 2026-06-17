@@ -1,4 +1,10 @@
-import { ArrowUpRightIcon } from "lucide-react";
+"use client";
+
+import { ArrowUpRightIcon, DownloadIcon, MailIcon } from "lucide-react";
+import { useState } from "react";
+import { DocIcon, EMAIL_FILE_TYPES } from "./doc-icon";
+import { EmailReaderModal } from "./email-reader-modal";
+import { useEmailPreview } from "./use-email-preview";
 
 interface FileCardProps {
   documentId: string;
@@ -13,55 +19,26 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function extColor(ext: string): string {
-  switch (ext) {
-    case "pdf":
-      return "bg-pdf";
-    case "docx":
-    case "doc":
-      return "bg-docx";
-    case "xlsx":
-    case "xls":
-    case "csv":
-      return "bg-xlsx";
-    default:
-      return "bg-muted-foreground";
-  }
-}
-
-/**
- * Document-icon block — colored card with ext label and a folded corner.
- * Matches the .doc-icon pattern from the design mockup.
- */
-export function DocIcon({ ext, size = "md" }: { ext: string; size?: "sm" | "md" }) {
-  const label = ext.toUpperCase();
-  const dims = size === "sm" ? "h-9 w-7" : "h-12 w-10";
-  const fontSize = size === "sm" ? "text-[8px]" : "text-[9px]";
-  return (
-    <div
-      className={`relative shrink-0 rounded-sm ${dims} ${extColor(ext)} grid place-items-end overflow-hidden text-white shadow-sm`}
-    >
-      {/* folded corner */}
-      <span
-        aria-hidden="true"
-        className="absolute top-0 right-0 size-2.5 bg-background"
-        style={{
-          clipPath: "polygon(0 0, 100% 100%, 100% 0)",
-        }}
-      />
-      <span className={`pb-1 font-mono font-semibold tracking-wider ${fontSize}`}>{label}</span>
-    </div>
-  );
-}
-
 export function FileCard({ documentId, title, fileType, fileSizeBytes }: FileCardProps) {
   const ext = (fileType ?? "file").toLowerCase();
+
+  if (EMAIL_FILE_TYPES.has(ext)) {
+    return (
+      <EmailFileCard
+        documentId={documentId}
+        title={title}
+        ext={ext}
+        fileSizeBytes={fileSizeBytes}
+      />
+    );
+  }
+
   return (
     <a
       href={`/api/download?document_id=${documentId}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group bg-card hover:border-muted-foreground/40 my-2 flex w-full items-center gap-3.5 rounded-xl border p-3 transition-all hover:shadow-sm"
+      className="group bg-card hover:border-muted-foreground/40 my-2 flex w-full max-w-xl items-center gap-3.5 rounded-xl border p-3 transition-all hover:shadow-sm"
     >
       <DocIcon ext={ext} />
       <div className="min-w-0 flex-1">
@@ -77,5 +54,59 @@ export function FileCard({ documentId, title, fileType, fileSizeBytes }: FileCar
         <ArrowUpRightIcon className="size-3.5" />
       </span>
     </a>
+  );
+}
+
+function EmailFileCard({
+  documentId,
+  title,
+  ext,
+  fileSizeBytes,
+}: {
+  documentId: string;
+  title: string;
+  ext: string;
+  fileSizeBytes?: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const preview = useEmailPreview(documentId, true);
+
+  const sub =
+    preview.status === "ready" && (preview.data.fromName || preview.data.date)
+      ? [preview.data.fromName, preview.data.date].filter(Boolean).join(" · ")
+      : `${ext.toUpperCase()} · ${formatFileSize(fileSizeBytes ?? 0)}`;
+
+  return (
+    <>
+      <div className="bg-card my-2 flex w-full max-w-xl items-center gap-3.5 rounded-xl border p-3 transition-colors max-[480px]:flex-wrap">
+        <DocIcon ext={ext} />
+        <div className="min-w-0 flex-1">
+          <p className="text-primary truncate text-sm leading-snug font-semibold tracking-tight">
+            {title}
+          </p>
+          <p className="text-muted-foreground mt-0.5 truncate text-[11px] tracking-wide">{sub}</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-1 max-[480px]:w-full max-[480px]:justify-end">
+          <a
+            href={`/api/download?document_id=${documentId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:bg-primary/8 hover:text-primary inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors"
+          >
+            <DownloadIcon className="size-3.5" />
+            Download
+          </a>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="text-ring hover:bg-ring/10 inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors"
+          >
+            <MailIcon className="size-3.5" />
+            Preview
+          </button>
+        </div>
+      </div>
+      <EmailReaderModal documentId={documentId} title={title} open={open} onOpenChange={setOpen} />
+    </>
   );
 }
