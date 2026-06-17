@@ -5,5 +5,11 @@ export function deduplicateSources(
   toolCallDocumentIds: string[]
 ): SourceDocument[] {
   const toolCallIdSet = new Set(toolCallDocumentIds.map((id) => id.toLowerCase()));
-  return sourceDocuments.filter((doc) => !toolCallIdSet.has(doc.id.toLowerCase()));
+  const seen = new Set<string>();
+  return sourceDocuments.filter((doc) => {
+    const id = doc.id.toLowerCase();
+    if (toolCallIdSet.has(id) || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
 }

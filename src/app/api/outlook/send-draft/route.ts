@@ -11,6 +11,7 @@ import {
 } from "@/lib/outlook/token-manager";
 import { resolveAttachments, deduplicateDocumentIds } from "@/lib/outlook/attachment-resolver";
 import { createDraftMessage, attachFile, createUploadSession } from "@/lib/outlook/graph-client";
+import { plainTextToHtml } from "@/lib/outlook/plain-text-to-html";
 
 const sendDraftSchema = z.object({
   to: z.string().max(255),
@@ -80,7 +81,10 @@ export async function POST(request: Request) {
   // 7. Create draft via Graph API
   let messageId: string;
   try {
-    const draft = await createDraftMessage({ accessToken }, { to, subject, bodyHtml: body });
+    const draft = await createDraftMessage(
+      { accessToken },
+      { to, subject, bodyHtml: plainTextToHtml(body) }
+    );
     messageId = draft.id;
   } catch (err) {
     const message = err instanceof Error ? err.message : "Graph API request failed";

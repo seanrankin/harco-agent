@@ -84,12 +84,27 @@ const DevToolsModal =
 
 const FileReferenceToolUI = makeAssistantToolUI({
   toolName: "fileReference",
-  render: ({ args }) => {
+  render: function FileReference({ args, toolCallId }) {
+    const message = useMessage();
     if (!args) return null;
+
+    const documentId = args.document_id as string;
+
+    // Render only the first fileReference card per document, so a document the
+    // model references more than once shows a single download card.
+    const firstToolCallId = message.content.find(
+      (part): part is Extract<typeof part, { type: "tool-call" }> =>
+        part.type === "tool-call" &&
+        part.toolName === "fileReference" &&
+        (part.args as { document_id?: string }).document_id === documentId
+    )?.toolCallId;
+
+    if (firstToolCallId && firstToolCallId !== toolCallId) return null;
+
     return (
       <ChunkErrorBoundary>
         <FileCard
-          documentId={args.document_id as string}
+          documentId={documentId}
           title={args.title as string}
           fileType={args.file_type as string}
           fileSizeBytes={args.file_size_bytes as number}
@@ -117,18 +132,9 @@ const EmailDraftToolUI = makeAssistantToolUI({
       .map((part) => (part.args as { document_id?: string }).document_id ?? "")
       .filter(Boolean);
 
-    const sourceIds = message.content
-      .filter(
-        (part): part is Extract<typeof part, { type: "data" }> =>
-          part.type === "data" && part.name === "sources"
-      )
-      .flatMap((part) => {
-        const docs = (part.data?.documents ?? []) as Array<{ id: string }>;
-        return docs.map((doc) => doc.id);
-      })
-      .filter(Boolean);
-
-    const documentIds = Array.from(new Set([...fileRefIds, ...sourceIds]));
+    // Only attach files the LLM surfaced as downloadable file cards (fileReference).
+    // RAG source documents are intentionally excluded from email attachments.
+    const documentIds = Array.from(new Set(fileRefIds));
 
     return (
       <ChunkErrorBoundary>
