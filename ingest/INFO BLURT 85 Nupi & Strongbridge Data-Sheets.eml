@@ -1,0 +1,171 @@
+Received: from MAIL.harcofittings.com (192.168.1.23) by MAIL.harcofittings.com
+ (192.168.1.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5 via Mailbox
+ Transport; Wed, 26 May 2021 14:38:11 -0400
+Received: from MAIL.harcofittings.com (192.168.1.23) by MAIL.harcofittings.com
+ (192.168.1.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Wed, 26 May
+ 2021 14:38:11 -0400
+Received: from MAIL.harcofittings.com ([169.254.0.2]) by
+ MAIL.harcofittings.com ([169.254.0.2]) with mapi id 15.01.1913.012; Wed, 26
+ May 2021 14:38:11 -0400
+From: "Brad  Sukolsky" <Brad.Sukolsky@harcofittings.com>
+To: NA-US-MT-STV-ADSG-HarcoFittings-Sales <SalesDeptMT@harcofittings.com>,
+	Douglas Foucheaux <DFoucheaux@harcofittings.com>, Dave Krause
+	<DKrause@harcofittings.com>, Rick Shriver <RShriver@harcofittings.com>, Mike
+ Scheel <Mike.Scheel@harcofittings.com>, John Fralick
+	<John.Fralick@harcofittings.com>, Sean Tully <Sean.Tully@harcofittings.com>,
+	NA-US-ADSG-HarcoFittings-Product Engineering <Product@harcofittings.com>,
+	Cindy Grishaw <Cindy.Grishaw@harcofittings.com>, Shelley Jennings
+	<Shelley.Jennings@harcofittings.com>
+Subject: INFO BLURT 85 Nupi & Strongbridge Data-Sheets
+Thread-Topic: INFO BLURT 85 Nupi & Strongbridge Data-Sheets
+Thread-Index: AddSXcv+U4E9B37zQUGCY5v+cgizhw==
+Date: Wed, 26 May 2021 18:38:10 +0000
+Message-ID: <0fe54f9263ae4d18ac592e7f104c1382@harcofittings.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Exchange-Organization-AuthAs: Internal
+X-MS-Exchange-Organization-AuthMechanism: 04
+X-MS-Exchange-Organization-AuthSource: MAIL.harcofittings.com
+X-MS-Has-Attach:
+X-MS-Exchange-Organization-Network-Message-Id:
+ 4d5ae6c1-5d46-411e-ca0e-08d9207569f2
+X-MS-Exchange-Organization-SCL: -1
+X-MS-TNEF-Correlator:
+X-MS-Exchange-Organization-RecordReviewCfmType: 0
+x-ms-exchange-organization-originalclientipaddress: 192.168.10.20
+x-ms-exchange-organization-originalserveripaddress: 192.168.1.23
+x-originating-ip: [192.168.10.20]
+x-tm-as-result: No-10--18.033900-5.000000
+x-tm-as-product-ver: SMEX-14.0.0.1158-8.6.1012-26180.007
+x-tm-as-user-blocked-sender: No
+x-tm-as-user-approved-sender: No
+x-tmase-matchedrid: zaP8QUweGYD/rTppf3D9GO9VsdrlGzy3Q6/DFZugyt1bYv6Kt+uF2MxF
+	Qxp3PhHymoRv4vCWtWMfvo9UW9ImXv+z7xWvCPyPWcC0gYMYIWiOVGny5q72hiPS9JdK3W4/zU4
+	H2c6gTjruwVMYOEUN5gH/6CIQ6zHMn0UoIZ374hcCOoDG5aR1MfxeH3fk9hIOWUtm6AJIkCBQCs
+	mfAegbdODyrhjfvMpNKoyKZUc8XR4iz21blUtkFdLtgx6d641ijokMbd75JAoi0/kre3GpulgUN
+	WSEnOV8S9gQn6wQyVmhfgnIj2dNhOr0FFeDVhizuy1sIsdu6VIyWxZ1HCECbanSPFMXVhWe7+mc
+	/oawXMZFf98KuN2I1fajRS+DViruLlel0HG2hOEdxBAG5/hkW9L5WpA78Ye8OgqmhdcFC5YZiFm
+	GNfTu7gdNTGdVVbw8c/cW3l1H8r+Av1rzYMSBzDn/wcdfjLjCgYhUsGge+PKXBXaJoB9JZ/7E6G
+	Nqs6ceAaUQk5EZOUmA6k6KAPdvJ2KbiO7rfgmGfKIHQui77Q+emh3/VQvHP+7IF3XF+SUkNBl/M
+	d5dVfo=
+Content-Type: multipart/alternative;
+	boundary="_000_0fe54f9263ae4d18ac592e7f104c1382harcofittingscom_"
+MIME-Version: 1.0
+
+--_000_0fe54f9263ae4d18ac592e7f104c1382harcofittingscom_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+All,
+There are certain considerations that must be taken into account when molde=
+d HDPE fittings manufactured by others are sold by Harco.  This blurt addre=
+sses Nupi and Strongbridge specifically.
+
+Nupi and Strongbridge are based overseas but promote their product through =
+the websites nupiamericas.com & strongbridge.us.  One of their online resou=
+rces is a library of dimensional drawings and data-sheets.  These data-shee=
+ts recite pressure ratings based on European ISO standards and not American=
+ ASTM standards.  Pressure rating is calculated differently between these s=
+ets of standards.  For example, Nupi data-sheets describe DR11 as 230 psi w=
+hile by American convention DR11 is 200psi.  .  Harco sells to a North Amer=
+ican market and is governed by the ASTM calculations.
+
+We have requested they revise their data sheets to reflect American pressur=
+e ratings.
+
+Customer service and sales staff should not recite the pressure ratings lis=
+ted on Nupi or Strongbridge data-sheets and should not provide those data-s=
+heets to customers.  If a drawing/data-sheet of these products is required,=
+ please request one be produced through the channels you typically make suc=
+h requests and it will be created on a Harco template.
+
+
+--_000_0fe54f9263ae4d18ac592e7f104c1382harcofittingscom_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri",sans-serif;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">All,<o:p></o:p></p>
+<p class=3D"MsoNormal">There are certain considerations that must be taken =
+into account when molded HDPE fittings manufactured by others are sold by H=
+arco.&nbsp; This blurt addresses Nupi and Strongbridge specifically.<o:p></=
+o:p></p>
+<p class=3D"MsoNormal"><b><o:p>&nbsp;</o:p></b></p>
+<p class=3D"MsoNormal">Nupi and Strongbridge are based overseas but promote=
+ their product through the websites nupiamericas.com &amp; strongbridge.us.=
+&nbsp; One of their online resources is a library of dimensional drawings a=
+nd data-sheets.&nbsp; These data-sheets recite pressure
+ ratings based on European ISO standards and not American ASTM standards.&n=
+bsp; Pressure rating is calculated differently between these sets of standa=
+rds.&nbsp; For example, Nupi data-sheets describe DR11 as 230 psi while by =
+American convention DR11 is 200psi.&nbsp; .&nbsp; Harco
+ sells to a North American market and is governed by the ASTM calculations.=
+<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">We have requested they revise their data sheets to r=
+eflect American pressure ratings.<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Customer service and sales staff should not recite t=
+he pressure ratings listed on Nupi or Strongbridge data-sheets and should n=
+ot provide those data-sheets to customers.&nbsp; If a drawing/data-sheet of=
+ these products is required, please request
+ one be produced through the channels you typically make such requests and =
+it will be created on a Harco template.<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
+
+--_000_0fe54f9263ae4d18ac592e7f104c1382harcofittingscom_--

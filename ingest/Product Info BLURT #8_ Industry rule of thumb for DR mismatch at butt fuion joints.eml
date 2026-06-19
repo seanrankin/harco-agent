@@ -1,0 +1,264 @@
+Received: from HARCO144 (192.168.1.157) by MAIL.harcofittings.com
+ (192.168.1.23) with Microsoft SMTP Server (TLS) id 8.1.436.0; Wed, 14 Dec
+ 2011 10:07:54 -0500
+From: John Riordan <JRiordan@harcofittings.com>
+To: Brian Hurley <BHurley@harcofittings.com>, Curtis Bruton
+	<CBruton@harcofittings.com>, Dirk Merrill <DMerrill@harcofittings.com>, Ed
+ Eichmann <EEichmann@harcofittings.com>, Jack Harrington <harcojbh@msn.com>,
+	John Fralick <JFralick@harcofittings.com>, Mike Friedman
+	<MFriedman@harcofittings.com>, Mike Scheel <MScheel@harcofittings.com>, Phil
+ Busman <PBusman@harcofittings.com>
+CC: Dan Hicks <DHicks@harcofittings.com>, Troy Daniel
+	<TDaniel@harcofittings.com>
+Subject: Product Info BLURT #8: Industry rule of thumb for DR mismatch at butt
+ fuion joints
+Thread-Topic: Product Info BLURT #8: Industry rule of thumb for DR mismatch at
+ butt fuion joints
+Thread-Index: Acy6bRFa6uPDY5Z7Rb+ij4Ebft7gEw==
+Date: Wed, 14 Dec 2011 15:07:24 +0000
+Message-ID: <9B7E2735CEC37E4D9137A9548F21D78372545FCA08@MAIL>
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+X-MS-Exchange-Organization-RecordReviewCfmType: 0
+Content-Type: multipart/alternative;
+	boundary="_000_9B7E2735CEC37E4D9137A9548F21D78372545FCA08MAIL_"
+MIME-Version: 1.0
+
+--_000_9B7E2735CEC37E4D9137A9548F21D78372545FCA08MAIL_
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Hello All,
+
+There is an informal rule of thumb that one step of DR is acceptable at a f=
+usion joint.
+
+There is no official documentation of this as a recommended practice in any=
+ industry standard or at the PPI however.  It is all word of mouth.  The un=
+derstanding is that it would be at the user=92s risk.
+
+The general availability of fittings with machined ends (where the ends are=
+ machined to match the pipe) is for the purpose of matching at the joint wi=
+th the pipe.  This can be done with fabricated and molded fittings.  We hav=
+e the capability to do this and have done it.  Pricing for fabricated fitti=
+ngs are in the price sheets.  Fittings with machined ends will cost more.
+
+The fusion parameters would have to be adjusted  for mismatching DR=92s but=
+ there is no official industry guideline for this either.  Again this is at=
+ user=92s risk.
+
+When the mismatch gets too great there are two problems that occur.  The fu=
+sion joint quality is questionable and the creation of a geometric stress r=
+iser (the step itself).  This is mostly an issue at fitting to pipe connect=
+ions.  The fusion joint quality is questionable because the ideal fusion pa=
+rameters are more different for the larger mismatch.
+
+Brandon Wheeler of Nupi has long experience with these matters working at J=
+M Eagles fitting plant.  He says he has seen ample evidence from failures t=
+hat two DR steps is too much.
+
+Defining a DR step has some peculiarities because there are =93half step=94=
+ DR=92s
+
+From thicker to thinner the full step DR=92s for IPS pipe go like this:
+7
+9
+11
+13.5
+17
+21
+26
+32.5
+
+DR 15.5 is a =93half step=94 DR.  The rule of thumb would say a DR11 fittin=
+g should have ends machined to DR 15.5 or at least to DR 13.5 when used wit=
+h DR 15.5 pipe.
+
+Our thoughts on this if asked:
+
+Harco advises that good practice is to match the ends at a joint.  There is=
+ an unofficial rule of thumb that a mismatch of one DR step can be acceptab=
+le but to do so would be the users decision and risk.  Our observation to d=
+ate in the golf application is that one step in DR across a joint seems not=
+ to have resulted in problems to this date.  We must caution that the life =
+of PE systems in golf applications is very short and that the problems may =
+not manifest themselves for some time.  It is only in the last 4 years that=
+ pipe thinner than DR 11 has been in regular use.  These systems would use =
+DR13.5 pipe and DR11 fittings.
+
+John
+
+--_000_9B7E2735CEC37E4D9137A9548F21D78372545FCA08MAIL_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<meta name=3D"Generator" content=3D"Microsoft Word 14 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+span.EmailStyle18
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle19
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle20
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle21
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle22
+	{mso-style-type:personal-reply;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">Hello All,<o:p></o:p><=
+/span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">There is an informal r=
+ule of thumb that one step of DR is acceptable at a fusion joint.<o:p></o:p=
+></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">There is no official d=
+ocumentation of this as a recommended practice in any industry standard or =
+at the PPI however.&nbsp; It is all word of mouth.&nbsp; The understanding =
+is that it would be at the user=92s risk.&nbsp;
+<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">The general availabili=
+ty of fittings with machined ends (where the ends are machined to match the=
+ pipe) is for the purpose of matching at the joint with the pipe.&nbsp; Thi=
+s can be done with fabricated and molded
+ fittings.&nbsp; We have the capability to do this and have done it.&nbsp; =
+Pricing for fabricated fittings are in the price sheets.&nbsp; Fittings wit=
+h machined ends will cost more.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">The fusion parameters =
+would have to be adjusted &nbsp;for mismatching DR=92s but there is no offi=
+cial industry guideline for this either.&nbsp; Again this is at user=92s ri=
+sk.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">When the mismatch gets=
+ too great there are two problems that occur.&nbsp; The fusion joint qualit=
+y is questionable and the creation of a geometric stress riser (the step it=
+self).&nbsp; This is mostly an issue at fitting
+ to pipe connections.&nbsp; The fusion joint quality is questionable becaus=
+e the ideal fusion parameters are more different for the larger mismatch.<o=
+:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">Brandon Wheeler of Nup=
+i has long experience with these matters working at JM Eagles fitting plant=
+.&nbsp; He says he has seen ample evidence from failures that two DR steps =
+is too much.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">Defining a DR step has=
+ some peculiarities because there are =93half step=94 DR=92s<o:p></o:p></sp=
+an></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">From thicker to thinne=
+r the full step DR=92s for IPS pipe go like this:<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">7<o:p></o:p></span></p=
+>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">9<o:p></o:p></span></p=
+>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">11<o:p></o:p></span></=
+p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">13.5<o:p></o:p></span>=
+</p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">17<o:p></o:p></span></=
+p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">21<o:p></o:p></span></=
+p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">26<o:p></o:p></span></=
+p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">32.5<o:p></o:p></span>=
+</p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">DR 15.5 is a =93half s=
+tep=94 DR.&nbsp; The rule of thumb would say a DR11 fitting should have end=
+s machined to DR 15.5 or at least to DR 13.5 when used with DR 15.5 pipe.<o=
+:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">Our thoughts on this i=
+f asked:<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"color:#1F4=
+97D">Harco advises that good practice is to match the ends at a joint.&nbsp=
+; There is an unofficial rule of thumb that a mismatch of one DR step can b=
+e acceptable but to do so would be the users
+ decision and risk.&nbsp; Our observation to date in the golf application i=
+s that one step in DR across a joint seems not to have resulted in problems=
+ to this date.&nbsp; We must caution that the life of PE systems in golf ap=
+plications is very short and that the problems
+ may not manifest themselves for some time. &nbsp;It is only in the last 4 =
+years that pipe thinner than DR 11 has been in regular use.&nbsp; These sys=
+tems would use DR13.5 pipe and DR11 fittings.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">John<o:p></o:p></span>=
+</p>
+</div>
+</body>
+</html>
+
+--_000_9B7E2735CEC37E4D9137A9548F21D78372545FCA08MAIL_--

@@ -1,0 +1,199 @@
+Received: from MAIL.harcofittings.com ([192.168.1.23]) by MAIL
+ ([192.168.1.23]) with mapi; Thu, 25 Feb 2016 13:13:54 -0500
+From: John Riordan
+	<IMCEAEX-_O=HARCO_OU=EXCHANGE+20ADMINISTRATIVE+20GROUP+20+28FYDIBOHF23SPDLT+29_CN=RECIPIENTS_CN=JRIORDAN@eurprd05.prod.outlook.com>
+To: Brian Hurley <BHurley@harcofittings.com>, Jay Leishman
+	<JLeishman@harcofittings.com>, Jeff Spek <JSpek@harcofittings.com>, John
+ Fralick <JFralick@harcofittings.com>, Lance Casey <LCasey@harcofittings.com>,
+	Larry Harwood <LHarwood@harcofittings.com>, Michael Friedman
+	<MFriedman@harcofittings.com>, Michael Roberts <MRoberts@harcofittings.com>,
+	Mike Scheel <MScheel@harcofittings.com>, Rick Shriver
+	<RShriver@harcofittings.com>
+Subject: Info Blurt 46: Guidance for Electrofusion of Lateral Connection using
+ PE Ball Valves
+Thread-Topic: Info Blurt 46: Guidance for Electrofusion of Lateral Connection
+ using PE Ball Valves
+Thread-Index: AdFv9vYwyC+RUDBVSrOz7h+9nxWhdQ==
+Date: Thu, 25 Feb 2016 18:13:26 +0000
+Message-ID: <4414AEBBCFB2B648B49E5766D309768E9804E34077@MAIL>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Exchange-Organization-AuthAs: Internal
+X-MS-Exchange-Organization-AuthMechanism: 04
+X-MS-Exchange-Organization-AuthSource: MAIL.harcofittings.com
+X-MS-Has-Attach:
+X-Message-Flag: Follow up
+X-MS-TNEF-Correlator:
+X-MS-Exchange-Organization-RecordReviewCfmType: 0
+Content-Type: multipart/alternative;
+	boundary="_000_4414AEBBCFB2B648B49E5766D309768E9804E34077MAIL_"
+MIME-Version: 1.0
+
+--_000_4414AEBBCFB2B648B49E5766D309768E9804E34077MAIL_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+All,
+
+In the case of a lateral connection with a PE Ball Valve, electrofusion fit=
+tings are typically used.  In the interest of minimizing risk the following=
+ guidance applies.
+
+If socket electrofusing to pipe, the pipe must be scraped per standard prac=
+tice.
+
+If the socket electrofusion is to a plain end that is part of a molded fitt=
+ing (such as a BF Fitting, EF Branch Saddle, or PE Ball Valve) it is not ne=
+cessary and good risk management practice not to scrape that end in order t=
+o insure the best possible interface between the plain end and the socket. =
+ All other preparations are the same for both cases.
+
+The reason it is necessary to scrape pipe is because the surface is likely =
+to have been oxidized by UV exposure from sunlight and contaminated by dirt=
+ and so on from handling and laying around exposed.  These effects make a p=
+roper fusion unachievable.
+
+The reason it is not necessary to scrape molded fittings is because these w=
+ill have been packaged and protected from contaminants and UV degradation (=
+assuming that is the case of course).  This is not saying it is wrong to sc=
+rape the plain ends of molded fittings it is just that if not necessary one=
+ can avoid increasing the gap between the socket and the plain end (for whi=
+ch there is a limit and still allow a sound fusion).
+
+J
+
+
+
+--_000_4414AEBBCFB2B648B49E5766D309768E9804E34077MAIL_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 14 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-priority:34;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+span.EmailStyle18
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+span.EmailStyle19
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle20
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle21
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle22
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.EmailStyle23
+	{mso-style-type:personal-reply;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">All,<o:p></o:p></span>=
+</p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">In the case of a later=
+al connection with a PE Ball Valve, electrofusion fittings are typically us=
+ed.&nbsp; In the interest of minimizing risk the following guidance applies=
+.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">If socket electrofusin=
+g to pipe, the pipe must be scraped per standard practice.&nbsp;
+<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">If the socket electrof=
+usion is to a plain end that is part of a molded fitting (such as a BF Fitt=
+ing, EF Branch Saddle, or PE Ball Valve) it is not necessary and good risk =
+management practice not to scrape that
+ end in order to insure the best possible interface between the plain end a=
+nd the socket.&nbsp; All other preparations are the same for both cases.<o:=
+p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">The reason it is neces=
+sary to scrape pipe is because the surface is likely to have been oxidized =
+by UV exposure from sunlight and contaminated by dirt and so on from handli=
+ng and laying around exposed.&nbsp; These
+ effects make a proper fusion unachievable.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">The reason it is not n=
+ecessary to scrape molded fittings is because these will have been packaged=
+ and protected from contaminants and UV degradation (assuming that is the c=
+ase of course).&nbsp; This is not saying
+ it is wrong to scrape the plain ends of molded fittings it is just that if=
+ not necessary one can avoid increasing the gap between the socket and the =
+plain end (for which there is a limit and still allow a sound fusion).<o:p>=
+</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">J<o:p></o:p></span></p=
+>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D"><o:p>&nbsp;</o:p></spa=
+n></p>
+</div>
+</body>
+</html>
+
+--_000_4414AEBBCFB2B648B49E5766D309768E9804E34077MAIL_--

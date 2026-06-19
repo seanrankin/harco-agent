@@ -13,9 +13,6 @@
 # testing
 /coverage
 
-# source emails and doc.
-/ingest
-
 # next.js
 /.next/
 /out/
