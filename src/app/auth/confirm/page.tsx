@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function AuthConfirmPage() {
+function ConfirmFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const verifying = useRef(false);
@@ -43,5 +43,19 @@ export default function AuthConfirmPage() {
     <div className="flex min-h-screen items-center justify-center">
       <p className="text-muted-foreground text-sm">Signing you in...</p>
     </div>
+  );
+}
+
+export default function AuthConfirmPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-muted-foreground text-sm">Loading...</p>
+        </div>
+      }
+    >
+      <ConfirmFlow />
+    </Suspense>
   );
 }
